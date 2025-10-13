@@ -41,4 +41,10 @@ export type Screen =
   | 'vaccine-selection'
   | 'vaccine-details'
   | 'vaccination-list'
-  | 'timeline';
+  | 'timeline'
+  | 'treatment-selection'
+  | 'treatment-details'
+  | 'treatment-list'
+  | 'exam-selection'
+  | 'exam-details'
+  | 'exam-list';

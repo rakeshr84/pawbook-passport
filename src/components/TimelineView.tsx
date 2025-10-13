@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { ChevronLeft, FileText, Mail } from 'lucide-react';
-import { VaccinationRecord } from '@/types/medical';
+import { VaccinationRecord, TreatmentRecord, ClinicalExam } from '@/types/medical';
 
 interface TimelineViewProps {
-  petData: {
-    name: string;
-    breed: string;
-  };
+  petData: { name: string; breed: string };
   vaccinations: VaccinationRecord[];
+  treatments: TreatmentRecord[];
+  examinations: ClinicalExam[];
   onBack: () => void;
 }
 
@@ -31,27 +30,18 @@ function formatDate(date: Date): string {
   });
 }
 
-export default function TimelineView({ petData, vaccinations, onBack }: TimelineViewProps) {
+export default function TimelineView({ petData, vaccinations, treatments, examinations, onBack }: TimelineViewProps) {
   const [filter, setFilter] = useState<FilterType>('all');
 
-  // Convert vaccinations to timeline items
-  const timelineItems: TimelineItem[] = vaccinations.map(v => ({
-    id: v.id,
-    type: 'vaccine',
-    emoji: '💉',
-    date: v.vaccination_date,
-    title: v.vaccine_name,
-    subtitle: v.vet_name,
-    nextDue: `Next due: ${formatDate(v.valid_until)}`,
-  }));
+  const allRecords: TimelineItem[] = [
+    ...vaccinations.map(v => ({ id: v.id, type: 'vaccine' as const, emoji: '💉', date: v.vaccination_date, title: v.vaccine_name, subtitle: v.vet_name, nextDue: `Valid until: ${formatDate(v.valid_until)}` })),
+    ...treatments.map(t => ({ id: t.id, type: 'treatment' as const, emoji: '💊', date: t.date_administered, title: t.product_name, subtitle: t.treatment_type, nextDue: t.next_due_date ? `Next due: ${formatDate(t.next_due_date)}` : undefined })),
+    ...examinations.map(e => ({ id: e.id, type: 'exam' as const, emoji: '🏥', date: e.exam_date, title: e.exam_type, subtitle: e.vet_name, nextDue: e.reason })),
+  ];
 
-  // Filter items
-  const filteredItems = timelineItems.filter(item => {
+  const filteredItems = allRecords.filter(item => {
     if (filter === 'all') return true;
-    if (filter === 'vaccines') return item.type === 'vaccine';
-    if (filter === 'treatments') return item.type === 'treatment';
-    if (filter === 'exams') return item.type === 'exam';
-    return true;
+    return filter === 'vaccines' ? item.type === 'vaccine' : filter === 'treatments' ? item.type === 'treatment' : item.type === 'exam';
   });
 
   // Group by year

@@ -24,17 +24,6 @@ const MedicalDashboard = ({
   onViewVaccinationList,
   vaccinations = []
 }: MedicalDashboardProps) => {
-  const [showComingSoon, setShowComingSoon] = useState(false);
-  const [comingSoonFeature, setComingSoonFeature] = useState('');
-  
-  const handleFeatureClick = (feature: string) => {
-    if (feature === 'vaccination') {
-      onAddVaccination();
-    } else {
-      setComingSoonFeature(feature);
-      setShowComingSoon(true);
-    }
-  };
   
   const calculateAge = (dateOfBirth: string): string => {
     const birthDate = new Date(dateOfBirth);
@@ -101,7 +90,7 @@ const MedicalDashboard = ({
                 
                 {/* Vaccinations */}
                 <button 
-                  onClick={() => handleFeatureClick('vaccination')}
+                  onClick={onAddVaccination}
                   className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
                 >
                   <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💉</div>
@@ -116,7 +105,7 @@ const MedicalDashboard = ({
 
                 {/* Treatments */}
                 <button 
-                  onClick={() => handleFeatureClick('treatment')}
+              onClick={onAddTreatment}
                   className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
                 >
                   <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💊</div>
@@ -131,7 +120,7 @@ const MedicalDashboard = ({
 
                 {/* Examinations */}
                 <button 
-                  onClick={() => handleFeatureClick('exam')}
+              onClick={onAddExam}
                   className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
                 >
                   <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🏥</div>
@@ -303,30 +292,6 @@ const MedicalDashboard = ({
           </>
         )}
 
-        {/* Coming Soon Modal */}
-        {showComingSoon && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
-            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-              <div className="text-center">
-                <div className="text-6xl mb-4">🚧</div>
-                <h3 className="text-2xl font-light text-gray-900 mb-3">
-                  Coming Soon!
-                </h3>
-                <p className="text-gray-600 font-light mb-6">
-                  {comingSoonFeature === 'treatment' 
-                    ? 'Treatment tracking is coming in the next update. For now, you can add vaccination records.'
-                    : 'Health exam tracking is coming in the next update. For now, you can add vaccination records.'}
-                </p>
-                <button
-                  onClick={() => setShowComingSoon(false)}
-                  className="w-full bg-gray-900 text-white py-4 px-8 rounded-full font-medium hover:bg-gray-800 transition-all duration-300"
-                >
-                  Got it
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
       </div>
     </div>
