@@ -11,6 +11,7 @@ export interface PetFormData {
   profilePhotoPreview: string;
   vetClinic: string;
   vetPhone: string;
+  category: string;
 }
 
 export interface UserFormData {
@@ -30,4 +31,4 @@ export interface Category {
   message: string;
 }
 
-export type Screen = 'welcome' | 'category' | 'form' | 'success' | 'passport' | 'medical-dashboard' | 'vaccine-selection' | 'ocr-scanner';
+export type Screen = 'welcome' | 'category' | 'form' | 'success' | 'passport' | 'medical-dashboard' | 'vaccine-selection';

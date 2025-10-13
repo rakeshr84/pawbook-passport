@@ -7,9 +7,8 @@ import SuccessPage from '@/components/SuccessPage';
 import PetPassportView from '@/components/PetPassportView';
 import MedicalDashboard from '@/components/MedicalDashboard';
 import VaccineSelection from '@/components/VaccineSelection';
-import OCRScanner from '@/components/OCRScanner';
 import { Screen, Category, PetFormData, UserFormData } from '@/types/pet';
-import { ExtractedVaccine } from '@/types/medical';
+import { VaccinationRecord } from '@/types/medical';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -17,6 +16,7 @@ const Index = () => {
   const [petData, setPetData] = useState<PetFormData | null>(null);
   const [userData, setUserData] = useState<UserFormData | null>(null);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const [vaccinations, setVaccinations] = useState<VaccinationRecord[]>([]);
 
   const handleGetStarted = () => {
     setCurrentScreen('category');
@@ -60,7 +60,7 @@ const Index = () => {
       setSelectedCategory(null);
     } else if (currentScreen === 'medical-dashboard') {
       setCurrentScreen('passport');
-    } else if (currentScreen === 'vaccine-selection' || currentScreen === 'ocr-scanner') {
+    } else if (currentScreen === 'vaccine-selection') {
       setCurrentScreen('medical-dashboard');
     }
   };
@@ -73,21 +73,10 @@ const Index = () => {
     setCurrentScreen('vaccine-selection');
   };
 
-  const handleScanCertificate = () => {
-    setCurrentScreen('ocr-scanner');
-  };
-
   const handleVaccineNext = (selectedVaccine: string, customName?: string) => {
     console.log('Selected vaccine:', selectedVaccine, customName);
     // Phase 2 Part 2 will handle vaccine details form
     alert('Vaccine details form coming in Phase 2 Part 2!');
-  };
-
-  const handleOCRComplete = (vaccines: ExtractedVaccine[]) => {
-    console.log('Extracted vaccines:', vaccines);
-    // Phase 2 Part 2 will handle saving vaccines
-    alert(`Successfully extracted ${vaccines.length} vaccines! Full implementation coming in Phase 2 Part 2.`);
-    setCurrentScreen('medical-dashboard');
   };
 
   return (
@@ -136,7 +125,7 @@ const Index = () => {
           petData={petData}
           onBack={handleBack}
           onAddVaccination={handleAddVaccination}
-          onScanCertificate={handleScanCertificate}
+          vaccinations={vaccinations}
         />
       )}
 
@@ -145,15 +134,6 @@ const Index = () => {
           petData={petData}
           onBack={handleBack}
           onNext={handleVaccineNext}
-          onUploadCertificate={handleScanCertificate}
-        />
-      )}
-
-      {currentScreen === 'ocr-scanner' && (
-        <OCRScanner
-          onBack={handleBack}
-          onComplete={handleOCRComplete}
-          onEditManually={handleAddVaccination}
         />
       )}
 

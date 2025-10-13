@@ -30,7 +30,8 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     profilePhoto: null,
     profilePhotoPreview: '',
     vetClinic: '',
-    vetPhone: ''
+    vetPhone: '',
+    category: category.name
   });
 
   const [errors, setErrors] = useState<Record<string, boolean>>({});
