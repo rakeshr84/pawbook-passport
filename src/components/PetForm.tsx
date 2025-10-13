@@ -192,14 +192,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               <div>
                 <select
                   value={formData.breed}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === 'Other' || value === 'Mixed Breed') {
-                      setFormData(prev => ({ ...prev, breed: '' }));
-                    } else {
-                      setFormData(prev => ({ ...prev, breed: value }));
-                    }
-                  }}
+                  onChange={(e) => setFormData(prev => ({ ...prev, breed: e.target.value }))}
                   className="w-full px-6 py-4 border border-border rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light"
                 >
                   <option value="">Select breed (optional)</option>
@@ -212,11 +205,10 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               </div>
             </div>
 
-            {(formData.breed === '' || formData.breed === 'Other' || formData.breed === 'Mixed Breed') && (
+            {(formData.breed === 'Other' || formData.breed === 'Mixed Breed') && (
               <input
                 type="text"
-                placeholder="Enter breed or mix (e.g., Labrador/Poodle mix)"
-                value={formData.breed}
+                placeholder="Specify breed or mix (e.g., Labrador/Poodle mix)"
                 onChange={(e) => setFormData(prev => ({ ...prev, breed: e.target.value }))}
                 className="w-full px-6 py-4 border border-border rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light"
               />
