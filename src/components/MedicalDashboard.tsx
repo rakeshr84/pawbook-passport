@@ -9,6 +9,7 @@ interface MedicalDashboardProps {
   onAddTreatment?: () => void;
   onAddExam?: () => void;
   onViewFullHistory?: () => void;
+  onViewVaccinationList?: () => void;
   vaccinations?: VaccinationRecord[];
 }
 
@@ -19,6 +20,7 @@ const MedicalDashboard = ({
   onAddTreatment,
   onAddExam,
   onViewFullHistory,
+  onViewVaccinationList,
   vaccinations = []
 }: MedicalDashboardProps) => {
   
@@ -166,7 +168,10 @@ const MedicalDashboard = ({
             {/* Overview Cards */}
             <div className="grid md:grid-cols-3 gap-6">
               
-              <div className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
+              <div 
+                onClick={onViewVaccinationList}
+                className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+              >
                 <div className="text-4xl mb-4">💉</div>
                 <h3 className="text-xl font-medium text-gray-900 mb-2">Vaccinations</h3>
                 <p className="text-gray-600 font-light mb-4">

@@ -31,4 +31,14 @@ export interface Category {
   message: string;
 }
 
-export type Screen = 'welcome' | 'category' | 'form' | 'success' | 'passport' | 'medical-dashboard' | 'vaccine-selection';
+export type Screen = 
+  | 'welcome' 
+  | 'category' 
+  | 'form' 
+  | 'success' 
+  | 'passport'
+  | 'medical-dashboard'
+  | 'vaccine-selection'
+  | 'vaccine-details'
+  | 'vaccination-list'
+  | 'timeline';
