@@ -3,10 +3,11 @@ import { Check } from 'lucide-react';
 interface SuccessPageProps {
   petName: string;
   petPhoto: string;
+  onViewPassport: () => void;
   onAddAnother: () => void;
 }
 
-const SuccessPage = ({ petName, petPhoto, onAddAnother }: SuccessPageProps) => {
+const SuccessPage = ({ petName, petPhoto, onViewPassport, onAddAnother }: SuccessPageProps) => {
   return (
     <div className="min-h-screen gradient-bg flex items-center justify-center p-6">
       <div className="max-w-2xl w-full text-center space-y-10">
@@ -32,7 +33,10 @@ const SuccessPage = ({ petName, petPhoto, onAddAnother }: SuccessPageProps) => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-8 max-w-lg mx-auto">
-          <button className="flex-1 bg-primary text-primary-foreground px-8 py-4 rounded-full font-medium hover:bg-gray-800 smooth-transition">
+          <button 
+            onClick={onViewPassport}
+            className="flex-1 bg-primary text-primary-foreground px-8 py-4 rounded-full font-medium hover:bg-gray-800 smooth-transition"
+          >
             View Passport
           </button>
           <button
