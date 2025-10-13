@@ -17,7 +17,7 @@ export interface UserFormData {
   email: string;
   password: string;
   fullName: string;
-  phone: string;
+  phone?: string;
 }
 
 export interface Category {

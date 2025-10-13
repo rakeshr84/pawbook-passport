@@ -22,7 +22,6 @@ const RegistrationModal = ({ petName, onSubmit }: RegistrationModalProps) => {
     const newErrors: Record<string, boolean> = {};
     if (!userData.fullName.trim()) newErrors.fullName = true;
     if (!userData.email.trim()) newErrors.email = true;
-    if (!userData.phone.trim()) newErrors.phone = true;
     if (userData.password.length < 6) newErrors.password = true;
 
     if (Object.keys(newErrors).length > 0) {
@@ -35,7 +34,7 @@ const RegistrationModal = ({ petName, onSubmit }: RegistrationModalProps) => {
 
   const handleSocialLogin = (provider: string) => {
     console.log(`Social login with ${provider}`);
-    onSubmit({ email: 'user@example.com', password: '', fullName: 'Social User', phone: '555-0123' });
+    onSubmit({ email: 'user@example.com', password: '', fullName: 'Social User' });
   };
 
   return (
@@ -113,15 +112,12 @@ const RegistrationModal = ({ petName, onSubmit }: RegistrationModalProps) => {
           
           <input
             type="tel"
-            placeholder="Phone Number"
+            placeholder="Phone Number (optional)"
             value={userData.phone}
             onChange={(e) => {
               setUserData(prev => ({ ...prev, phone: e.target.value }));
-              setErrors(prev => ({ ...prev, phone: false }));
             }}
-            className={`w-full px-6 py-4 border ${
-              errors.phone ? 'border-red-300' : 'border-border'
-            } rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light`}
+            className="w-full px-6 py-4 border border-border rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light"
           />
           
           <input
