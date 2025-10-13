@@ -73,15 +73,19 @@ const CategorySelection = ({ onSelectCategory, onBack }: CategorySelectionProps)
                             <img 
                               src={photo} 
                               alt={`${category.name} ${idx + 1}`}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover object-center"
                             />
                           </div>
                         ))}
                       </div>
 
                       <div className="flex items-start gap-4">
-                        <div className="text-5xl flex-shrink-0">
-                          {category.mascot}
+                        <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+                          <img 
+                            src={category.tabIcon} 
+                            alt={category.name}
+                            className="w-full h-full object-contain"
+                          />
                         </div>
                         <div className="relative">
                           <div className="absolute -left-2 top-4 w-4 h-4 bg-white transform rotate-45" />
