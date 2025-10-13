@@ -73,7 +73,7 @@ const CategorySelection = ({ onSelectCategory, onBack }: CategorySelectionProps)
                             <img 
                               src={photo} 
                               alt={`${category.name} ${idx + 1}`}
-                              className="w-full h-full object-cover object-[center_30%]"
+                              className="w-full h-full object-cover object-center"
                             />
                           </div>
                         ))}
