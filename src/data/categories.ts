@@ -35,13 +35,22 @@ import exotic1 from '@/assets/exotic/exotic-1.jpg';
 import exotic2 from '@/assets/exotic/exotic-2.jpg';
 import exotic3 from '@/assets/exotic/exotic-3.jpg';
 import exotic4 from '@/assets/exotic/exotic-4.jpg';
+import dogIcon from '@/assets/icons/dog-icon.png';
+import catIcon from '@/assets/icons/cat-icon.png';
+import birdIcon from '@/assets/icons/bird-icon.png';
+import rabbitIcon from '@/assets/icons/rabbit-icon.png';
+import guineaPigIcon from '@/assets/icons/guinea-pig-icon.png';
+import hamsterIcon from '@/assets/icons/hamster-icon.png';
+import reptileIcon from '@/assets/icons/reptile-icon.png';
+import fishIcon from '@/assets/icons/fish-icon.png';
+import exoticIcon from '@/assets/icons/exotic-icon.png';
 
 export const categories: Category[] = [
   {
     id: 'dogs',
     name: 'Dogs',
     bgGradient: 'from-blue-100 to-blue-50',
-    tabEmoji: '🐕',
+    tabIcon: dogIcon,
     photos: [dog1, dog2, dog3, dog4],
     mascot: '🐕',
     message: "Woof woof! That's \"Please track my vet visits\" in dog language! Let's keep me healthy together!"
@@ -50,7 +59,7 @@ export const categories: Category[] = [
     id: 'cats',
     name: 'Cats',
     bgGradient: 'from-purple-100 to-purple-50',
-    tabEmoji: '🐱',
+    tabIcon: catIcon,
     photos: [cat1, cat2, cat3, cat4],
     mascot: '🐱',
     message: "Meow... I mean, hello! I'll let you track my health... but only because I care about you."
@@ -59,7 +68,7 @@ export const categories: Category[] = [
     id: 'birds',
     name: 'Birds',
     bgGradient: 'from-yellow-100 to-yellow-50',
-    tabEmoji: '🦜',
+    tabIcon: birdIcon,
     photos: [bird1, bird2, bird3, bird4],
     mascot: '🦜',
     message: "Tweet tweet! Help me remember my checkups - I'm too busy singing to keep track!"
@@ -68,7 +77,7 @@ export const categories: Category[] = [
     id: 'rabbits',
     name: 'Rabbits',
     bgGradient: 'from-pink-100 to-pink-50',
-    tabEmoji: '🐰',
+    tabIcon: rabbitIcon,
     photos: [rabbit1, rabbit2, rabbit3, rabbit4],
     mascot: '🐰',
     message: "Hippity hop! Let's hop into my health journey together - no more lost vaccine records!"
@@ -77,7 +86,7 @@ export const categories: Category[] = [
     id: 'guinea-pigs',
     name: 'Guinea Pigs',
     bgGradient: 'from-orange-100 to-orange-50',
-    tabEmoji: '🐹',
+    tabIcon: guineaPigIcon,
     photos: [guineaPig1, guineaPig2, guineaPig3, guineaPig4],
     mascot: '🐹',
     message: "Wheek wheek! That means 'Yes please!' Track my health so I can focus on eating hay!"
@@ -86,7 +95,7 @@ export const categories: Category[] = [
     id: 'hamsters',
     name: 'Hamsters',
     bgGradient: 'from-amber-100 to-amber-50',
-    tabEmoji: '🐹',
+    tabIcon: hamsterIcon,
     photos: [hamster1, hamster2, hamster3, hamster4],
     mascot: '🐹',
     message: "Busy running on wheel - Oh hi! Help me track my tiny health needs!"
@@ -95,7 +104,7 @@ export const categories: Category[] = [
     id: 'reptiles',
     name: 'Reptiles',
     bgGradient: 'from-green-100 to-green-50',
-    tabEmoji: '🦎',
+    tabIcon: reptileIcon,
     photos: [reptile1, reptile2, reptile3, reptile4],
     mascot: '🦎',
     message: "Ssssslow and steady wins the race! Let's track my health at my own pace."
@@ -104,7 +113,7 @@ export const categories: Category[] = [
     id: 'fish',
     name: 'Fish',
     bgGradient: 'from-cyan-100 to-cyan-50',
-    tabEmoji: '🐠',
+    tabIcon: fishIcon,
     photos: [fish1, fish2, fish3, fish4],
     mascot: '🐠',
     message: "Blub blub! Even underwater, I need my health tracked - let's dive in!"
@@ -113,7 +122,7 @@ export const categories: Category[] = [
     id: 'exotic',
     name: 'Exotic Pets',
     bgGradient: 'from-indigo-100 to-indigo-50',
-    tabEmoji: '✨',
+    tabIcon: exoticIcon,
     photos: [exotic1, exotic2, exotic3, exotic4],
     mascot: '🦔',
     message: "We're special! Whether we hop, slither, or glide - let's track our unique needs together!"

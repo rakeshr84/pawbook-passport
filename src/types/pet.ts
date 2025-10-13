@@ -23,7 +23,7 @@ export interface Category {
   id: string;
   name: string;
   bgGradient: string;
-  tabEmoji: string;
+  tabIcon: string; // Image path for tab icon
   photos: string[]; // Array of image paths
   mascot: string;
   message: string;

@@ -68,7 +68,7 @@ const CategorySelection = ({ onSelectCategory, onBack }: CategorySelectionProps)
                         {category.photos.map((photo, idx) => (
                           <div
                             key={idx}
-                            className="bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden h-20"
+                            className="bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden h-20 flex items-center justify-center"
                           >
                             <img 
                               src={photo} 
@@ -95,8 +95,12 @@ const CategorySelection = ({ onSelectCategory, onBack }: CategorySelectionProps)
                     </div>
                   </div>
 
-                  <div className="w-20 bg-white rounded-r-2xl shadow-lg flex items-center justify-center text-4xl flex-shrink-0">
-                    {category.tabEmoji}
+                  <div className="w-20 bg-white rounded-r-2xl shadow-lg flex items-center justify-center flex-shrink-0">
+                    <img 
+                      src={category.tabIcon} 
+                      alt={category.name}
+                      className="w-12 h-12 object-contain"
+                    />
                   </div>
                 </div>
               );
