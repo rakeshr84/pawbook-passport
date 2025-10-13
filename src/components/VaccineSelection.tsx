@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
+import { normalizePetCategory } from '@/lib/utils';
 
 interface VaccineSelectionProps {
   petData: PetFormData;
@@ -23,7 +24,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
   };
 
   const petAgeInMonths = calculateAgeInMonths(petData.dateOfBirth);
-  const category = petData.category.toLowerCase();
+  const category = normalizePetCategory(petData.category);
   const isPuppy = category === 'dogs' && petAgeInMonths < 6;
   const isKitten = category === 'cats' && petAgeInMonths < 6;
 
