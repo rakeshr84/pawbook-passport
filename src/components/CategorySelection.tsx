@@ -68,12 +68,12 @@ const CategorySelection = ({ onSelectCategory, onBack }: CategorySelectionProps)
                         {category.photos.map((photo, idx) => (
                           <div
                             key={idx}
-                            className="bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden h-20 flex items-center justify-center"
+                            className="bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden h-20 flex items-center justify-center p-2"
                           >
                             <img 
                               src={photo} 
                               alt={`${category.name} ${idx + 1}`}
-                              className="w-full h-full object-cover object-center"
+                              className="max-w-full max-h-full object-contain"
                             />
                           </div>
                         ))}
