@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Camera } from 'lucide-react';
 import { PetFormData, Category } from '@/types/pet';
+import { useToast } from '@/hooks/use-toast';
 
 interface PetFormProps {
   category: Category;
@@ -9,6 +10,13 @@ interface PetFormProps {
 }
 
 const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
+  const { toast } = useToast();
+  const photoInputRef = useRef<HTMLDivElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const genderInputRef = useRef<HTMLDivElement>(null);
+  const microchipInputRef = useRef<HTMLInputElement>(null);
+
   const [formData, setFormData] = useState<PetFormData>({
     name: '',
     breed: '',
@@ -56,14 +64,57 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     e.preventDefault();
     
     const newErrors: Record<string, boolean> = {};
-    if (!formData.profilePhoto) newErrors.profilePhoto = true;
-    if (!formData.name.trim()) newErrors.name = true;
-    if (!formData.dateOfBirth) newErrors.dateOfBirth = true;
-    if (formData.gender === 'unknown') newErrors.gender = true;
-    if (!formData.microchipNumber.trim()) newErrors.microchipNumber = true;
+    const missingFields: string[] = [];
+
+    if (!formData.profilePhoto) {
+      newErrors.profilePhoto = true;
+      missingFields.push('Pet photo');
+    }
+    if (!formData.name.trim()) {
+      newErrors.name = true;
+      missingFields.push('Pet name');
+    }
+    if (!formData.dateOfBirth) {
+      newErrors.dateOfBirth = true;
+      missingFields.push('Date of birth');
+    }
+    if (formData.gender === 'unknown') {
+      newErrors.gender = true;
+      missingFields.push('Gender');
+    }
+    if (!formData.microchipNumber.trim()) {
+      newErrors.microchipNumber = true;
+      missingFields.push('Microchip number');
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      
+      // Show toast with missing fields
+      toast({
+        title: "Missing required fields",
+        description: `Please fill in: ${missingFields.join(', ')}`,
+        variant: "destructive",
+      });
+
+      // Scroll to first error
+      setTimeout(() => {
+        if (newErrors.profilePhoto && photoInputRef.current) {
+          photoInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (newErrors.name && nameInputRef.current) {
+          nameInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          nameInputRef.current.focus();
+        } else if (newErrors.dateOfBirth && dateInputRef.current) {
+          dateInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          dateInputRef.current.focus();
+        } else if (newErrors.gender && genderInputRef.current) {
+          genderInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (newErrors.microchipNumber && microchipInputRef.current) {
+          microchipInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          microchipInputRef.current.focus();
+        }
+      }, 100);
+      
       return;
     }
 
@@ -81,7 +132,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex justify-center">
+          <div className="flex justify-center" ref={photoInputRef}>
             <label className="cursor-pointer group">
               <input
                 type="file"
@@ -91,7 +142,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               />
               <div
                 className={`w-40 h-40 rounded-full border-2 ${
-                  errors.profilePhoto ? 'border-red-300' : 'border-border'
+                  errors.profilePhoto ? 'border-red-400 shadow-red-100' : 'border-border'
                 } flex items-center justify-center overflow-hidden bg-white hover:border-gray-400 hover:shadow-lg smooth-transition`}
               >
                 {formData.profilePhotoPreview ? (
@@ -111,21 +162,32 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               </div>
             </label>
           </div>
+          {errors.profilePhoto && (
+            <p className="text-sm text-red-500 font-light text-center -mt-2">
+              Pet photo is required
+            </p>
+          )}
 
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Name"
-                value={formData.name}
-                onChange={(e) => {
-                  setFormData(prev => ({ ...prev, name: e.target.value }));
-                  setErrors(prev => ({ ...prev, name: false }));
-                }}
-                className={`px-6 py-4 border ${
-                  errors.name ? 'border-red-300' : 'border-border'
-                } rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light`}
-              />
+              <div>
+                <input
+                  ref={nameInputRef}
+                  type="text"
+                  placeholder="Name"
+                  value={formData.name}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, name: e.target.value }));
+                    setErrors(prev => ({ ...prev, name: false }));
+                  }}
+                  className={`w-full px-6 py-4 border ${
+                    errors.name ? 'border-red-400' : 'border-border'
+                  } rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light`}
+                />
+                {errors.name && (
+                  <p className="text-sm text-red-500 font-light mt-1">Name is required</p>
+                )}
+              </div>
               <input
                 type="text"
                 placeholder="Breed (optional)"
@@ -137,6 +199,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
 
             <div>
               <input
+                ref={dateInputRef}
                 type="date"
                 value={formData.dateOfBirth}
                 onChange={(e) => {
@@ -144,17 +207,20 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                   setErrors(prev => ({ ...prev, dateOfBirth: false }));
                 }}
                 className={`w-full px-6 py-4 border ${
-                  errors.dateOfBirth ? 'border-red-300' : 'border-border'
+                  errors.dateOfBirth ? 'border-red-400' : 'border-border'
                 } rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light`}
               />
-              {formData.dateOfBirth && (
+              {errors.dateOfBirth && (
+                <p className="text-sm text-red-500 font-light mt-1">Date of birth is required</p>
+              )}
+              {formData.dateOfBirth && !errors.dateOfBirth && (
                 <p className="text-sm text-muted-foreground font-light mt-2">
                   {calculateAge(formData.dateOfBirth)}
                 </p>
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" ref={genderInputRef}>
               <label className="text-sm text-muted-foreground font-light">Gender</label>
               <div className="grid grid-cols-3 gap-4">
                 {(['male', 'female', 'unknown'] as const).map((gender) => (
@@ -169,7 +235,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                       formData.gender === gender
                         ? 'bg-primary text-primary-foreground'
                         : `bg-white text-gray-600 border ${
-                            errors.gender ? 'border-red-300' : 'border-border'
+                            errors.gender ? 'border-red-400' : 'border-border'
                           } hover:border-gray-300`
                     }`}
                   >
@@ -177,6 +243,9 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                   </button>
                 ))}
               </div>
+              {errors.gender && (
+                <p className="text-sm text-red-500 font-light mt-1">Please select a gender</p>
+              )}
             </div>
 
             <textarea
@@ -210,19 +279,25 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
             <label className="text-sm text-muted-foreground font-light">
               Microchip information
             </label>
-            <input
-              type="text"
-              placeholder="15-digit microchip number"
-              maxLength={15}
-              value={formData.microchipNumber}
-              onChange={(e) => {
-                setFormData(prev => ({ ...prev, microchipNumber: e.target.value }));
-                setErrors(prev => ({ ...prev, microchipNumber: false }));
-              }}
-              className={`w-full px-6 py-4 border ${
-                errors.microchipNumber ? 'border-red-300' : 'border-border'
-              } rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light`}
-            />
+            <div>
+              <input
+                ref={microchipInputRef}
+                type="text"
+                placeholder="15-digit microchip number"
+                maxLength={15}
+                value={formData.microchipNumber}
+                onChange={(e) => {
+                  setFormData(prev => ({ ...prev, microchipNumber: e.target.value }));
+                  setErrors(prev => ({ ...prev, microchipNumber: false }));
+                }}
+                className={`w-full px-6 py-4 border ${
+                  errors.microchipNumber ? 'border-red-400' : 'border-border'
+                } rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light`}
+              />
+              {errors.microchipNumber && (
+                <p className="text-sm text-red-500 font-light mt-1">Microchip number is required</p>
+              )}
+            </div>
           </div>
 
           <div className="pt-4 border-t border-border space-y-3">
