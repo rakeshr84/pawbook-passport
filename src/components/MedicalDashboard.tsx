@@ -7,11 +7,15 @@ interface MedicalDashboardProps {
   petData: PetFormData;
   onBack: () => void;
   onAddVaccination: () => void;
-  onAddTreatment?: () => void;
-  onAddExam?: () => void;
-  onViewFullHistory?: () => void;
-  onViewVaccinationList?: () => void;
-  vaccinations?: VaccinationRecord[];
+  onAddTreatment: () => void;
+  onAddExam: () => void;
+  onViewFullHistory: () => void;
+  onViewVaccinationList: () => void;
+  onViewTreatmentList: () => void;
+  onViewExamList: () => void;
+  vaccinations: VaccinationRecord[];
+  treatments: any[];
+  examinations: any[];
 }
 
 const MedicalDashboard = ({ 
@@ -22,7 +26,11 @@ const MedicalDashboard = ({
   onAddExam,
   onViewFullHistory,
   onViewVaccinationList,
-  vaccinations = []
+  onViewTreatmentList,
+  onViewExamList,
+  vaccinations,
+  treatments,
+  examinations,
 }: MedicalDashboardProps) => {
   
   const calculateAge = (dateOfBirth: string): string => {
@@ -40,7 +48,7 @@ const MedicalDashboard = ({
     return ageString || 'Less than 1 month';
   };
 
-  const hasRecords = vaccinations.length > 0;
+  const hasRecords = vaccinations.length > 0 || treatments.length > 0 || examinations.length > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-12 px-6">
@@ -186,31 +194,31 @@ const MedicalDashboard = ({
               </div>
 
               <div 
-                onClick={() => handleFeatureClick('treatment')}
+                onClick={onViewTreatmentList}
                 className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
               >
                 <div className="text-4xl mb-4">💊</div>
                 <h3 className="text-xl font-medium text-gray-900 mb-2">Treatments</h3>
                 <p className="text-gray-600 font-light mb-4">
-                  Coming soon
+                  {treatments.length > 0 ? `✓ ${treatments.length} treatment${treatments.length !== 1 ? 's' : ''} on record` : 'No treatments yet'}
                 </p>
-                <span className="text-gray-400 font-medium">
+                <button className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
                   View All →
-                </span>
+                </button>
               </div>
 
               <div 
-                onClick={() => handleFeatureClick('exam')}
+                onClick={onViewExamList}
                 className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
               >
                 <div className="text-4xl mb-4">🏥</div>
                 <h3 className="text-xl font-medium text-gray-900 mb-2">Health Exams</h3>
                 <p className="text-gray-600 font-light mb-4">
-                  Coming soon
+                  {examinations.length > 0 ? `✓ ${examinations.length} exam${examinations.length !== 1 ? 's' : ''} on record` : 'No exams yet'}
                 </p>
-                <span className="text-gray-400 font-medium">
+                <button className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
                   View All →
-                </span>
+                </button>
               </div>
               
             </div>
@@ -229,7 +237,7 @@ const MedicalDashboard = ({
                 </button>
                 
                 <button 
-                  onClick={() => handleFeatureClick('treatment')}
+                  onClick={onAddTreatment}
                   className="flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
                 >
                   <Plus className="w-5 h-5" />
@@ -237,7 +245,7 @@ const MedicalDashboard = ({
                 </button>
                 
                 <button 
-                  onClick={() => handleFeatureClick('exam')}
+                  onClick={onAddExam}
                   className="flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
                 >
                   <Plus className="w-5 h-5" />
