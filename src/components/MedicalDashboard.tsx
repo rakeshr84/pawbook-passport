@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ChevronLeft, Plus, Stethoscope, Lightbulb, FileText } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
 import { VaccinationRecord } from '@/types/medical';
@@ -23,6 +24,17 @@ const MedicalDashboard = ({
   onViewVaccinationList,
   vaccinations = []
 }: MedicalDashboardProps) => {
+  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState('');
+  
+  const handleFeatureClick = (feature: string) => {
+    if (feature === 'vaccination') {
+      onAddVaccination();
+    } else {
+      setComingSoonFeature(feature);
+      setShowComingSoon(true);
+    }
+  };
   
   const calculateAge = (dateOfBirth: string): string => {
     const birthDate = new Date(dateOfBirth);
@@ -89,7 +101,7 @@ const MedicalDashboard = ({
                 
                 {/* Vaccinations */}
                 <button 
-                  onClick={onAddVaccination}
+                  onClick={() => handleFeatureClick('vaccination')}
                   className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
                 >
                   <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💉</div>
@@ -104,7 +116,7 @@ const MedicalDashboard = ({
 
                 {/* Treatments */}
                 <button 
-                  onClick={onAddTreatment}
+                  onClick={() => handleFeatureClick('treatment')}
                   className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
                 >
                   <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💊</div>
@@ -119,7 +131,7 @@ const MedicalDashboard = ({
 
                 {/* Examinations */}
                 <button 
-                  onClick={onAddExam}
+                  onClick={() => handleFeatureClick('exam')}
                   className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
                 >
                   <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🏥</div>
@@ -184,33 +196,33 @@ const MedicalDashboard = ({
                 </button>
               </div>
 
-              <button 
-                onClick={onAddTreatment}
+              <div 
+                onClick={() => handleFeatureClick('treatment')}
                 className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
               >
                 <div className="text-4xl mb-4">💊</div>
                 <h3 className="text-xl font-medium text-gray-900 mb-2">Treatments</h3>
                 <p className="text-gray-600 font-light mb-4">
-                  Log medications and preventative care
+                  Coming soon
                 </p>
-                <span className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
-                  Add Treatment →
+                <span className="text-gray-400 font-medium">
+                  View All →
                 </span>
-              </button>
+              </div>
 
-              <button 
-                onClick={onAddExam}
+              <div 
+                onClick={() => handleFeatureClick('exam')}
                 className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
               >
                 <div className="text-4xl mb-4">🏥</div>
                 <h3 className="text-xl font-medium text-gray-900 mb-2">Health Exams</h3>
                 <p className="text-gray-600 font-light mb-4">
-                  Record checkups and vet visits
+                  Coming soon
                 </p>
-                <span className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
-                  Add Exam →
+                <span className="text-gray-400 font-medium">
+                  View All →
                 </span>
-              </button>
+              </div>
               
             </div>
 
@@ -228,7 +240,7 @@ const MedicalDashboard = ({
                 </button>
                 
                 <button 
-                  onClick={onAddTreatment}
+                  onClick={() => handleFeatureClick('treatment')}
                   className="flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
                 >
                   <Plus className="w-5 h-5" />
@@ -236,7 +248,7 @@ const MedicalDashboard = ({
                 </button>
                 
                 <button 
-                  onClick={onAddExam}
+                  onClick={() => handleFeatureClick('exam')}
                   className="flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
                 >
                   <Plus className="w-5 h-5" />
@@ -289,6 +301,31 @@ const MedicalDashboard = ({
               </div>
             )}
           </>
+        )}
+
+        {/* Coming Soon Modal */}
+        {showComingSoon && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+              <div className="text-center">
+                <div className="text-6xl mb-4">🚧</div>
+                <h3 className="text-2xl font-light text-gray-900 mb-3">
+                  Coming Soon!
+                </h3>
+                <p className="text-gray-600 font-light mb-6">
+                  {comingSoonFeature === 'treatment' 
+                    ? 'Treatment tracking is coming in the next update. For now, you can add vaccination records.'
+                    : 'Health exam tracking is coming in the next update. For now, you can add vaccination records.'}
+                </p>
+                <button
+                  onClick={() => setShowComingSoon(false)}
+                  className="w-full bg-gray-900 text-white py-4 px-8 rounded-full font-medium hover:bg-gray-800 transition-all duration-300"
+                >
+                  Got it
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
       </div>
