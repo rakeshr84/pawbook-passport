@@ -5,7 +5,11 @@ import PetForm from '@/components/PetForm';
 import RegistrationModal from '@/components/RegistrationModal';
 import SuccessPage from '@/components/SuccessPage';
 import PetPassportView from '@/components/PetPassportView';
+import MedicalDashboard from '@/components/MedicalDashboard';
+import VaccineSelection from '@/components/VaccineSelection';
+import OCRScanner from '@/components/OCRScanner';
 import { Screen, Category, PetFormData, UserFormData } from '@/types/pet';
+import { ExtractedVaccine } from '@/types/medical';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -54,7 +58,36 @@ const Index = () => {
     } else if (currentScreen === 'form') {
       setCurrentScreen('category');
       setSelectedCategory(null);
+    } else if (currentScreen === 'medical-dashboard') {
+      setCurrentScreen('passport');
+    } else if (currentScreen === 'vaccine-selection' || currentScreen === 'ocr-scanner') {
+      setCurrentScreen('medical-dashboard');
     }
+  };
+
+  const handleAddMedicalRecords = () => {
+    setCurrentScreen('medical-dashboard');
+  };
+
+  const handleAddVaccination = () => {
+    setCurrentScreen('vaccine-selection');
+  };
+
+  const handleScanCertificate = () => {
+    setCurrentScreen('ocr-scanner');
+  };
+
+  const handleVaccineNext = (selectedVaccine: string, customName?: string) => {
+    console.log('Selected vaccine:', selectedVaccine, customName);
+    // Phase 2 Part 2 will handle vaccine details form
+    alert('Vaccine details form coming in Phase 2 Part 2!');
+  };
+
+  const handleOCRComplete = (vaccines: ExtractedVaccine[]) => {
+    console.log('Extracted vaccines:', vaccines);
+    // Phase 2 Part 2 will handle saving vaccines
+    alert(`Successfully extracted ${vaccines.length} vaccines! Full implementation coming in Phase 2 Part 2.`);
+    setCurrentScreen('medical-dashboard');
   };
 
   return (
@@ -93,8 +126,34 @@ const Index = () => {
           userData={userData}
           category={selectedCategory}
           onBack={() => setCurrentScreen('success')}
-          onAddMedicalRecords={() => alert('Phase 2: Medical Records coming soon!')}
+          onAddMedicalRecords={handleAddMedicalRecords}
           onAddAnother={handleAddAnother}
+        />
+      )}
+
+      {currentScreen === 'medical-dashboard' && petData && (
+        <MedicalDashboard
+          petData={petData}
+          onBack={handleBack}
+          onAddVaccination={handleAddVaccination}
+          onScanCertificate={handleScanCertificate}
+        />
+      )}
+
+      {currentScreen === 'vaccine-selection' && petData && (
+        <VaccineSelection
+          petData={petData}
+          onBack={handleBack}
+          onNext={handleVaccineNext}
+          onUploadCertificate={handleScanCertificate}
+        />
+      )}
+
+      {currentScreen === 'ocr-scanner' && (
+        <OCRScanner
+          onBack={handleBack}
+          onComplete={handleOCRComplete}
+          onEditManually={handleAddVaccination}
         />
       )}
 

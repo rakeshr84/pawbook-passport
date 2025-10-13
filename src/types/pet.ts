@@ -30,4 +30,4 @@ export interface Category {
   message: string;
 }
 
-export type Screen = 'welcome' | 'category' | 'form' | 'success' | 'passport';
+export type Screen = 'welcome' | 'category' | 'form' | 'success' | 'passport' | 'medical-dashboard' | 'vaccine-selection' | 'ocr-scanner';
