@@ -24,7 +24,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
 
   const petAgeInMonths = calculateAgeInMonths(petData.dateOfBirth);
   const isPuppy = petAgeInMonths < 6;
-  const isKitten = petData.category === 'Cats' && petAgeInMonths < 6;
+  const isKitten = petData.category === 'cats' && petAgeInMonths < 6;
 
   const handleNext = () => {
     if (selectedVaccine === 'custom' && customVaccineName.trim()) {
@@ -35,7 +35,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
   };
 
   // Check if species doesn't typically need vaccines
-  const noVaccinesSpecies = ['Fish', 'Reptiles', 'Small Pets (Hamsters, Guinea Pigs)'].includes(petData.category);
+  const noVaccinesSpecies = ['fish', 'reptiles', 'hamsters', 'guinea-pigs', 'exotic'].includes(petData.category);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-12 px-6">
@@ -87,7 +87,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </div>
               </label>
             </div>
-          ) : petData.category === 'Dogs' && isPuppy ? (
+          ) : petData.category === 'dogs' && isPuppy ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🐶 Puppy Vaccination Series</h3>
               <div className="bg-blue-50 rounded-xl p-4 mb-4">
@@ -138,7 +138,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </label>
               </div>
             </>
-          ) : petData.category === 'Cats' && isKitten ? (
+          ) : petData.category === 'cats' && isKitten ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🐱 Kitten Vaccination Series</h3>
               <div className="bg-blue-50 rounded-xl p-4 mb-4">
@@ -189,7 +189,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </label>
               </div>
             </>
-          ) : petData.category === 'Cats' ? (
+          ) : petData.category === 'cats' ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🌟 Recommended for Cats</h3>
               
@@ -259,9 +259,163 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </div>
               </label>
             </>
+          ) : petData.category === 'birds' ? (
+            <>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">🦜 Bird Vaccinations</h3>
+              
+              <div className="space-y-3">
+                <label className="block cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="vaccine" 
+                    value="polyomavirus" 
+                    className="hidden peer"
+                    onChange={(e) => setSelectedVaccine(e.target.value)}
+                  />
+                  <div className="p-6 border-2 border-gray-200 rounded-xl hover:border-gray-400 peer-checked:border-gray-900 peer-checked:bg-gray-50 transition-all duration-200">
+                    <div className="font-medium text-gray-900 mb-1">Polyomavirus</div>
+                    <div className="text-sm text-gray-500 font-light">Common for parrots and cockatiels</div>
+                  </div>
+                </label>
+                
+                <label className="block cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="vaccine" 
+                    value="pacheco" 
+                    className="hidden peer"
+                    onChange={(e) => setSelectedVaccine(e.target.value)}
+                  />
+                  <div className="p-6 border-2 border-gray-200 rounded-xl hover:border-gray-400 peer-checked:border-gray-900 peer-checked:bg-gray-50 transition-all duration-200">
+                    <div className="font-medium text-gray-900 mb-1">Pacheco's Disease</div>
+                    <div className="text-sm text-gray-500 font-light">Herpes virus protection</div>
+                  </div>
+                </label>
+                
+                <label className="block cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="vaccine" 
+                    value="newcastle" 
+                    className="hidden peer"
+                    onChange={(e) => setSelectedVaccine(e.target.value)}
+                  />
+                  <div className="p-6 border-2 border-gray-200 rounded-xl hover:border-gray-400 peer-checked:border-gray-900 peer-checked:bg-gray-50 transition-all duration-200">
+                    <div className="font-medium text-gray-900 mb-1">Newcastle Disease</div>
+                    <div className="text-sm text-gray-500 font-light">Viral infection prevention</div>
+                  </div>
+                </label>
+                
+                <label className="block cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="vaccine" 
+                    value="avian-pox" 
+                    className="hidden peer"
+                    onChange={(e) => setSelectedVaccine(e.target.value)}
+                  />
+                  <div className="p-6 border-2 border-gray-200 rounded-xl hover:border-gray-400 peer-checked:border-gray-900 peer-checked:bg-gray-50 transition-all duration-200">
+                    <div className="font-medium text-gray-900 mb-1">Avian Pox</div>
+                    <div className="text-sm text-gray-500 font-light">Poxvirus protection</div>
+                  </div>
+                </label>
+                
+                <label className="block cursor-pointer mt-4">
+                  <input 
+                    type="radio" 
+                    name="vaccine" 
+                    value="custom" 
+                    className="hidden peer"
+                    onChange={(e) => setSelectedVaccine(e.target.value)}
+                  />
+                  <div className="p-6 border-2 border-gray-200 rounded-xl hover:border-gray-400 peer-checked:border-gray-900 peer-checked:bg-gray-50 transition-all duration-200">
+                    <div className="font-medium text-gray-900 mb-2">Custom/Other</div>
+                    {selectedVaccine === 'custom' && (
+                      <input 
+                        type="text" 
+                        placeholder="Enter vaccine name..."
+                        value={customVaccineName}
+                        onChange={(e) => setCustomVaccineName(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 font-light"
+                      />
+                    )}
+                  </div>
+                </label>
+              </div>
+            </>
+          ) : petData.category === 'rabbits' ? (
+            <>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">🐰 Rabbit Vaccinations</h3>
+              
+              <div className="space-y-3">
+                <label className="block cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="vaccine" 
+                    value="myxomatosis" 
+                    className="hidden peer"
+                    onChange={(e) => setSelectedVaccine(e.target.value)}
+                  />
+                  <div className="p-6 border-2 border-gray-200 rounded-xl hover:border-gray-400 peer-checked:border-gray-900 peer-checked:bg-gray-50 transition-all duration-200">
+                    <div className="font-medium text-gray-900 mb-1">Myxomatosis</div>
+                    <div className="text-sm text-gray-500 font-light">Essential protection • Annual</div>
+                  </div>
+                </label>
+                
+                <label className="block cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="vaccine" 
+                    value="rhd" 
+                    className="hidden peer"
+                    onChange={(e) => setSelectedVaccine(e.target.value)}
+                  />
+                  <div className="p-6 border-2 border-gray-200 rounded-xl hover:border-gray-400 peer-checked:border-gray-900 peer-checked:bg-gray-50 transition-all duration-200">
+                    <div className="font-medium text-gray-900 mb-1">RHD (Rabbit Hemorrhagic Disease)</div>
+                    <div className="text-sm text-gray-500 font-light">Essential protection • Annual</div>
+                  </div>
+                </label>
+                
+                <label className="block cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="vaccine" 
+                    value="rabies" 
+                    className="hidden peer"
+                    onChange={(e) => setSelectedVaccine(e.target.value)}
+                  />
+                  <div className="p-6 border-2 border-gray-200 rounded-xl hover:border-gray-400 peer-checked:border-gray-900 peer-checked:bg-gray-50 transition-all duration-200">
+                    <div className="font-medium text-gray-900 mb-1">Rabies (Optional)</div>
+                    <div className="text-sm text-gray-500 font-light">Sometimes required for travel</div>
+                  </div>
+                </label>
+                
+                <label className="block cursor-pointer mt-4">
+                  <input 
+                    type="radio" 
+                    name="vaccine" 
+                    value="custom" 
+                    className="hidden peer"
+                    onChange={(e) => setSelectedVaccine(e.target.value)}
+                  />
+                  <div className="p-6 border-2 border-gray-200 rounded-xl hover:border-gray-400 peer-checked:border-gray-900 peer-checked:bg-gray-50 transition-all duration-200">
+                    <div className="font-medium text-gray-900 mb-2">Custom/Other</div>
+                    {selectedVaccine === 'custom' && (
+                      <input 
+                        type="text" 
+                        placeholder="Enter vaccine name..."
+                        value={customVaccineName}
+                        onChange={(e) => setCustomVaccineName(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 font-light"
+                      />
+                    )}
+                  </div>
+                </label>
+              </div>
+            </>
           ) : (
             <>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">🌟 Recommended Vaccines</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">🌟 Recommended for Dogs</h3>
               
               <div className="space-y-3">
                 <label className="block cursor-pointer">
@@ -328,11 +482,15 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                     <input type="checkbox" className="w-5 h-5 rounded border-gray-300" />
                     <span className="font-light text-gray-700">Lyme Disease</span>
                   </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" className="w-5 h-5 rounded border-gray-300" />
-                    <span className="font-light text-gray-700">Canine Influenza</span>
-                  </label>
-                </div>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" className="w-5 h-5 rounded border-gray-300" />
+              <span className="font-light text-gray-700">Canine Influenza</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" className="w-5 h-5 rounded border-gray-300" />
+              <span className="font-light text-gray-700">Coronavirus</span>
+            </label>
+          </div>
               </div>
               
               <label className="block cursor-pointer mt-4">
