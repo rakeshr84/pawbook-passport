@@ -154,16 +154,7 @@ const MedicalDashboard = ({
           </>
         ) : (
           <>
-            {/* Health Status Card */}
-            <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 shadow-lg">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <h2 className="text-2xl font-light text-gray-900">Health Status: Up to Date</h2>
-              </div>
-              <p className="text-gray-600 font-light">
-                Next Due: Rabies Booster on December 15, 2025 (62 days)
-              </p>
-            </div>
+            {/* Health Status Card - Hidden until calculated from actual data */}
 
             {/* Overview Cards */}
             <div className="grid md:grid-cols-3 gap-6">
@@ -175,37 +166,13 @@ const MedicalDashboard = ({
                 <div className="text-4xl mb-4">💉</div>
                 <h3 className="text-xl font-medium text-gray-900 mb-2">Vaccinations</h3>
                 <p className="text-gray-600 font-light mb-4">
-                  ✓ {vaccinations.length} vaccine{vaccinations.length !== 1 ? 's' : ''} on record<br/>
-                  ⚠️ Rabies due in 2 months
+                  ✓ {vaccinations.length} vaccine{vaccinations.length !== 1 ? 's' : ''} on record
                 </p>
                 <button className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
                   View All →
                 </button>
               </div>
 
-              <div className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
-                <div className="text-4xl mb-4">💊</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Treatments</h3>
-                <p className="text-gray-600 font-light mb-4">
-                  ✓ 0 treatments recorded<br/>
-                  ✓ All up to date
-                </p>
-                <button className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
-                  View All →
-                </button>
-              </div>
-
-              <div className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
-                <div className="text-4xl mb-4">🏥</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Examinations</h3>
-                <p className="text-gray-600 font-light mb-4">
-                  ✓ Last: June 15, 2024<br/>
-                  ℹ️ Next due in 4 months
-                </p>
-                <button className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
-                  View All →
-                </button>
-              </div>
               
             </div>
 
@@ -249,48 +216,6 @@ const MedicalDashboard = ({
               </div>
             </div>
 
-            {/* Recent Timeline Preview */}
-            <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 shadow-lg">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-light text-gray-900">Recent Activity</h3>
-                {onViewFullHistory && (
-                  <button 
-                    onClick={onViewFullHistory}
-                    className="text-gray-600 font-light hover:text-gray-900 transition-colors duration-200"
-                  >
-                    View Full History →
-                  </button>
-                )}
-              </div>
-              
-              <div className="space-y-4">
-                
-                <div className="flex gap-4 pb-4 border-b border-gray-200">
-                  <div className="text-2xl">💊</div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">Flea/Tick Treatment</p>
-                    <p className="text-sm text-gray-500 font-light">October 15, 2024</p>
-                  </div>
-                </div>
-                
-                <div className="flex gap-4 pb-4 border-b border-gray-200">
-                  <div className="text-2xl">💉</div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">Bordetella Vaccine</p>
-                    <p className="text-sm text-gray-500 font-light">September 10, 2024</p>
-                  </div>
-                </div>
-                
-                <div className="flex gap-4">
-                  <div className="text-2xl">🏥</div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">Annual Checkup</p>
-                    <p className="text-sm text-gray-500 font-light">June 15, 2024</p>
-                  </div>
-                </div>
-                
-              </div>
-            </div>
           </>
         )}
 
