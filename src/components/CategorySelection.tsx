@@ -71,9 +71,10 @@ const CategorySelection = ({ onSelectCategory, onBack }: CategorySelectionProps)
                             className="bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden h-20"
                           >
                             <img 
-                              src={photo} 
+                              src={photo.src} 
                               alt={`${category.name} ${idx + 1}`}
-                              className="w-full h-full object-cover object-center"
+                              className="w-full h-full object-cover"
+                              style={{ objectPosition: photo.position }}
                             />
                           </div>
                         ))}

@@ -51,7 +51,12 @@ export const categories: Category[] = [
     name: 'Dogs',
     bgGradient: 'from-blue-100 to-blue-50',
     tabIcon: dogIcon,
-    photos: [dog1, dog2, dog3, dog4],
+    photos: [
+      { src: dog1, position: 'center 35%' },
+      { src: dog2, position: 'center 40%' },
+      { src: dog3, position: 'center 30%' },
+      { src: dog4, position: 'center 25%' }
+    ],
     mascot: '🐕',
     message: "Woof woof! That's \"Please track my vet visits\" in dog language! Let's keep me healthy together!"
   },
@@ -60,7 +65,12 @@ export const categories: Category[] = [
     name: 'Cats',
     bgGradient: 'from-purple-100 to-purple-50',
     tabIcon: catIcon,
-    photos: [cat1, cat2, cat3, cat4],
+    photos: [
+      { src: cat1, position: 'center 30%' },
+      { src: cat2, position: 'center 35%' },
+      { src: cat3, position: 'center 30%' },
+      { src: cat4, position: 'center 30%' }
+    ],
     mascot: '🐱',
     message: "Meow... I mean, hello! I'll let you track my health... but only because I care about you."
   },
@@ -69,7 +79,12 @@ export const categories: Category[] = [
     name: 'Birds',
     bgGradient: 'from-yellow-100 to-yellow-50',
     tabIcon: birdIcon,
-    photos: [bird1, bird2, bird3, bird4],
+    photos: [
+      { src: bird1, position: 'center 35%' },
+      { src: bird2, position: 'center 25%' },
+      { src: bird3, position: 'center 40%' },
+      { src: bird4, position: 'center 30%' }
+    ],
     mascot: '🦜',
     message: "Tweet tweet! Help me remember my checkups - I'm too busy singing to keep track!"
   },
@@ -78,7 +93,12 @@ export const categories: Category[] = [
     name: 'Rabbits',
     bgGradient: 'from-pink-100 to-pink-50',
     tabIcon: rabbitIcon,
-    photos: [rabbit1, rabbit2, rabbit3, rabbit4],
+    photos: [
+      { src: rabbit1, position: 'center 45%' },
+      { src: rabbit2, position: 'center 40%' },
+      { src: rabbit3, position: 'center 40%' },
+      { src: rabbit4, position: 'center 40%' }
+    ],
     mascot: '🐰',
     message: "Hippity hop! Let's hop into my health journey together - no more lost vaccine records!"
   },
@@ -87,7 +107,12 @@ export const categories: Category[] = [
     name: 'Guinea Pigs',
     bgGradient: 'from-orange-100 to-orange-50',
     tabIcon: guineaPigIcon,
-    photos: [guineaPig1, guineaPig2, guineaPig3, guineaPig4],
+    photos: [
+      { src: guineaPig1, position: 'center 45%' },
+      { src: guineaPig2, position: 'center 35%' },
+      { src: guineaPig3, position: 'center 40%' },
+      { src: guineaPig4, position: 'center 35%' }
+    ],
     mascot: '🐹',
     message: "Wheek wheek! That means 'Yes please!' Track my health so I can focus on eating hay!"
   },
@@ -96,7 +121,12 @@ export const categories: Category[] = [
     name: 'Hamsters',
     bgGradient: 'from-amber-100 to-amber-50',
     tabIcon: hamsterIcon,
-    photos: [hamster1, hamster2, hamster3, hamster4],
+    photos: [
+      { src: hamster1, position: 'center 35%' },
+      { src: hamster2, position: 'center 40%' },
+      { src: hamster3, position: 'center 35%' },
+      { src: hamster4, position: 'center 35%' }
+    ],
     mascot: '🐹',
     message: "Busy running on wheel - Oh hi! Help me track my tiny health needs!"
   },
@@ -105,7 +135,12 @@ export const categories: Category[] = [
     name: 'Reptiles',
     bgGradient: 'from-green-100 to-green-50',
     tabIcon: reptileIcon,
-    photos: [reptile1, reptile2, reptile3, reptile4],
+    photos: [
+      { src: reptile1, position: 'center 30%' },
+      { src: reptile2, position: 'center 40%' },
+      { src: reptile3, position: 'center center' },
+      { src: reptile4, position: 'center 30%' }
+    ],
     mascot: '🦎',
     message: "Ssssslow and steady wins the race! Let's track my health at my own pace."
   },
@@ -114,7 +149,12 @@ export const categories: Category[] = [
     name: 'Fish',
     bgGradient: 'from-cyan-100 to-cyan-50',
     tabIcon: fishIcon,
-    photos: [fish1, fish2, fish3, fish4],
+    photos: [
+      { src: fish1, position: 'center center' },
+      { src: fish2, position: 'center center' },
+      { src: fish3, position: 'center center' },
+      { src: fish4, position: 'center center' }
+    ],
     mascot: '🐠',
     message: "Blub blub! Even underwater, I need my health tracked - let's dive in!"
   },
@@ -123,7 +163,12 @@ export const categories: Category[] = [
     name: 'Exotic Pets',
     bgGradient: 'from-indigo-100 to-indigo-50',
     tabIcon: exoticIcon,
-    photos: [exotic1, exotic2, exotic3, exotic4],
+    photos: [
+      { src: exotic1, position: 'center 35%' },
+      { src: exotic2, position: 'center 30%' },
+      { src: exotic3, position: 'center 35%' },
+      { src: exotic4, position: 'center 25%' }
+    ],
     mascot: '🦔',
     message: "We're special! Whether we hop, slither, or glide - let's track our unique needs together!"
   }
