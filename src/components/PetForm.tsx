@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Camera } from 'lucide-react';
 import { PetFormData, Category } from '@/types/pet';
 import { useToast } from '@/hooks/use-toast';
+import { breedsByCategory } from '@/data/breeds';
 
 interface PetFormProps {
   category: Category;
@@ -188,14 +189,38 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                   <p className="text-sm text-red-500 font-light mt-1">Name is required</p>
                 )}
               </div>
+              <div>
+                <select
+                  value={formData.breed}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === 'Other' || value === 'Mixed Breed') {
+                      setFormData(prev => ({ ...prev, breed: '' }));
+                    } else {
+                      setFormData(prev => ({ ...prev, breed: value }));
+                    }
+                  }}
+                  className="w-full px-6 py-4 border border-border rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light"
+                >
+                  <option value="">Select breed (optional)</option>
+                  {breedsByCategory[category.name]?.map((breed) => (
+                    <option key={breed} value={breed}>
+                      {breed}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {(formData.breed === '' || formData.breed === 'Other' || formData.breed === 'Mixed Breed') && (
               <input
                 type="text"
-                placeholder="Breed (optional)"
+                placeholder="Enter breed or mix (e.g., Labrador/Poodle mix)"
                 value={formData.breed}
                 onChange={(e) => setFormData(prev => ({ ...prev, breed: e.target.value }))}
-                className="px-6 py-4 border border-border rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light"
+                className="w-full px-6 py-4 border border-border rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light"
               />
-            </div>
+            )}
 
             <div>
               <input

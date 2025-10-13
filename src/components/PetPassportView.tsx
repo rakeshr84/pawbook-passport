@@ -20,6 +20,7 @@ interface PetPassportViewProps {
   category: Category;
   onBack: () => void;
   onAddMedicalRecords?: () => void;
+  onAddAnother?: () => void;
 }
 
 const PetPassportView = ({ 
@@ -27,7 +28,8 @@ const PetPassportView = ({
   userData, 
   category,
   onBack,
-  onAddMedicalRecords 
+  onAddMedicalRecords,
+  onAddAnother 
 }: PetPassportViewProps) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'medical' | 'documents'>('profile');
 
@@ -341,7 +343,7 @@ const PetPassportView = ({
         </div>
 
         {/* Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 gap-4">
           
           <button className="flex items-center justify-center gap-3 px-6 py-4 bg-white/60 backdrop-blur-md border border-gray-200 text-gray-700 rounded-2xl font-light hover:bg-white hover:shadow-lg transition-all duration-300">
             <Share2 className="w-5 h-5" />
@@ -353,12 +355,17 @@ const PetPassportView = ({
             Edit Profile
           </button>
           
-          <button className="flex items-center justify-center gap-3 px-6 py-4 bg-white/60 backdrop-blur-md border border-gray-200 text-gray-700 rounded-2xl font-light hover:bg-white hover:shadow-lg transition-all duration-300">
-            <FileText className="w-5 h-5" />
-            Export PDF
-          </button>
-          
         </div>
+
+        {onAddAnother && (
+          <button 
+            onClick={onAddAnother}
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-primary text-primary-foreground rounded-2xl font-medium hover:bg-gray-800 transition-all duration-300"
+          >
+            <Plus className="w-5 h-5" />
+            Add Another Pet
+          </button>
+        )}
 
         {/* Next Steps Tips */}
         <div className="bg-blue-50 rounded-2xl p-6">
@@ -366,7 +373,6 @@ const PetPassportView = ({
           <ul className="space-y-2 text-sm text-gray-700 font-light">
             <li>• Add vaccination records to track {petData.name}'s health</li>
             <li>• Upload medical documents for easy access</li>
-            <li>• Share this passport with your vet or pet sitter</li>
             <li>• Set up reminders for upcoming vaccinations</li>
           </ul>
         </div>

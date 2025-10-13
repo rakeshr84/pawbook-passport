@@ -94,6 +94,7 @@ const Index = () => {
           category={selectedCategory}
           onBack={() => setCurrentScreen('success')}
           onAddMedicalRecords={() => alert('Phase 2: Medical Records coming soon!')}
+          onAddAnother={handleAddAnother}
         />
       )}
 
