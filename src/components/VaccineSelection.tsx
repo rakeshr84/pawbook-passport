@@ -23,8 +23,9 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
   };
 
   const petAgeInMonths = calculateAgeInMonths(petData.dateOfBirth);
-  const isPuppy = petAgeInMonths < 6;
-  const isKitten = petData.category === 'cats' && petAgeInMonths < 6;
+  const category = petData.category.toLowerCase();
+  const isPuppy = category === 'dogs' && petAgeInMonths < 6;
+  const isKitten = category === 'cats' && petAgeInMonths < 6;
 
   const handleNext = () => {
     if (selectedVaccine === 'custom' && customVaccineName.trim()) {
@@ -35,7 +36,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
   };
 
   // Check if species doesn't typically need vaccines
-  const noVaccinesSpecies = ['fish', 'reptiles', 'hamsters', 'guinea-pigs', 'exotic'].includes(petData.category);
+  const noVaccinesSpecies = ['fish', 'reptiles', 'hamsters', 'guinea-pigs', 'guinea pigs', 'exotic'].includes(category);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-12 px-6">
@@ -87,7 +88,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </div>
               </label>
             </div>
-          ) : petData.category === 'dogs' && isPuppy ? (
+          ) : category === 'dogs' && isPuppy ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🐶 Puppy Vaccination Series</h3>
               <div className="bg-blue-50 rounded-xl p-4 mb-4">
@@ -138,7 +139,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </label>
               </div>
             </>
-          ) : petData.category === 'cats' && isKitten ? (
+          ) : category === 'cats' && isKitten ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🐱 Kitten Vaccination Series</h3>
               <div className="bg-blue-50 rounded-xl p-4 mb-4">
@@ -189,7 +190,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </label>
               </div>
             </>
-          ) : petData.category === 'cats' ? (
+          ) : category === 'cats' ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🌟 Recommended for Cats</h3>
               
@@ -259,7 +260,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </div>
               </label>
             </>
-          ) : petData.category === 'birds' ? (
+          ) : category === 'birds' ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🦜 Bird Vaccinations</h3>
               
@@ -343,7 +344,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </label>
               </div>
             </>
-          ) : petData.category === 'rabbits' ? (
+          ) : category === 'rabbits' ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🐰 Rabbit Vaccinations</h3>
               
