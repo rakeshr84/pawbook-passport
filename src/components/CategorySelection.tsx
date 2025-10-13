@@ -65,12 +65,16 @@ const CategorySelection = ({ onSelectCategory, onBack }: CategorySelectionProps)
                       }}
                     >
                       <div className="grid grid-cols-4 gap-3 mb-6">
-                        {category.photos.map((emoji, idx) => (
+                        {category.photos.map((photo, idx) => (
                           <div
                             key={idx}
-                            className="bg-white/60 backdrop-blur-sm rounded-xl flex items-center justify-center text-4xl h-20"
+                            className="bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden h-20"
                           >
-                            {emoji}
+                            <img 
+                              src={photo} 
+                              alt={`${category.name} ${idx + 1}`}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
                         ))}
                       </div>

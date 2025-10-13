@@ -24,7 +24,7 @@ export interface Category {
   name: string;
   bgGradient: string;
   tabEmoji: string;
-  photos: string[];
+  photos: string[]; // Array of image paths
   mascot: string;
   message: string;
 }
