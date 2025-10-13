@@ -219,6 +219,14 @@ const PetPassportView = ({
                         <div className="text-gray-900 font-medium">{userData.email}</div>
                       </div>
                     </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <Phone className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-500 font-light">Phone</div>
+                        <div className="text-gray-900 font-medium">{userData.phone}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
