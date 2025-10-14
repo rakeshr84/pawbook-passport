@@ -220,6 +220,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                 ref={dateInputRef}
                 type="date"
                 value={formData.dateOfBirth}
+                max={new Date().toISOString().split("T")[0]}
                 onChange={(e) => {
                   setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }));
                   setErrors(prev => ({ ...prev, dateOfBirth: false }));
