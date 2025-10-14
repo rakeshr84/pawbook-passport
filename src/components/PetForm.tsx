@@ -35,6 +35,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
   });
 
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [dateError, setDateError] = useState<string>('');
 
   const calculateAge = (dob: string): string => {
     if (!dob) return '';
@@ -79,6 +80,11 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     if (!formData.dateOfBirth) {
       newErrors.dateOfBirth = true;
       missingFields.push('Date of birth');
+    }
+    // Block submission if date is in the future
+    if (dateError) {
+      newErrors.dateOfBirth = true;
+      missingFields.push('Valid date of birth');
     }
     if (formData.gender === 'unknown') {
       newErrors.gender = true;
@@ -222,17 +228,28 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                 value={formData.dateOfBirth}
                 max={new Date().toISOString().split("T")[0]}
                 onChange={(e) => {
-                  setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }));
+                  const newDate = e.target.value;
+                  setFormData(prev => ({ ...prev, dateOfBirth: newDate }));
                   setErrors(prev => ({ ...prev, dateOfBirth: false }));
+                  
+                  // Validate that date is not in the future
+                  if (newDate && new Date(newDate) > new Date()) {
+                    setDateError("Date of birth cannot be in the future");
+                  } else {
+                    setDateError("");
+                  }
                 }}
                 className={`w-full px-6 py-4 border ${
-                  errors.dateOfBirth ? 'border-red-400' : 'border-border'
+                  errors.dateOfBirth || dateError ? 'border-red-400' : 'border-border'
                 } rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light`}
               />
               {errors.dateOfBirth && (
                 <p className="text-sm text-red-500 font-light mt-1">Date of birth is required</p>
               )}
-              {formData.dateOfBirth && !errors.dateOfBirth && (
+              {dateError && (
+                <p className="text-sm text-red-500 font-light mt-1">{dateError}</p>
+              )}
+              {formData.dateOfBirth && !errors.dateOfBirth && !dateError && (
                 <p className="text-sm text-muted-foreground font-light mt-2">
                   {calculateAge(formData.dateOfBirth)}
                 </p>
