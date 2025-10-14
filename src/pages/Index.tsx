@@ -96,12 +96,9 @@ const Index = () => {
     setCurrentScreen('passport');
   };
 
+  // Legacy: keeping for any old references but redirecting to centralized handler
   const handleAddAnother = () => {
-    setCurrentScreen('welcome');
-    setSelectedCategory(null);
-    setPetData(null);
-    setUserData(null);
-    setShowRegistrationModal(false);
+    handleAddAnotherPet();
   };
 
   const handleBack = () => {
@@ -245,7 +242,12 @@ const Index = () => {
     setCurrentScreen('passport');
   };
 
-  const handleAddPetFromDashboard = () => {
+  // Centralize this so all "+ Add Pet" entry points use the same logic
+  const handleAddAnotherPet = () => {
+    // clear the working pet state so the form is clean
+    setPetData(null);
+    setSelectedCategory(null);
+    // go to the category "folder" chooser, not welcome
     setCurrentScreen('category');
   };
 
@@ -264,7 +266,7 @@ const Index = () => {
           user={user}
           pets={pets}
           onSelectPet={handleSelectPet}
-          onAddPet={handleAddPetFromDashboard}
+          onAddPet={handleAddAnotherPet}
           onLogout={handleLogout}
         />
       )}
