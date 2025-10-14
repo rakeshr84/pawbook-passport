@@ -2,9 +2,10 @@ import { ChevronRight } from 'lucide-react';
 
 interface WelcomePageProps {
   onGetStarted: () => void;
+  onSignIn: () => void;
 }
 
-const WelcomePage = ({ onGetStarted }: WelcomePageProps) => {
+const WelcomePage = ({ onGetStarted, onSignIn }: WelcomePageProps) => {
   return (
     <div className="min-h-screen gradient-bg flex items-center justify-center p-6 animate-fade-in">
       <div className="max-w-2xl w-full text-center space-y-12">
@@ -18,13 +19,22 @@ const WelcomePage = ({ onGetStarted }: WelcomePageProps) => {
           </p>
         </div>
 
-        <button
-          onClick={onGetStarted}
-          className="group inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-full font-medium smooth-transition hover:gap-4 hover:shadow-lg"
-        >
-          Get Started
-          <ChevronRight className="w-5 h-5 smooth-transition group-hover:translate-x-1" />
-        </button>
+        <div className="flex flex-col gap-4 max-w-md mx-auto">
+          <button
+            onClick={onGetStarted}
+            className="group inline-flex items-center justify-center gap-3 bg-gray-900 text-white px-8 py-4 rounded-full font-medium smooth-transition hover:gap-4 hover:shadow-lg"
+          >
+            I'm New to PawBuck
+            <ChevronRight className="w-5 h-5 smooth-transition group-hover:translate-x-1" />
+          </button>
+          
+          <button
+            onClick={onSignIn}
+            className="inline-flex items-center justify-center gap-3 border border-gray-300 text-gray-700 px-8 py-4 rounded-full font-light hover:bg-gray-50 transition-all duration-300"
+          >
+            I Already Have an Account
+          </button>
+        </div>
 
         <div className="pt-8">
           <div className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg max-w-md mx-auto">

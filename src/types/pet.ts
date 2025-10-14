@@ -47,4 +47,6 @@ export type Screen =
   | 'treatment-list'
   | 'exam-selection'
   | 'exam-details'
-  | 'exam-list';
+  | 'exam-list'
+  | 'signin'
+  | 'dashboard';

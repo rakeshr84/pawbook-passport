@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import WelcomePage from '@/components/WelcomePage';
+import SignIn from '@/components/SignIn';
+import Dashboard, { PetCardData } from '@/components/Dashboard';
 import CategorySelection from '@/components/CategorySelection';
 import PetForm from '@/components/PetForm';
 import RegistrationModal from '@/components/RegistrationModal';
@@ -32,6 +34,11 @@ const Index = () => {
   const [selectedVaccine, setSelectedVaccine] = useState<string>('');
   const [selectedTreatmentType, setSelectedTreatmentType] = useState<string>('');
   const [selectedExamType, setSelectedExamType] = useState<string>('');
+  
+  // Authentication state
+  const [isAuthed, setIsAuthed] = useState(false);
+  const [user, setUser] = useState<{ full_name?: string; email?: string } | null>(null);
+  const [pets, setPets] = useState<PetCardData[]>([]);
 
   const handleGetStarted = () => {
     setCurrentScreen('category');
@@ -52,7 +59,37 @@ const Index = () => {
     console.log('Pet data:', petData);
     setUserData(data);
     setShowRegistrationModal(false);
-    setCurrentScreen('success');
+    
+    // Set auth state for new user
+    setIsAuthed(true);
+    setUser({ full_name: data.fullName, email: data.email });
+    
+    // Calculate age for pet card
+    const calculateAgeLabel = (dob: string): string => {
+      const birthDate = new Date(dob);
+      const today = new Date();
+      const years = today.getFullYear() - birthDate.getFullYear();
+      const months = today.getMonth() - birthDate.getMonth();
+      
+      if (years > 0) return `${years}y ${months > 0 ? `${months}m` : ''}`.trim();
+      if (months > 0) return `${months}m`;
+      return 'New';
+    };
+    
+    // Add pet to pets array
+    if (petData) {
+      const newPet: PetCardData = {
+        id: crypto.randomUUID(),
+        name: petData.name,
+        breed: petData.breed,
+        ageLabel: calculateAgeLabel(petData.dateOfBirth),
+        photoUrl: petData.profilePhotoPreview,
+        status: 'ok',
+      };
+      setPets(prev => [...prev, newPet]);
+    }
+    
+    setCurrentScreen('dashboard');
   };
 
   const handleViewPassport = () => {
@@ -178,10 +215,58 @@ const Index = () => {
   const handleViewExamList = () => setCurrentScreen('exam-list');
   const handleViewExamDetails = (id: string) => console.log('View exam:', id);
 
+  // Auth handlers
+  const handleSignInClick = () => {
+    setCurrentScreen('signin');
+  };
+
+  const handleSignIn = (params: { email?: string; password?: string; provider?: 'google' | 'apple' }) => {
+    const displayName = 'PawBuck User';
+    setUser({ 
+      full_name: displayName, 
+      email: params.email ?? `${(params.provider || 'user')}@example.com` 
+    });
+    setIsAuthed(true);
+    setCurrentScreen('dashboard');
+  };
+
+  const handleLogout = () => {
+    setIsAuthed(false);
+    setUser(null);
+    setPets([]);
+    setCurrentScreen('welcome');
+  };
+
+  const handleSelectPet = (id: string) => {
+    const selected = pets.find(p => p.id === id);
+    if (!selected) return;
+    
+    // For now, just show passport view - in real app would load pet data
+    setCurrentScreen('passport');
+  };
+
+  const handleAddPetFromDashboard = () => {
+    setCurrentScreen('category');
+  };
+
   return (
     <>
       {currentScreen === 'welcome' && (
-        <WelcomePage onGetStarted={handleGetStarted} />
+        <WelcomePage onGetStarted={handleGetStarted} onSignIn={handleSignInClick} />
+      )}
+
+      {currentScreen === 'signin' && (
+        <SignIn onBack={() => setCurrentScreen('welcome')} onSignIn={handleSignIn} />
+      )}
+
+      {currentScreen === 'dashboard' && (
+        <Dashboard
+          user={user}
+          pets={pets}
+          onSelectPet={handleSelectPet}
+          onAddPet={handleAddPetFromDashboard}
+          onLogout={handleLogout}
+        />
       )}
       
       {currentScreen === 'category' && (
