@@ -2,6 +2,7 @@ export interface PetCardData {
   id: string;
   name: string;
   breed?: string;
+  dateOfBirth?: string;
   ageLabel?: string;
   photoUrl?: string;
   status?: 'ok' | 'expiring' | 'due';
@@ -43,7 +44,7 @@ const Dashboard = ({ user, pets, onSelectPet, onAddPet, onLogout }: DashboardPro
           <div className="bg-white/60 backdrop-blur-md rounded-3xl p-12 shadow-lg text-center">
             <div className="w-24 h-24 rounded-full bg-blue-100 mx-auto mb-6 flex items-center justify-center text-4xl">🐾</div>
             <h2 className="text-3xl font-light text-gray-900 mb-3">Add your first pet</h2>
-            <p className="text-gray-600 font-light max-w-xl mx-auto mb-8">Create a pet passport to start tracking vaccinations, treatments, and exams in one place.</p>
+            <p className="text-gray-600 font-light max-w-xl mx-auto mb-8">It takes less than 60 seconds to create your first passport 🐾</p>
             <button
               onClick={onAddPet}
               className="bg-gray-900 text-white py-4 px-8 rounded-full font-medium hover:bg-gray-800 transition-all duration-300"

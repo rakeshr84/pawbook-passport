@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import WelcomePage from '@/components/WelcomePage';
 import SignIn from '@/components/SignIn';
 import Dashboard, { PetCardData } from '@/components/Dashboard';
@@ -22,12 +22,38 @@ import { Screen, Category, PetFormData, UserFormData } from '@/types/pet';
 import { VaccinationRecord, TreatmentRecord, ClinicalExam } from '@/types/medical';
 import { toast } from '@/hooks/use-toast';
 
+// Helper: Calculate age label with proper negative month handling
+const calculateAgeLabel = (dob: string): string => {
+  const d = new Date(dob);
+  const t = new Date();
+  let years = t.getFullYear() - d.getFullYear();
+  let months = t.getMonth() - d.getMonth();
+  
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+  
+  if (years > 0) return `${years}y${months ? ` ${months}m` : ''}`.trim();
+  
+  const days = Math.floor((+t - +d) / 86400000);
+  return days >= 30 ? `${months}m` : 'New';
+};
+
 const Index = () => {
+  // Navigation stack for clean back button logic
+  const [navStack, setNavStack] = useState<Screen[]>(['welcome']);
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [petData, setPetData] = useState<PetFormData | null>(null);
   const [userData, setUserData] = useState<UserFormData | null>(null);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  
+  // Current active pet ID for medical records
+  const [currentPetId, setCurrentPetId] = useState<string | null>(null);
+  
+  // Medical records indexed by pet ID
   const [vaccinations, setVaccinations] = useState<VaccinationRecord[]>([]);
   const [treatments, setTreatments] = useState<TreatmentRecord[]>([]);
   const [examinations, setExaminations] = useState<ClinicalExam[]>([]);
@@ -40,13 +66,24 @@ const Index = () => {
   const [user, setUser] = useState<{ full_name?: string; email?: string } | null>(null);
   const [pets, setPets] = useState<PetCardData[]>([]);
 
+  // Sync currentScreen with navStack
+  useEffect(() => {
+    const latest = navStack[navStack.length - 1];
+    if (latest) setCurrentScreen(latest);
+  }, [navStack]);
+
+  // Navigation helpers
+  const push = (screen: Screen) => setNavStack(prev => [...prev, screen]);
+  const pop = () => setNavStack(prev => prev.length > 1 ? prev.slice(0, -1) : prev);
+  const replace = (screen: Screen) => setNavStack(prev => [...prev.slice(0, -1), screen]);
+
   const handleGetStarted = () => {
-    setCurrentScreen('category');
+    push('category');
   };
 
   const handleSelectCategory = (category: Category) => {
     setSelectedCategory(category);
-    setCurrentScreen('form');
+    push('form');
   };
 
   const handlePetFormSubmit = (data: PetFormData) => {
@@ -55,8 +92,6 @@ const Index = () => {
   };
 
   const handleRegistrationSubmit = (data: UserFormData) => {
-    console.log('User registered:', data);
-    console.log('Pet data:', petData);
     setUserData(data);
     setShowRegistrationModal(false);
     
@@ -64,88 +99,76 @@ const Index = () => {
     setIsAuthed(true);
     setUser({ full_name: data.fullName, email: data.email });
     
-    // Calculate age for pet card
-    const calculateAgeLabel = (dob: string): string => {
-      const birthDate = new Date(dob);
-      const today = new Date();
-      const years = today.getFullYear() - birthDate.getFullYear();
-      const months = today.getMonth() - birthDate.getMonth();
-      
-      if (years > 0) return `${years}y ${months > 0 ? `${months}m` : ''}`.trim();
-      if (months > 0) return `${months}m`;
-      return 'New';
-    };
-    
-    // Add pet to pets array
+    // Create pet with stable UUID
     if (petData) {
+      const petId = crypto.randomUUID();
       const newPet: PetCardData = {
-        id: crypto.randomUUID(),
+        id: petId,
         name: petData.name,
         breed: petData.breed,
+        dateOfBirth: petData.dateOfBirth,
         ageLabel: calculateAgeLabel(petData.dateOfBirth),
         photoUrl: petData.profilePhotoPreview,
         status: 'ok',
       };
       setPets(prev => [...prev, newPet]);
+      setCurrentPetId(petId);
+      
+      toast({
+        title: "🎉 Passport created!",
+        description: `${petData.name}'s passport is ready. You can now add medical records.`,
+      });
     }
     
-    setCurrentScreen('dashboard');
+    // Go to dashboard after registration
+    replace('dashboard');
   };
 
   const handleViewPassport = () => {
-    setCurrentScreen('passport');
+    push('passport');
   };
 
-  // Legacy: keeping for any old references but redirecting to centralized handler
+  // Centralized "Add Another Pet" flow
+  const handleAddAnotherPet = () => {
+    setPetData(null);
+    setSelectedCategory(null);
+    setCurrentPetId(null);
+    push('category');
+  };
+
+  // Legacy handler redirects to centralized one
   const handleAddAnother = () => {
     handleAddAnotherPet();
   };
 
+  // Simplified back navigation using nav stack
   const handleBack = () => {
-    if (currentScreen === 'category') {
-      setCurrentScreen('welcome');
-    } else if (currentScreen === 'form') {
-      setCurrentScreen('category');
-      setSelectedCategory(null);
-    } else if (currentScreen === 'medical-dashboard') {
-      setCurrentScreen('passport');
-    } else if (currentScreen === 'vaccine-selection') {
-      setCurrentScreen('medical-dashboard');
-    } else if (currentScreen === 'vaccine-details') {
-      setCurrentScreen('vaccine-selection');
-    } else if (currentScreen === 'vaccination-list') {
-      setCurrentScreen('medical-dashboard');
-    } else if (currentScreen === 'timeline' || currentScreen === 'treatment-list' || currentScreen === 'exam-list') {
-      setCurrentScreen('medical-dashboard');
-    } else if (currentScreen === 'treatment-selection') {
-      setCurrentScreen('medical-dashboard');
-    } else if (currentScreen === 'treatment-details') {
-      setCurrentScreen('treatment-selection');
-    } else if (currentScreen === 'exam-selection') {
-      setCurrentScreen('medical-dashboard');
-    } else if (currentScreen === 'exam-details') {
-      setCurrentScreen('exam-selection');
-    }
+    pop();
   };
 
   const handleAddMedicalRecords = () => {
-    setCurrentScreen('medical-dashboard');
+    push('medical-dashboard');
   };
 
   const handleAddVaccination = () => {
-    setCurrentScreen('vaccine-selection');
+    push('vaccine-selection');
   };
 
   const handleVaccineNext = (vaccine: string, customName?: string) => {
     setSelectedVaccine(customName || vaccine);
-    setCurrentScreen('vaccine-details');
+    push('vaccine-details');
   };
 
   const handleSaveVaccination = (record: Omit<VaccinationRecord, 'id' | 'pet_id' | 'created_at' | 'updated_at'>) => {
+    if (!currentPetId) {
+      toast({ title: "Error", description: "No active pet selected", variant: "destructive" });
+      return;
+    }
+    
     const newRecord: VaccinationRecord = {
       ...record,
       id: crypto.randomUUID(),
-      pet_id: petData?.name || '',
+      pet_id: currentPetId,
       created_at: new Date(),
       updated_at: new Date(),
     };
@@ -153,68 +176,94 @@ const Index = () => {
     setVaccinations(prev => [...prev, newRecord]);
     
     toast({
-      title: "Vaccination saved!",
-      description: `${record.vaccine_name} record has been added successfully.`,
+      title: "✅ Vaccination saved!",
+      description: "You can now upload a certificate photo (optional).",
     });
     
-    setCurrentScreen('medical-dashboard');
+    replace('medical-dashboard');
   };
 
   const handleViewVaccinationList = () => {
-    setCurrentScreen('vaccination-list');
+    push('vaccination-list');
   };
 
   const handleViewTimeline = () => {
-    setCurrentScreen('timeline');
+    push('timeline');
   };
 
   const handleViewVaccineDetails = (id: string) => {
     console.log('View vaccine details:', id);
   };
 
-  const handleAddTreatment = () => setCurrentScreen('treatment-selection');
+  const handleAddTreatment = () => push('treatment-selection');
+  
   const handleTreatmentNext = (type: string) => {
     setSelectedTreatmentType(type);
-    setCurrentScreen('treatment-details');
+    push('treatment-details');
   };
+  
   const handleSaveTreatment = (record: Omit<TreatmentRecord, 'id' | 'pet_id' | 'created_at' | 'updated_at'>) => {
+    if (!currentPetId) {
+      toast({ title: "Error", description: "No active pet selected", variant: "destructive" });
+      return;
+    }
+    
     const newRecord: TreatmentRecord = {
       ...record,
       id: crypto.randomUUID(),
-      pet_id: petData?.name || '',
+      pet_id: currentPetId,
       created_at: new Date(),
       updated_at: new Date(),
     };
     setTreatments(prev => [...prev, newRecord]);
-    toast({ title: "Treatment saved!", description: `${record.product_name} record has been added.` });
-    setCurrentScreen('medical-dashboard');
+    
+    toast({
+      title: "✅ Treatment saved!",
+      description: "You can now upload a certificate photo (optional).",
+    });
+    
+    replace('medical-dashboard');
   };
-  const handleViewTreatmentList = () => setCurrentScreen('treatment-list');
+  
+  const handleViewTreatmentList = () => push('treatment-list');
   const handleViewTreatmentDetails = (id: string) => console.log('View treatment:', id);
 
-  const handleAddExam = () => setCurrentScreen('exam-selection');
+  const handleAddExam = () => push('exam-selection');
+  
   const handleExamNext = (type: string) => {
     setSelectedExamType(type);
-    setCurrentScreen('exam-details');
+    push('exam-details');
   };
+  
   const handleSaveExam = (record: Omit<ClinicalExam, 'id' | 'pet_id' | 'created_at' | 'updated_at'>) => {
+    if (!currentPetId) {
+      toast({ title: "Error", description: "No active pet selected", variant: "destructive" });
+      return;
+    }
+    
     const newRecord: ClinicalExam = {
       ...record,
       id: crypto.randomUUID(),
-      pet_id: petData?.name || '',
+      pet_id: currentPetId,
       created_at: new Date(),
       updated_at: new Date(),
     };
     setExaminations(prev => [...prev, newRecord]);
-    toast({ title: "Examination saved!", description: "Health exam record has been added." });
-    setCurrentScreen('medical-dashboard');
+    
+    toast({
+      title: "✅ Examination saved!",
+      description: "You can now upload test results (optional).",
+    });
+    
+    replace('medical-dashboard');
   };
-  const handleViewExamList = () => setCurrentScreen('exam-list');
+  
+  const handleViewExamList = () => push('exam-list');
   const handleViewExamDetails = (id: string) => console.log('View exam:', id);
 
   // Auth handlers
   const handleSignInClick = () => {
-    setCurrentScreen('signin');
+    push('signin');
   };
 
   const handleSignIn = (params: { email?: string; password?: string; provider?: 'google' | 'apple' }) => {
@@ -224,31 +273,39 @@ const Index = () => {
       email: params.email ?? `${(params.provider || 'user')}@example.com` 
     });
     setIsAuthed(true);
-    setCurrentScreen('dashboard');
+    replace('dashboard');
   };
 
   const handleLogout = () => {
     setIsAuthed(false);
     setUser(null);
     setPets([]);
-    setCurrentScreen('welcome');
+    setCurrentPetId(null);
+    setNavStack(['welcome']);
   };
 
   const handleSelectPet = (id: string) => {
     const selected = pets.find(p => p.id === id);
     if (!selected) return;
     
-    // For now, just show passport view - in real app would load pet data
-    setCurrentScreen('passport');
-  };
-
-  // Centralize this so all "+ Add Pet" entry points use the same logic
-  const handleAddAnotherPet = () => {
-    // clear the working pet state so the form is clean
-    setPetData(null);
-    setSelectedCategory(null);
-    // go to the category "folder" chooser, not welcome
-    setCurrentScreen('category');
+    // Hydrate full pet data from selected pet
+    setPetData({
+      name: selected.name,
+      breed: selected.breed || '',
+      dateOfBirth: selected.dateOfBirth || '',
+      gender: 'unknown',
+      colorMarkings: '',
+      weight: '',
+      weightUnit: 'kg',
+      microchipNumber: '',
+      profilePhoto: null,
+      profilePhotoPreview: selected.photoUrl || '',
+      vetClinic: '',
+      vetPhone: '',
+      category: '',
+    });
+    setCurrentPetId(selected.id);
+    push('passport');
   };
 
   return (
@@ -258,7 +315,7 @@ const Index = () => {
       )}
 
       {currentScreen === 'signin' && (
-        <SignIn onBack={() => setCurrentScreen('welcome')} onSignIn={handleSignIn} />
+        <SignIn onBack={handleBack} onSignIn={handleSignIn} />
       )}
 
       {currentScreen === 'dashboard' && (
@@ -295,12 +352,18 @@ const Index = () => {
         />
       )}
 
-      {currentScreen === 'passport' && petData && userData && selectedCategory && (
+      {currentScreen === 'passport' && petData && selectedCategory && (
         <PetPassportView
           petData={petData}
           userData={userData}
           category={selectedCategory}
-          onBack={() => setCurrentScreen('success')}
+          onBack={() => {
+            if (isAuthed) {
+              setNavStack(['welcome', 'dashboard']);
+            } else {
+              pop();
+            }
+          }}
           onAddMedicalRecords={handleAddMedicalRecords}
           onAddAnother={handleAddAnother}
         />
