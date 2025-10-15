@@ -61,7 +61,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     if (suggested) {
       setFormData(p => ({ ...p, avatarUrl: suggested }));
     }
-  }, [formData.category, formData.breed, formData.profilePhotoPreview, formData.avatarUrl]);
+  }, [formData.category, formData.breed]);
 
   const calculateAge = (dob: string): string => {
     if (!dob) return '';
