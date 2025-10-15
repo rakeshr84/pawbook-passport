@@ -75,3 +75,11 @@ export const formatSpeciesBreed = (species?: string, breed?: string) => {
   const br = (breed && breed.trim()) ? breed.trim() : undefined;
   return br ? `${sp} • ${br}` : sp;
 };
+
+// Single source of truth for pet image URL
+export const getPetImageUrl = (pet: any): string => {
+  const species = normalizeSpecies(pet?.species || pet?.category);
+  const uploaded = pet?.photoUrl || pet?.profilePhotoPreview || pet?.profile_photo_url;
+  const avatar = pet?.avatarUrl || (pet?.useAvatar ? defaultAvatarFor(species) : undefined);
+  return uploaded ?? avatar ?? defaultAvatarFor(species);
+};

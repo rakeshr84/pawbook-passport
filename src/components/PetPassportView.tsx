@@ -17,6 +17,7 @@ import { PetFormData, UserFormData, Category } from '@/types/pet';
 import { HealthState } from '@/types/health';
 import HealthTracking from '@/components/HealthTracking';
 import { defaultAvatarFor, formatSpeciesBreed } from '@/lib/utils';
+import { PetAvatar } from '@/components/PetAvatar';
 
 interface PetPassportViewProps {
   petData: PetFormData;
@@ -98,11 +99,9 @@ const PetPassportView = ({
           
           {/* Pet Header */}
           <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-8 md:p-12 text-center">
-            <img 
-              src={petData.profilePhotoPreview || petData.avatarUrl || defaultAvatarFor(petData.category)}
-              alt={petData.name}
-              className="w-32 h-32 rounded-full object-cover mx-auto mb-6 border-4 border-white shadow-lg"
-            />
+            <div className="flex justify-center mb-6">
+              <PetAvatar pet={petData} size={128} />
+            </div>
             <h2 className="text-4xl font-light text-gray-900 mb-2">{petData.name}</h2>
             <p className="text-xl text-gray-600 font-light mb-1">
               {formatSpeciesBreed(petData.category, petData.breed)} • {calculatedAge} old

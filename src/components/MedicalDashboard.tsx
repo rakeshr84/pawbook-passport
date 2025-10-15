@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { ChevronLeft, Plus, Stethoscope, Lightbulb, FileText } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
 import { VaccinationRecord } from '@/types/medical';
+import { PetAvatar } from '@/components/PetAvatar';
+import { formatSpeciesBreed } from '@/lib/utils';
 
 interface MedicalDashboardProps {
-  petData: PetFormData;
+  pet: any;
   onBack: () => void;
   onAddVaccination: () => void;
   onAddTreatment: () => void;
@@ -19,7 +21,7 @@ interface MedicalDashboardProps {
 }
 
 const MedicalDashboard = ({ 
-  petData, 
+  pet, 
   onBack, 
   onAddVaccination,
   onAddTreatment,
@@ -62,15 +64,11 @@ const MedicalDashboard = ({
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <img 
-            src={petData.profilePhotoPreview} 
-            className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg" 
-            alt={petData.name}
-          />
+          <PetAvatar pet={pet} size={80} />
           <div className="flex-1">
-            <h1 className="text-4xl font-light text-gray-900">{petData.name}'s Medical Records</h1>
+            <h1 className="text-4xl font-light text-gray-900">{pet.name}'s Medical Records</h1>
             <p className="text-gray-500 font-light mt-1">
-              {petData.breed} • {calculateAge(petData.dateOfBirth)}
+              {formatSpeciesBreed(pet.species || pet.category, pet.breed)} • {pet.ageLabel || calculateAge(pet.dateOfBirth)}
             </p>
           </div>
         </div>
@@ -83,7 +81,7 @@ const MedicalDashboard = ({
                 <Stethoscope className="w-12 h-12 text-blue-600" />
               </div>
               <h2 className="text-3xl font-light text-gray-900 mb-3">
-                Start tracking {petData.name}'s health
+                Start tracking {pet.name}'s health
               </h2>
               <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto">
                 Keep all vaccination records, treatments, and health exams organized in one place

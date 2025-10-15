@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { breedsByCategory } from '@/data/breeds';
 import { NeuroButton } from '@/components/ui/neuro-button';
 import { AVATARS, defaultAvatarFor, normalizeSpecies } from '@/lib/utils';
+import { PetAvatar } from '@/components/PetAvatar';
 
 interface PetFormProps {
   category: Category;
@@ -155,15 +156,15 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
 
             <div className="flex flex-col md:flex-row items-center gap-6">
               {/* Preview */}
-              <div className="w-28 h-28 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-gray-100 flex items-center justify-center">
-                {formData.profilePhotoPreview ? (
-                  <img src={formData.profilePhotoPreview} alt="Pet" className="object-cover w-full h-full" />
-                ) : formData.avatarUrl ? (
-                  <img src={formData.avatarUrl} alt="Avatar" className="w-20 h-20" />
-                ) : (
-                  <img src={defaultAvatarFor(normalizeSpecies(category.id))} alt="Default" className="w-20 h-20" />
-                )}
-              </div>
+              <PetAvatar 
+                pet={{ 
+                  ...formData, 
+                  species: formData.category,
+                  category: formData.category 
+                }} 
+                size={112} 
+                rounded="2xl" 
+              />
 
               {/* Uniform buttons */}
               <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">

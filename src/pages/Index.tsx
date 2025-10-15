@@ -24,7 +24,7 @@ import { Screen, Category, PetFormData, UserFormData } from '@/types/pet';
 import { VaccinationRecord, TreatmentRecord, ClinicalExam } from '@/types/medical';
 import { HealthState } from '@/types/health';
 import { toast } from '@/hooks/use-toast';
-import { normalizeSpecies, defaultAvatarFor } from '@/lib/utils';
+import { normalizeSpecies, defaultAvatarFor, getPetImageUrl } from '@/lib/utils';
 
 // Helper: Calculate age label with proper negative month handling
 const calculateAgeLabel = (dob: string): string => {
@@ -118,7 +118,6 @@ const Index = () => {
       const species = normalizeSpecies(petData.category);
       const avatarUrl = petData.avatarUrl || (petData.avatarUrl ? defaultAvatarFor(species) : undefined);
       const uploaded = petData.profilePhotoPreview || undefined;
-      const finalPhoto = uploaded ?? avatarUrl ?? defaultAvatarFor(species);
       
       const newPet: PetCardData = {
         id: petId,
@@ -127,13 +126,17 @@ const Index = () => {
         breed: petData.breed,
         dateOfBirth: petData.dateOfBirth,
         ageLabel: calculateAgeLabel(petData.dateOfBirth),
-        photoUrl: finalPhoto,
         avatarUrl,
+        photoUrl: uploaded,
         weight: petData.weight !== '' && petData.weight != null ? Number(petData.weight) : undefined,
         weightUnit: petData.weightUnit || 'kg',
         microchipNumber: petData.microchipNumber || undefined,
         status: 'ok',
       };
+      
+      // Ensure photoUrl is always set using the helper
+      newPet.photoUrl = getPetImageUrl(newPet);
+      
       setPets(prev => [...prev, newPet]);
       setCurrentPetId(petId);
       
@@ -482,9 +485,9 @@ const Index = () => {
         />
       )}
 
-      {currentScreen === 'medical-dashboard' && petData && (
+      {currentScreen === 'medical-dashboard' && petData && currentPetId && (
         <MedicalDashboard
-          petData={petData}
+          pet={pets.find(p => p.id === currentPetId) || { ...petData, species: petData.category, id: currentPetId }}
           onBack={handleBack}
           onAddVaccination={handleAddVaccination}
           onAddTreatment={handleAddTreatment}

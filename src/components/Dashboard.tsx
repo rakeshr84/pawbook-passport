@@ -1,4 +1,5 @@
 import { defaultAvatarFor, formatSpeciesBreed } from '@/lib/utils';
+import { PetAvatar } from '@/components/PetAvatar';
 
 export type WeightUnit = 'kg' | 'lbs';
 
@@ -85,11 +86,7 @@ const Dashboard = ({ user, pets, onSelectPet, onAddPet, onLogout }: DashboardPro
                   className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-left"
                 >
                   <div className="flex items-center gap-4">
-                    <img
-                      src={p.photoUrl || defaultAvatarFor(p.species)}
-                      alt={p.name}
-                      className="w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-md"
-                    />
+                    <PetAvatar pet={p} size={80} rounded="2xl" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="text-2xl font-light text-gray-900 truncate">{p.name}</h3>
