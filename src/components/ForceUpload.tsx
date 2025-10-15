@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 interface ForceUploadProps {
   accept?: string;
@@ -15,28 +15,41 @@ export function ForceUpload({
   label,
   className = "",
 }: ForceUploadProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    console.log("ForceUpload button clicked, triggering file picker...");
+    inputRef.current?.click();
+  };
+
   return (
-    <label
-      className={
-        "relative inline-flex items-center justify-center px-6 h-12 rounded-2xl " +
-        "bg-gray-900 text-white font-medium hover:shadow-md active:translate-y-px " +
-        "transition-all cursor-pointer select-none " +
-        className
-      }
-    >
-      {label}
+    <div className="relative inline-block">
+      <button
+        type="button"
+        onClick={handleClick}
+        className={
+          "inline-flex items-center justify-center px-6 h-12 rounded-2xl " +
+          "bg-gray-900 text-white font-medium hover:shadow-md active:translate-y-px " +
+          "transition-all cursor-pointer select-none " +
+          className
+        }
+      >
+        {label}
+      </button>
       <input
+        ref={inputRef}
         type="file"
         accept={accept}
         multiple={multiple}
-        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+        style={{ display: 'none' }}
         onChange={(e) => {
+          console.log("File input changed, files:", e.target.files);
           if (e.target.files?.length) {
             onSelect(e.target.files);
             e.target.value = "";
           }
         }}
       />
-    </label>
+    </div>
   );
 }
