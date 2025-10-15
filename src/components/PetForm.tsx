@@ -183,6 +183,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                   species: formData.category,
                   category: formData.category 
                 }} 
+                context="edit"
                 size={112} 
                 rounded="2xl" 
               />
@@ -280,7 +281,8 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                         setFormData(prev => ({ 
                           ...prev, 
                           avatarUrl: src, 
-                          profilePhotoPreview: undefined // ensure avatar is shown
+                          profilePhotoPreview: undefined, // ensure avatar is shown
+                          photoUrl: undefined, // clear stale persisted value for instant preview
                         }));
                         setUseAvatar(true);
                         setErrors(prev => ({ ...prev, profilePhoto: false }));

@@ -128,10 +128,10 @@ const Index = () => {
     if (petData) {
       const petId = crypto.randomUUID();
       const species = normalizeSpecies(petData.category);
-      const avatarUrl = petData.avatarUrl || (petData.avatarUrl ? defaultAvatarFor(species) : undefined);
-      const uploaded = petData.profilePhotoPreview || undefined;
-      // If photo uploaded, clear tint; otherwise keep it
-      const finalTint = uploaded ? undefined : petData.avatarTint;
+      
+      // Persist avatar choice: photo wins, else avatar
+      const finalPhoto = petData.profilePhotoPreview || petData.avatarUrl || defaultAvatarFor(species);
+      const finalTint = petData.profilePhotoPreview ? undefined : petData.avatarTint;
       
       const newPet: PetCardData = {
         id: petId,
@@ -140,8 +140,8 @@ const Index = () => {
         breed: petData.breed,
         dateOfBirth: petData.dateOfBirth,
         ageLabel: calculateAgeLabel(petData.dateOfBirth),
-        avatarUrl,
-        photoUrl: uploaded,
+        avatarUrl: petData.avatarUrl,
+        photoUrl: finalPhoto,
         coatColorId: petData.coatColorId,
         avatarTint: finalTint,
         weight: petData.weight !== '' && petData.weight != null ? Number(petData.weight) : undefined,
@@ -149,9 +149,6 @@ const Index = () => {
         microchipNumber: petData.microchipNumber || undefined,
         status: 'ok',
       };
-      
-      // Ensure photoUrl is always set using the helper
-      newPet.photoUrl = getPetImageUrl(newPet);
       
       setPets(prev => [...prev, newPet]);
       setCurrentPetId(petId);

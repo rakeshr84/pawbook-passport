@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { normalizeSpecies, defaultAvatarFor, getPetImageUrl } from '@/lib/utils';
+import { useMemo } from 'react';
+import { getPetImageUrlForCard, getPetImageUrlForEdit } from '@/lib/pet-image';
 
 export interface PetAvatarProps {
   pet: any;
   size?: number;
+  context?: 'card' | 'edit';
   className?: string;
   rounded?: 'full' | '2xl';
 }
@@ -11,19 +12,17 @@ export interface PetAvatarProps {
 export function PetAvatar({
   pet,
   size = 64,
+  context = 'card',
   className = '',
   rounded = 'full',
 }: PetAvatarProps) {
-  const [src, setSrc] = useState<string>(() => getPetImageUrl(pet));
-  const species = normalizeSpecies(pet?.species || pet?.category);
-
-  const onError = () => {
-    // If uploaded/selected image breaks, swap to species default
-    const fallback = defaultAvatarFor(species);
-    if (src !== fallback) setSrc(fallback);
-  };
-
   const r = rounded === 'full' ? 'rounded-full' : 'rounded-2xl';
+  
+  // Memoize with deps to force re-render on selection change
+  const src = useMemo(
+    () => (context === 'edit' ? getPetImageUrlForEdit(pet) : getPetImageUrlForCard(pet)),
+    [context, pet?.photoUrl, pet?.avatarUrl, pet?.profilePhotoPreview]
+  );
   
   // BACKDROP: use pet.avatarTint or soft neutral; only show when using avatar (no real photo)
   const showBackdrop = !!pet?.avatarUrl && !pet?.profilePhotoPreview;
@@ -41,7 +40,6 @@ export function PetAvatar({
       <img
         src={src}
         alt=""
-        onError={onError}
         className={`absolute inset-0 w-full h-full object-contain p-2 bg-transparent ${r} border-4 border-white shadow-md`}
         draggable={false}
       />
