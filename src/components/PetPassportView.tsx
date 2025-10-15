@@ -30,6 +30,7 @@ interface PetPassportViewProps {
   onAddMedicalRecords?: () => void;
   onAddAnother?: () => void;
   onEditProfile?: () => void;
+  onDeletePet?: () => void;
   onSaveWeight: (weight: number, unit: "kg" | "lbs", date: string) => void;
   onSaveFood: (amount: number, date: string, name?: string) => void;
   onSaveWater: (amount: number, date: string) => void;
@@ -48,6 +49,7 @@ const PetPassportView = ({
   onAddMedicalRecords,
   onAddAnother,
   onEditProfile,
+  onDeletePet,
   onSaveWeight,
   onSaveFood,
   onSaveWater,
@@ -267,6 +269,15 @@ const PetPassportView = ({
                         className="mt-4 px-6 py-3 rounded-xl border border-gray-300 font-light hover:bg-gray-50 transition-all duration-200"
                       >
                         Edit Profile
+                      </button>
+                    )}
+
+                    {onDeletePet && (
+                      <button
+                        onClick={onDeletePet}
+                        className="mt-4 ml-3 px-6 py-3 rounded-xl border border-red-300 text-red-700 hover:bg-red-50 font-light transition-all duration-200"
+                      >
+                        Delete Pet Profile
                       </button>
                     )}
                   </div>

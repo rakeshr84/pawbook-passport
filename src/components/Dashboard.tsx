@@ -26,6 +26,7 @@ export interface DashboardProps {
   onSelectPet: (id: string) => void;
   onAddPet: () => void;
   onLogout: () => void;
+  onDeletePet?: (id: string) => void;
 }
 
 const StatusDot = ({ status = 'ok' }: { status?: 'ok' | 'expiring' | 'due' }) => {
@@ -33,7 +34,7 @@ const StatusDot = ({ status = 'ok' }: { status?: 'ok' | 'expiring' | 'due' }) =>
   return <span className={`inline-block w-2.5 h-2.5 rounded-full ${color}`} />;
 };
 
-const Dashboard = ({ user, pets, onSelectPet, onAddPet, onLogout }: DashboardProps) => {
+const Dashboard = ({ user, pets, onSelectPet, onAddPet, onLogout, onDeletePet }: DashboardProps) => {
   const formatWeight = (w?: number, u?: WeightUnit) =>
     (w != null && !Number.isNaN(w)) ? `${w} ${u || 'kg'}` : '';
 

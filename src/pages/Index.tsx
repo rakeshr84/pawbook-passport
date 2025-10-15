@@ -79,6 +79,18 @@ const Index = () => {
     meds: [],
   });
 
+  // Delete confirmation & undo state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [lastDeleted, setLastDeleted] = useState<{
+    pet: PetCardData;
+    vaccinations: VaccinationRecord[];
+    treatments: TreatmentRecord[];
+    exams: ClinicalExam[];
+    health: HealthState;
+  } | null>(null);
+  const [undoTimer, setUndoTimer] = useState<number | null>(null);
+  const [snackbar, setSnackbar] = useState<{ message: string; action?: () => void } | null>(null);
+
   // Sync currentScreen with navStack
   useEffect(() => {
     const latest = navStack[navStack.length - 1];
@@ -314,6 +326,109 @@ const Index = () => {
     setNavStack(['welcome']);
   };
 
+  // Delete pet utilities
+  const pickByPet = <T extends { pet_id?: string }>(rows: T[], petId: string) => 
+    rows.filter(r => r.pet_id === petId);
+  const dropByPet = <T extends { pet_id?: string }>(rows: T[], petId: string) => 
+    rows.filter(r => r.pet_id !== petId);
+
+  const buildSnapshot = (pet: PetCardData) => ({
+    pet,
+    vaccinations: pickByPet(vaccinations, pet.id),
+    treatments: pickByPet(treatments, pet.id),
+    exams: pickByPet(examinations, pet.id),
+    health: {
+      weight: health.weight.filter(w => w.petId === pet.id),
+      food: health.food.filter(f => f.petId === pet.id),
+      water: health.water.filter(w => w.petId === pet.id),
+      activity: health.activity.filter(a => a.petId === pet.id),
+      meds: health.meds.filter(m => m.petId === pet.id),
+    }
+  });
+
+  const restoreSnapshot = (snap: typeof lastDeleted) => {
+    if (!snap) return;
+    setPets(prev => [...prev, snap.pet]);
+    setVaccinations(prev => [...prev, ...snap.vaccinations]);
+    setTreatments(prev => [...prev, ...snap.treatments]);
+    setExaminations(prev => [...prev, ...snap.exams]);
+    setHealth(prev => ({
+      weight: [...prev.weight, ...snap.health.weight],
+      food: [...prev.food, ...snap.health.food],
+      water: [...prev.water, ...snap.health.water],
+      activity: [...prev.activity, ...snap.health.activity],
+      meds: [...prev.meds, ...snap.health.meds],
+    }));
+  };
+
+  const permanentlyDeletePet = (petId: string) => {
+    setPets(prev => prev.filter(p => p.id !== petId));
+    setVaccinations(prev => dropByPet(prev, petId));
+    setTreatments(prev => dropByPet(prev, petId));
+    setExaminations(prev => dropByPet(prev, petId));
+    setHealth(prev => ({
+      weight: prev.weight.filter(w => w.petId !== petId),
+      food: prev.food.filter(f => f.petId !== petId),
+      water: prev.water.filter(w => w.petId !== petId),
+      activity: prev.activity.filter(a => a.petId !== petId),
+      meds: prev.meds.filter(m => m.petId !== petId),
+    }));
+  };
+
+  const handleRequestDeletePet = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDeletePet = () => {
+    if (!currentPetId) return;
+    const pet = pets.find(p => p.id === currentPetId);
+    if (!pet) return;
+
+    // Snapshot for undo
+    const snap = buildSnapshot(pet);
+    setLastDeleted(snap);
+
+    // Delete now
+    permanentlyDeletePet(pet.id);
+
+    // Clear selection & navigate
+    setCurrentPetId(null);
+    if (pets.length - 1 > 0) {
+      setNavStack(['welcome', 'dashboard']);
+    } else {
+      setNavStack(['welcome']);
+    }
+
+    // Snackbar with Undo (5s)
+    setSnackbar({
+      message: `${pet.name || 'Pet'} deleted`,
+      action: () => {
+        if (undoTimer) {
+          window.clearTimeout(undoTimer);
+          setUndoTimer(null);
+        }
+        if (lastDeleted) restoreSnapshot(lastDeleted);
+        setLastDeleted(null);
+        setSnackbar(null);
+        setNavStack(['welcome', 'dashboard']);
+      }
+    });
+
+    const t = window.setTimeout(() => {
+      setSnackbar(null);
+      setLastDeleted(null);
+      setUndoTimer(null);
+    }, 5000);
+    setUndoTimer(t);
+
+    setShowDeleteModal(false);
+
+    toast({
+      title: "Pet deleted",
+      description: `${pet.name || 'Pet'} has been removed. Undo available for 5 seconds.`,
+    });
+  };
+
   // Health tracking handlers
   const handleSaveWeight = (weight: number, unit: "kg" | "lbs", date: string) => {
     if (!currentPetId) return;
@@ -430,6 +545,10 @@ const Index = () => {
           onSelectPet={handleSelectPet}
           onAddPet={handleAddAnotherPet}
           onLogout={handleLogout}
+          onDeletePet={(id) => {
+            setCurrentPetId(id);
+            handleRequestDeletePet();
+          }}
         />
       )}
       
@@ -475,6 +594,7 @@ const Index = () => {
           onAddMedicalRecords={handleAddMedicalRecords}
           onAddAnother={handleAddAnother}
           onEditProfile={handleEditProfile}
+          onDeletePet={handleRequestDeletePet}
           onSaveWeight={handleSaveWeight}
           onSaveFood={handleSaveFood}
           onSaveWater={handleSaveWater}
@@ -603,6 +723,49 @@ const Index = () => {
           petName={petData.name}
           onSubmit={handleRegistrationSubmit}
         />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && currentPetId && (
+        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-6">
+          <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-2xl">
+            <h3 className="text-2xl font-light text-gray-900 mb-2">Delete this pet?</h3>
+            <p className="text-gray-600 font-light mb-4">
+              This will remove the profile, medical records, and health logs for
+              <span className="font-medium"> {pets.find(p => p.id === currentPetId)?.name || 'this pet'}</span>.
+              You can undo for the next 5 seconds.
+            </p>
+
+            <div className="flex gap-3 justify-end pt-4">
+              <button 
+                onClick={() => setShowDeleteModal(false)} 
+                className="px-6 py-3 rounded-xl border border-gray-300 hover:bg-gray-50 font-light"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleConfirmDeletePet} 
+                className="px-6 py-3 rounded-xl bg-red-600 text-white hover:bg-red-700 font-medium"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Undo Snackbar */}
+      {snackbar && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+          <div className="bg-gray-900 text-white rounded-full px-5 py-3 shadow-lg flex items-center gap-4">
+            <span className="font-light">{snackbar.message}</span>
+            {snackbar.action && (
+              <button onClick={snackbar.action} className="underline font-medium">
+                Undo
+              </button>
+            )}
+          </div>
+        </div>
       )}
     </>
   );
