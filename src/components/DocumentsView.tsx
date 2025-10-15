@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { InlineUploadButton, UploadedFile } from '@/components/InlineUploadButton';
+import { UploadedFile } from '@/components/InlineUploadButton';
 import { UploadList } from '@/components/UploadList';
+import { ForceUpload } from '@/components/ForceUpload';
 
 interface DocumentsViewProps {
   petId: string;
@@ -20,17 +21,7 @@ export function DocumentsView({
   onBack,
 }: DocumentsViewProps) {
 
-  type DocItem = {
-    id: string;
-    petId: string;
-    name: string;
-    mime: string;
-    size: number;
-    url: string;
-    createdAt: string;
-  };
-
-  const [docs, setDocs] = useState<DocItem[]>([]);
+  const [docs, setDocs] = useState<UploadedFile[]>([]);
   const [docFilter, setDocFilter] = useState<string>('all');
 
   const contexts = ["all", "documents", "vaccination", "treatment", "exam", "pre-travel", "lab"];
@@ -59,7 +50,7 @@ export function DocumentsView({
   const hasDocs = docsForThisPet.length > 0;
 
   // ✅ Unified file upload handler
-  const handleUploadFiles = (list: FileList | null, context: string = "documents") => {
+  const handleUploadFiles = (list: FileList | null, context: UploadedFile['context'] = "documents") => {
     if (!list || !list.length) return;
     const added: UploadedFile[] = Array.from(list).map((f) => ({
       id: crypto.randomUUID(),
@@ -107,24 +98,13 @@ export function DocumentsView({
             </p>
 
             {/* ✅ Fixed upload button */}
-            <label
-              +  className="relative inline-flex items-center justify-center
-+             px-6 h-12 rounded-2xl bg-gray-900 text-white font-medium
-+             hover:shadow-md active:translate-y-px transition-all cursor-pointer select-none
-+             w-[260px] mx-auto z-[9999] pointer-events-auto"
-            >
-              + Upload Documents
-              <input
-                type="file"
-                accept="application/pdf,image/*"
-                multiple
-                className="absolute inset-0 opacity-0 cursor-pointer z-[10000]"
-                onChange={(e) => {
-                  handleUploadFiles(e.currentTarget.files, "documents");
-                  e.currentTarget.value = "";
-                }}
-              />
-            </label>
+            <ForceUpload
+              label="+ Upload Documents"
+              accept="application/pdf,image/*"
+              multiple={true}
+              onSelect={(files) => handleUploadFiles(files, "documents")}
+              className="w-[260px] mx-auto"
+            />
 
             {docsForThisPet.length > 0 && (
               <div className="mt-6 space-y-2 max-w-2xl mx-auto">
@@ -224,52 +204,29 @@ export function DocumentsView({
                 Add More Documents
               </h3>
               <div className="grid sm:grid-cols-3 gap-3">
-                <label className="relative inline-flex items-center justify-center
-                                   px-6 h-12 rounded-2xl bg-white border border-gray-200 text-gray-800 font-light
-                                   hover:shadow-md active:translate-y-px transition-all cursor-pointer select-none">
-                  Add More
-                  <input
-                    type="file"
-                    accept="application/pdf,image/*"
-                    multiple
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => {
-                      handleUploadFiles(e.currentTarget.files, "documents");
-                      e.currentTarget.value = "";
-                    }}
-                  />
-                </label>
+                <ForceUpload
+                  label="Add More"
+                  accept="application/pdf,image/*"
+                  multiple={true}
+                  onSelect={(files) => handleUploadFiles(files, "documents")}
+                  className="bg-white border border-gray-200 text-gray-800 font-light"
+                />
 
-                <label className="relative inline-flex items-center justify-center
-                                   px-6 h-12 rounded-2xl bg-white border border-gray-200 text-gray-800 font-light
-                                   hover:shadow-md active:translate-y-px transition-all cursor-pointer select-none">
-                  Scan with Camera
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => {
-                      handleUploadFiles(e.currentTarget.files, "documents");
-                      e.currentTarget.value = "";
-                    }}
-                  />
-                </label>
+                <ForceUpload
+                  label="Scan with Camera"
+                  accept="image/*"
+                  multiple={false}
+                  onSelect={(files) => handleUploadFiles(files, "documents")}
+                  className="bg-white border border-gray-200 text-gray-800 font-light"
+                />
 
-                <label className="relative inline-flex items-center justify-center
-                                   px-6 h-12 rounded-2xl bg-white border border-gray-200 text-gray-800 font-light
-                                   hover:shadow-md active:translate-y-px transition-all cursor-pointer select-none">
-                  Add PDF
-                  <input
-                    type="file"
-                    accept="application/pdf"
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => {
-                      handleUploadFiles(e.currentTarget.files, "documents");
-                      e.currentTarget.value = "";
-                    }}
-                  />
-                </label>
+                <ForceUpload
+                  label="Add PDF"
+                  accept="application/pdf"
+                  multiple={true}
+                  onSelect={(files) => handleUploadFiles(files, "documents")}
+                  className="bg-white border border-gray-200 text-gray-800 font-light"
+                />
               </div>
             </div>
           </>
