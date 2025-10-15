@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { InlineUploadButton, UploadedFile } from '@/components/InlineUploadButton';
+import { UploadedFile } from '@/components/InlineUploadButton';
 import { UploadList } from '@/components/UploadList';
 
 interface DocumentsViewProps {
@@ -37,19 +37,26 @@ export function DocumentsView({
     [docs, petId]
   );
 
-  // Handler used by the input below
-  function handlePick(list: FileList | null) {
-    if (!list || !list.length) return;
-    const added: DocItem[] = Array.from(list).map((f) => ({
+  // Shared upload handler - updates both local state and parent state
+  function handleUploadFiles(filesInput: FileList | File[] | null, context: UploadedFile['context'] = 'documents') {
+    if (!filesInput || !filesInput.length) return;
+    
+    const filesArray = Array.from(filesInput);
+    const newFiles: UploadedFile[] = filesArray.map((f) => ({
       id: crypto.randomUUID(),
       petId,
+      context,
       name: f.name,
       mime: f.type || "application/octet-stream",
       size: f.size,
       url: URL.createObjectURL(f),
       createdAt: new Date().toISOString(),
     }));
-    setDocs(prev => [...added, ...prev]); // newest first
+    
+    // Update local state
+    setDocs(prev => [...newFiles, ...prev]);
+    // Update parent state
+    onUpload(newFiles);
   }
 
   const [docFilter, setDocFilter] = useState<string>("all");
@@ -114,9 +121,7 @@ export function DocumentsView({
                 multiple
                 className="absolute inset-0 opacity-0 cursor-pointer"
                 onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  console.log("Picked:", file.name);
+                  handleUploadFiles(e.target.files, 'documents');
                   e.currentTarget.value = "";
                 }}
               />
@@ -193,34 +198,70 @@ export function DocumentsView({
             <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg">
               <h3 className="text-xl font-light text-gray-900 mb-4">Add More Documents</h3>
               <div className="grid sm:grid-cols-3 gap-3">
-                <InlineUploadButton
-                  label="Add More"
-                  accept="application/pdf,image/*"
-                  petId={petId}
-                  context="documents"
-                  onUpload={onUpload}
-                  debugTag="documents-add-more"
-                />
                 
-                <InlineUploadButton
-                  label="Scan with Camera"
-                  accept="image/*"
-                  capture="environment"
-                  multiple={false}
-                  petId={petId}
-                  context="documents"
-                  onUpload={onUpload}
-                  debugTag="documents-camera"
-                />
+                {/* Add More */}
+                <label
+                  className="relative inline-flex items-center justify-center
+                             px-6 h-12 rounded-2xl bg-white border border-gray-200 text-gray-800 font-light
+                             hover:shadow-md active:translate-y-px transition-all
+                             cursor-pointer select-none"
+                  data-upload-debug="documents-add-more"
+                >
+                  Add More
+                  <input
+                    type="file"
+                    accept="application/pdf,image/*"
+                    multiple
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => {
+                      handleUploadFiles(e.target.files, 'documents');
+                      e.currentTarget.value = "";
+                    }}
+                  />
+                </label>
                 
-                <InlineUploadButton
-                  label="Add PDF"
-                  accept="application/pdf"
-                  petId={petId}
-                  context="documents"
-                  onUpload={onUpload}
-                  debugTag="documents-add-pdf"
-                />
+                {/* Scan with Camera */}
+                <label
+                  className="relative inline-flex items-center justify-center
+                             px-6 h-12 rounded-2xl bg-white border border-gray-200 text-gray-800 font-light
+                             hover:shadow-md active:translate-y-px transition-all
+                             cursor-pointer select-none"
+                  data-upload-debug="documents-camera"
+                >
+                  Scan with Camera
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => {
+                      handleUploadFiles(e.target.files, 'documents');
+                      e.currentTarget.value = "";
+                    }}
+                  />
+                </label>
+                
+                {/* Add PDF */}
+                <label
+                  className="relative inline-flex items-center justify-center
+                             px-6 h-12 rounded-2xl bg-white border border-gray-200 text-gray-800 font-light
+                             hover:shadow-md active:translate-y-px transition-all
+                             cursor-pointer select-none"
+                  data-upload-debug="documents-add-pdf"
+                >
+                  Add PDF
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    multiple
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => {
+                      handleUploadFiles(e.target.files, 'documents');
+                      e.currentTarget.value = "";
+                    }}
+                  />
+                </label>
+                
               </div>
             </div>
           </>
