@@ -108,10 +108,10 @@ export function DocumentsView({
 
             {/* ✅ Fixed upload button */}
             <label
-              className="relative inline-flex items-center justify-center
-                         px-6 h-12 rounded-2xl bg-gray-900 text-white font-medium
-                         hover:shadow-md active:translate-y-px transition-all cursor-pointer select-none
-                         w-[260px] mx-auto"
+              +  className="relative inline-flex items-center justify-center
++             px-6 h-12 rounded-2xl bg-gray-900 text-white font-medium
++             hover:shadow-md active:translate-y-px transition-all cursor-pointer select-none
++             w-[260px] mx-auto z-[9999] pointer-events-auto"
             >
               + Upload Documents
               <input
