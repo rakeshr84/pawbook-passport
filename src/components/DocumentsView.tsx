@@ -114,8 +114,9 @@ export function DocumentsView({
                 multiple
                 className="absolute inset-0 opacity-0 cursor-pointer"
                 onChange={(e) => {
-                  handlePick(e.currentTarget.files);
-                  // allow choosing the *same* file again later
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  console.log("Picked:", file.name);
                   e.currentTarget.value = "";
                 }}
               />
