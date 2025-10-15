@@ -1,12 +1,8 @@
 import React from "react";
-import type { UploadedFile } from "./UniversalUpload";
+import type { UploadedFile } from "@/components/UniversalUpload";
 
-export function UploadList({
-  items,
-  onRemove,
-}: {
-  items: UploadedFile[];
-  onRemove: (id: string) => void;
+export function UploadList({ items, onRemove }:{
+  items: UploadedFile[]; onRemove:(id:string)=>void;
 }) {
   if (!items?.length) return null;
   return (
@@ -22,14 +18,10 @@ export function UploadList({
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-sm text-gray-900 truncate">{f.name}</div>
-            <div className="text-xs text-gray-500">{(f.size / 1048576).toFixed(2)} MB</div>
+            <div className="text-xs text-gray-500">{(f.size/1048576).toFixed(2)} MB</div>
           </div>
-          <a href={f.url} target="_blank" rel="noreferrer" className="text-blue-700 text-sm underline whitespace-nowrap">
-            Open
-          </a>
-          <button onClick={() => onRemove(f.id)} className="text-red-600 text-sm whitespace-nowrap">
-            Remove
-          </button>
+          <a href={f.url} target="_blank" rel="noreferrer" className="text-blue-700 text-sm underline">Open</a>
+          <button onClick={() => onRemove(f.id)} className="text-red-600 text-sm">Remove</button>
         </div>
       ))}
     </div>

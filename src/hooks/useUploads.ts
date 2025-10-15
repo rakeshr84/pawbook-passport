@@ -10,11 +10,12 @@ export function useUploads() {
   };
 
   const filesFor = (petId?: string, context?: UploadContext) =>
-    uploads.filter(u => (!petId || u.petId === petId) && (!context || u.context === context));
+    uploads.filter(
+      (u) => (!petId || u.petId === petId) && (!context || u.context === context)
+    );
 
-  const removeFile = (id: string) => {
-    setUploads(prev => prev.filter(x => x.id !== id));
-  };
-
-  return useMemo(() => ({ uploads, handleUpload, filesFor, setUploads, removeFile }), [uploads]);
+  return useMemo(
+    () => ({ uploads, handleUpload, filesFor, setUploads }),
+    [uploads]
+  );
 }

@@ -86,7 +86,7 @@ const Index = () => {
   const [documents, setDocuments] = useState<PetDocument[]>([]);
 
   // Universal upload system
-  const { uploads, handleUpload, filesFor, removeFile } = useUploads();
+  const { uploads, handleUpload, filesFor, setUploads } = useUploads();
 
   // Delete confirmation & undo state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -704,7 +704,7 @@ const Index = () => {
           petId={currentPetId}
           uploads={uploads}
           onUpload={handleUpload}
-          onRemoveUpload={removeFile}
+          onRemoveUpload={(id) => setUploads(prev => prev.filter(x => x.id !== id))}
         />
       )}
 
@@ -746,7 +746,7 @@ const Index = () => {
           petId={currentPetId}
           uploads={uploads}
           onUpload={handleUpload}
-          onRemoveUpload={removeFile}
+          onRemoveUpload={(id) => setUploads(prev => prev.filter(x => x.id !== id))}
         />
       )}
 
@@ -774,7 +774,7 @@ const Index = () => {
           petId={currentPetId}
           uploads={uploads}
           onUpload={handleUpload}
-          onRemoveUpload={removeFile}
+          onRemoveUpload={(id) => setUploads(prev => prev.filter(x => x.id !== id))}
         />
       )}
 
@@ -794,7 +794,7 @@ const Index = () => {
           petName={pets.find(p => p.id === currentPetId)?.name || 'Pet'}
           uploads={uploads}
           onUpload={handleUpload}
-          onRemove={removeFile}
+          onRemove={(id) => setUploads(prev => prev.filter(x => x.id !== id))}
           onBack={handleBack}
         />
       )}

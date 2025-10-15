@@ -6,7 +6,8 @@ export type UploadContext =
   | "vaccination"
   | "treatment"
   | "exam"
-  | "pre-travel";
+  | "pre-travel"
+  | "signature";
 
 export interface UploadedFile {
   id: string;
@@ -44,11 +45,7 @@ export function UniversalUploadButton({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const openPicker = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log("[UPLOAD] Button clicked", { label, context, debugTag, petId });
-    
+  const openPicker = () => {
     if (disabled) {
       console.warn("[UPLOAD] Disabled click", { label, context, debugTag });
       return;
@@ -62,7 +59,7 @@ export function UniversalUploadButton({
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const list = e.target.files;
     if (!list || !list.length) {
-      console.log("[UPLOAD] Picker closed (no files)", { label, context, debugTag });
+      console.log("[UPLOAD] Picker closed w/o files", { label, context, debugTag });
       return;
     }
     const out: UploadedFile[] = Array.from(list).map((f) => ({
@@ -87,30 +84,28 @@ export function UniversalUploadButton({
   };
 
   return (
-    <>
+    <div className="relative" data-upload-debug={debugTag} style={{ zIndex: 10 }}>
       <button
         type="button"
         onClick={openPicker}
         className={
-          className || 
-          "w-full px-6 h-14 rounded-2xl bg-white border border-gray-200 text-gray-800 font-light " +
-          "hover:shadow-md active:translate-y-px transition-all relative z-10"
+          "px-6 h-12 rounded-2xl bg-white border border-gray-200 text-gray-800 font-light " +
+          "hover:shadow-md active:translate-y-px transition-all " + className
         }
         disabled={disabled}
         aria-disabled={disabled}
-        data-upload-debug={debugTag}
       >
         {label}
       </button>
       <input
         ref={inputRef}
-        className="hidden"
         type="file"
+        className="hidden"
         accept={accept}
         {...(capture ? { capture } : {})}
         multiple={multiple}
         onChange={onChange}
       />
-    </>
+    </div>
   );
 }
