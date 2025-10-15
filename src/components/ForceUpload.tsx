@@ -18,8 +18,11 @@ export function ForceUpload({
   const hiddenInputRef = useRef<HTMLInputElement>(null);
 
   const triggerFileDialog = () => {
-    // attach input to body if shadow DOM breaks click
-    if (!hiddenInputRef.current) {
+    if (hiddenInputRef.current) {
+      // Use the ref'd input if available
+      hiddenInputRef.current.click();
+    } else {
+      // Fallback: create temporary input if ref failed
       const input = document.createElement("input");
       input.type = "file";
       input.accept = accept;
@@ -31,8 +34,6 @@ export function ForceUpload({
       });
       document.body.appendChild(input);
       input.click();
-    } else {
-      hiddenInputRef.current.click();
     }
   };
 
