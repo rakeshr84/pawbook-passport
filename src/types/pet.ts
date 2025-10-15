@@ -49,4 +49,5 @@ export type Screen =
   | 'exam-details'
   | 'exam-list'
   | 'signin'
-  | 'dashboard';
+  | 'dashboard'
+  | 'edit-profile';

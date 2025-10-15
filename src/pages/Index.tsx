@@ -18,6 +18,8 @@ import TreatmentListView from '@/components/TreatmentListView';
 import ExamSelection from '@/components/ExamSelection';
 import ExamDetailsForm from '@/components/ExamDetailsForm';
 import ExamListView from '@/components/ExamListView';
+import AppHeader from '@/components/AppHeader';
+import EditProfile from '@/components/EditProfile';
 import { Screen, Category, PetFormData, UserFormData } from '@/types/pet';
 import { VaccinationRecord, TreatmentRecord, ClinicalExam } from '@/types/medical';
 import { toast } from '@/hooks/use-toast';
@@ -308,11 +310,32 @@ const Index = () => {
       category: '',
     });
     setCurrentPetId(selected.id);
+    setSelectedCategory({ id: 'unknown', name: 'Unknown', bgGradient: '', tabIcon: '', photos: [], mascot: '', message: '' });
     push('passport');
   };
 
+  const handleEditProfile = () => {
+    push('edit-profile');
+  };
+
+  const handleSaveProfile = (updatedUser: { full_name?: string; phone?: string }) => {
+    setUser(prev => ({ ...prev, ...updatedUser }));
+    pop();
+    toast({
+      title: "✅ Profile updated!",
+      description: "Your profile has been saved successfully.",
+    });
+  };
+
+  const showAppHeader = isAuthed && pets.length > 0 && !['welcome', 'signin'].includes(currentScreen);
+
   return (
     <>
+      <AppHeader
+        showDashboard={showAppHeader}
+        onDashboard={() => setNavStack(['welcome', 'dashboard'])}
+      />
+
       {currentScreen === 'welcome' && (
         <WelcomePage onGetStarted={handleGetStarted} onSignIn={handleSignInClick} />
       )}
@@ -359,6 +382,7 @@ const Index = () => {
         <PetPassportView
           petData={petData}
           userData={userData}
+          user={user}
           category={selectedCategory}
           onBack={() => {
             if (isAuthed) {
@@ -369,6 +393,15 @@ const Index = () => {
           }}
           onAddMedicalRecords={handleAddMedicalRecords}
           onAddAnother={handleAddAnother}
+          onEditProfile={handleEditProfile}
+        />
+      )}
+
+      {currentScreen === 'edit-profile' && (
+        <EditProfile
+          user={user}
+          onSave={handleSaveProfile}
+          onCancel={handleBack}
         />
       )}
 

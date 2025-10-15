@@ -36,6 +36,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
 
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [dateError, setDateError] = useState<string>('');
+  const [useAvatar, setUseAvatar] = useState(false);
 
   const calculateAge = (dob: string): string => {
     if (!dob) return '';
@@ -51,6 +52,21 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     return ageString ? `${ageString} old` : '';
   };
 
+  const speciesAvatar = (species: string) => {
+    const map: Record<string, string> = {
+      dogs: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f436.svg",
+      cats: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f431.svg",
+      birds: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f426.svg",
+      rabbits: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f407.svg",
+      hamsters: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f439.svg",
+      "guinea-pigs": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f439.svg",
+      fish: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f41f.svg",
+      reptiles: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f98e.svg",
+      exotic: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2728.svg",
+    };
+    return map[species] || "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2728.svg";
+  };
+
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -59,6 +75,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
         profilePhoto: file,
         profilePhotoPreview: URL.createObjectURL(file)
       }));
+      setUseAvatar(false);
       setErrors(prev => ({ ...prev, profilePhoto: false }));
     }
   };
@@ -69,9 +86,9 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     const newErrors: Record<string, boolean> = {};
     const missingFields: string[] = [];
 
-    if (!formData.profilePhoto) {
+    if (!formData.profilePhotoPreview && !useAvatar) {
       newErrors.profilePhoto = true;
-      missingFields.push('Pet photo');
+      missingFields.push('Pet photo or avatar');
     }
     if (!formData.name.trim()) {
       newErrors.name = true;
@@ -140,41 +157,79 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex justify-center" ref={photoInputRef}>
-            <label className="cursor-pointer group">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handlePhotoChange}
-              />
-              <div
-                className={`w-40 h-40 rounded-full border-2 ${
-                  errors.profilePhoto ? 'border-red-400 shadow-red-100' : 'border-border'
-                } flex items-center justify-center overflow-hidden bg-white hover:border-gray-400 hover:shadow-lg smooth-transition`}
-              >
+          {/* Photo/Avatar Section */}
+          <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg" ref={photoInputRef}>
+            <h3 className="text-2xl font-light text-gray-900 mb-4">Profile Photo</h3>
+            <p className="text-gray-600 font-light mb-4">
+              Add a photo or pick an avatar now—so your pet is easy to spot later.
+            </p>
+
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              {/* Preview */}
+              <div className="w-28 h-28 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-gray-100 flex items-center justify-center">
                 {formData.profilePhotoPreview ? (
-                  <img
-                    src={formData.profilePhotoPreview}
-                    alt="Pet preview"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={formData.profilePhotoPreview} alt="Pet" className="object-cover w-full h-full" />
                 ) : (
-                  <div className="text-center">
-                    <Camera className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground font-light">
-                      Add photo
-                    </span>
-                  </div>
+                  <img src={speciesAvatar(category.id)} alt="Avatar" className="w-20 h-20" />
                 )}
               </div>
-            </label>
+
+              {/* Controls */}
+              <div className="flex-1 grid sm:grid-cols-3 gap-3 w-full">
+                {/* Choose Avatar */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData(prev => ({ ...prev, profilePhotoPreview: speciesAvatar(category.id) }));
+                    setUseAvatar(true);
+                    setErrors(prev => ({ ...prev, profilePhoto: false }));
+                  }}
+                  className="px-6 py-4 rounded-xl border border-gray-300 font-light hover:bg-gray-50 transition-all duration-200"
+                >
+                  Use Avatar
+                </button>
+
+                {/* Take Photo (Camera) */}
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                    onChange={handlePhotoChange}
+                  />
+                  <div className="px-6 py-4 rounded-xl border border-gray-300 font-light text-center hover:bg-gray-50 transition-all duration-200">
+                    Take Photo
+                  </div>
+                </label>
+
+                {/* Choose from Gallery */}
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoChange}
+                  />
+                  <div className="px-6 py-4 rounded-xl border border-gray-300 font-light text-center hover:bg-gray-50 transition-all duration-200">
+                    Choose from Gallery
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Gentle requirement banner */}
+            {!formData.profilePhotoPreview && !useAvatar && (
+              <div className="mt-4 bg-blue-50 rounded-xl p-4 text-sm text-gray-700 font-light">
+                Add a photo or pick an avatar to continue. You can change it anytime.
+              </div>
+            )}
+            {errors.profilePhoto && (
+              <p className="text-sm text-red-500 font-light mt-2">
+                Photo or avatar is required
+              </p>
+            )}
           </div>
-          {errors.profilePhoto && (
-            <p className="text-sm text-red-500 font-light text-center -mt-2">
-              Pet photo is required
-            </p>
-          )}
 
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
@@ -367,7 +422,8 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
             </button>
             <button
               type="submit"
-              className="flex-1 bg-primary text-primary-foreground py-4 px-8 rounded-full font-medium hover:bg-gray-800 smooth-transition"
+              disabled={!formData.profilePhotoPreview && !useAvatar}
+              className="flex-1 bg-primary text-primary-foreground py-4 px-8 rounded-full font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed smooth-transition"
             >
               Create Passport
             </button>

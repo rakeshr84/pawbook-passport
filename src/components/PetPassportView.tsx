@@ -16,20 +16,24 @@ import { PetFormData, UserFormData, Category } from '@/types/pet';
 
 interface PetPassportViewProps {
   petData: PetFormData;
-  userData: UserFormData;
+  userData: UserFormData | null;
+  user?: { full_name?: string; email?: string; phone?: string } | null;
   category: Category;
   onBack: () => void;
   onAddMedicalRecords?: () => void;
   onAddAnother?: () => void;
+  onEditProfile?: () => void;
 }
 
 const PetPassportView = ({ 
   petData, 
   userData, 
+  user,
   category,
   onBack,
   onAddMedicalRecords,
-  onAddAnother 
+  onAddAnother,
+  onEditProfile
 }: PetPassportViewProps) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'medical' | 'documents'>('profile');
 
@@ -210,7 +214,7 @@ const PetPassportView = ({
                       <FileText className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
                       <div className="flex-1">
                         <div className="text-sm text-gray-500 font-light">Name</div>
-                        <div className="text-gray-900 font-medium">{userData.fullName}</div>
+                        <div className="text-gray-900 font-medium">{user?.full_name || userData?.fullName || '—'}</div>
                       </div>
                     </div>
                     
@@ -218,7 +222,7 @@ const PetPassportView = ({
                       <Mail className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
                       <div className="flex-1">
                         <div className="text-sm text-gray-500 font-light">Email</div>
-                        <div className="text-gray-900 font-medium">{userData.email}</div>
+                        <div className="text-gray-900 font-medium">{user?.email || userData?.email || '—'}</div>
                       </div>
                     </div>
                     
@@ -226,15 +230,18 @@ const PetPassportView = ({
                       <Phone className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
                       <div className="flex-1">
                         <div className="text-sm text-gray-500 font-light">Phone</div>
-                        {userData.phone ? (
-                          <div className="text-gray-900 font-medium">{userData.phone}</div>
-                        ) : (
-                          <button className="text-blue-600 hover:text-blue-700 font-light text-sm transition-colors duration-200">
-                            + Add phone number
-                          </button>
-                        )}
+                        <div className="text-gray-900 font-light">{user?.phone || userData?.phone || '—'}</div>
                       </div>
                     </div>
+
+                    {onEditProfile && (
+                      <button
+                        onClick={onEditProfile}
+                        className="mt-4 px-6 py-3 rounded-xl border border-gray-300 font-light hover:bg-gray-50 transition-all duration-200"
+                      >
+                        Edit Profile
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -343,16 +350,11 @@ const PetPassportView = ({
         </div>
 
         {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-1 gap-4">
           
           <button className="flex items-center justify-center gap-3 px-6 py-4 bg-white/60 backdrop-blur-md border border-gray-200 text-gray-700 rounded-2xl font-light hover:bg-white hover:shadow-lg transition-all duration-300">
             <Share2 className="w-5 h-5" />
             Share Passport
-          </button>
-          
-          <button className="flex items-center justify-center gap-3 px-6 py-4 bg-white/60 backdrop-blur-md border border-gray-200 text-gray-700 rounded-2xl font-light hover:bg-white hover:shadow-lg transition-all duration-300">
-            <Edit3 className="w-5 h-5" />
-            Edit Profile
           </button>
           
         </div>
