@@ -118,6 +118,8 @@ const Index = () => {
       const species = normalizeSpecies(petData.category);
       const avatarUrl = petData.avatarUrl || (petData.avatarUrl ? defaultAvatarFor(species) : undefined);
       const uploaded = petData.profilePhotoPreview || undefined;
+      // If photo uploaded, clear tint; otherwise keep it
+      const finalTint = uploaded ? undefined : petData.avatarTint;
       
       const newPet: PetCardData = {
         id: petId,
@@ -128,6 +130,8 @@ const Index = () => {
         ageLabel: calculateAgeLabel(petData.dateOfBirth),
         avatarUrl,
         photoUrl: uploaded,
+        coatColorId: petData.coatColorId,
+        avatarTint: finalTint,
         weight: petData.weight !== '' && petData.weight != null ? Number(petData.weight) : undefined,
         weightUnit: petData.weightUnit || 'kg',
         microchipNumber: petData.microchipNumber || undefined,
@@ -373,6 +377,8 @@ const Index = () => {
       profilePhoto: null,
       profilePhotoPreview: selected.photoUrl || '',
       avatarUrl: selected.avatarUrl,
+      coatColorId: selected.coatColorId,
+      avatarTint: selected.avatarTint,
       vetClinic: '',
       vetPhone: '',
       category: selected.species,

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Camera } from 'lucide-react';
 import { PetFormData, Category } from '@/types/pet';
 import { useToast } from '@/hooks/use-toast';
@@ -6,6 +6,8 @@ import { breedsByCategory } from '@/data/breeds';
 import { NeuroButton } from '@/components/ui/neuro-button';
 import { AVATARS, defaultAvatarFor, normalizeSpecies } from '@/lib/utils';
 import { PetAvatar } from '@/components/PetAvatar';
+import { COAT_PALETTES, gradientFrom } from '@/lib/tint';
+import { BREED_DEFAULTS } from '@/lib/breed-defaults';
 
 interface PetFormProps {
   category: Category;
@@ -32,6 +34,8 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     microchipNumber: '',
     profilePhoto: null,
     profilePhotoPreview: '',
+    coatColorId: undefined,
+    avatarTint: undefined,
     vetClinic: '',
     vetPhone: '',
     category: category.name
@@ -41,6 +45,23 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
   const [dateError, setDateError] = useState<string>('');
   const [useAvatar, setUseAvatar] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
+
+  // Breed-aware auto-pick (only when user hasn't chosen)
+  useEffect(() => {
+    const species = normalizeSpecies(formData.category);
+    const breedKey = (formData.breed || '').toLowerCase().trim();
+
+    const userChose = !!formData.profilePhotoPreview || !!formData.avatarUrl;
+    if (userChose) return;
+
+    const pack = AVATARS[species] || [];
+    const idx = BREED_DEFAULTS[species]?.[breedKey] ?? 0;
+    const suggested = pack[idx % pack.length];
+
+    if (suggested) {
+      setFormData(p => ({ ...p, avatarUrl: suggested }));
+    }
+  }, [formData.category, formData.breed, formData.profilePhotoPreview, formData.avatarUrl]);
 
   const calculateAge = (dob: string): string => {
     if (!dob) return '';
@@ -210,6 +231,26 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                 </label>
               </div>
             </div>
+
+            {/* Coat Color Selector (for avatar tint) */}
+            {formData.avatarUrl && !formData.profilePhotoPreview && (
+              <div className="mt-6">
+                <div className="text-sm text-gray-700 font-light mb-2">Coat Color (for avatar tint)</div>
+                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                  {COAT_PALETTES.map(c => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setFormData(p => ({ ...p, coatColorId: c.id, avatarTint: gradientFrom(c.hex) }))}
+                      className={`h-8 rounded-full border ${formData.coatColorId === c.id ? 'ring-2 ring-gray-900' : 'border-gray-200'}`}
+                      style={{ background: c.hex }}
+                      aria-label={c.name}
+                      title={c.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Gentle requirement banner */}
             {!(formData.profilePhotoPreview || formData.avatarUrl) && (

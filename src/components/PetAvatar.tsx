@@ -24,18 +24,24 @@ export function PetAvatar({
   };
 
   const r = rounded === 'full' ? 'rounded-full' : 'rounded-2xl';
+  const tint = pet?.avatarTint as string | undefined;
+  // Only show tint if it's an avatar (not an uploaded photo)
+  const showTint = tint && !pet?.profilePhotoPreview;
 
   return (
     <div
-      className={`overflow-hidden border-4 border-white shadow-md bg-gray-100 ${r} ${className}`}
+      className={`relative overflow-hidden border-4 border-white shadow-md bg-gray-100 ${r} ${className}`}
       style={{ width: size, height: size }}
       aria-label={`${pet?.name || 'Pet'} avatar`}
     >
+      {showTint && (
+        <div className="absolute inset-0 z-10" style={{ background: tint, opacity: 0.65 }} />
+      )}
       <img
         src={src}
         alt=""
         onError={onError}
-        className="w-full h-full object-cover select-none pointer-events-none"
+        className="absolute inset-0 w-full h-full object-contain p-2"
         draggable={false}
       />
     </div>

@@ -12,6 +12,8 @@ export interface PetCardData {
   ageLabel?: string;
   photoUrl?: string;
   avatarUrl?: string;
+  coatColorId?: string;
+  avatarTint?: string;
   weight?: number;
   weightUnit?: WeightUnit;
   microchipNumber?: string;
