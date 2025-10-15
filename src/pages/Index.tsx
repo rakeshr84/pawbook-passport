@@ -246,6 +246,10 @@ const Index = () => {
     push('medical-dashboard');
   };
 
+  const handleAddDocuments = () => {
+    push('documents');
+  };
+
   const handleAddVaccination = () => {
     push('vaccine-selection');
   };
@@ -648,7 +652,7 @@ const Index = () => {
               pop();
             }
           }}
-          onAddMedicalRecords={handleAddMedicalRecords}
+          onAddMedicalRecords={handleAddDocuments}
           onAddAnother={handleAddAnother}
           onEditProfile={handleEditProfile}
           onDeletePet={handleRequestDeletePet}
