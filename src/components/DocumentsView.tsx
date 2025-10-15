@@ -207,7 +207,7 @@ export function DocumentsView({
                 <ForceUpload
                   label="Add More"
                   accept="application/pdf,image/*"
-                  multiple={true}
+                  multiple
                   onSelect={(files) => handleUploadFiles(files, "documents")}
                   className="bg-white border border-gray-200 text-gray-800 font-light"
                 />
@@ -215,7 +215,7 @@ export function DocumentsView({
                 <ForceUpload
                   label="Scan with Camera"
                   accept="image/*"
-                  multiple={false}
+                  multiple
                   onSelect={(files) => handleUploadFiles(files, "documents")}
                   className="bg-white border border-gray-200 text-gray-800 font-light"
                 />
@@ -223,7 +223,7 @@ export function DocumentsView({
                 <ForceUpload
                   label="Add PDF"
                   accept="application/pdf"
-                  multiple={true}
+                  multiple
                   onSelect={(files) => handleUploadFiles(files, "documents")}
                   className="bg-white border border-gray-200 text-gray-800 font-light"
                 />
