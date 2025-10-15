@@ -18,10 +18,12 @@ import TreatmentListView from '@/components/TreatmentListView';
 import ExamSelection from '@/components/ExamSelection';
 import ExamDetailsForm from '@/components/ExamDetailsForm';
 import ExamListView from '@/components/ExamListView';
+import { DocumentsView } from '@/components/DocumentsView';
 import AppHeader from '@/components/AppHeader';
 import EditProfile from '@/components/EditProfile';
 import { Screen, Category, PetFormData, UserFormData } from '@/types/pet';
 import { VaccinationRecord, TreatmentRecord, ClinicalExam } from '@/types/medical';
+import { PetDocument, DocKind } from '@/types/document';
 import { HealthState } from '@/types/health';
 import { toast } from '@/hooks/use-toast';
 import { normalizeSpecies, defaultAvatarFor, getPetImageUrl } from '@/lib/utils';
@@ -79,6 +81,9 @@ const Index = () => {
     meds: [],
   });
 
+  // Documents state
+  const [documents, setDocuments] = useState<PetDocument[]>([]);
+
   // Delete confirmation & undo state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [lastDeleted, setLastDeleted] = useState<{
@@ -87,6 +92,7 @@ const Index = () => {
     treatments: TreatmentRecord[];
     exams: ClinicalExam[];
     health: HealthState;
+    documents: PetDocument[];
   } | null>(null);
   const [undoTimer, setUndoTimer] = useState<number | null>(null);
   const [snackbar, setSnackbar] = useState<{ message: string; action?: () => void } | null>(null);
@@ -101,6 +107,52 @@ const Index = () => {
   const push = (screen: Screen) => setNavStack(prev => [...prev, screen]);
   const pop = () => setNavStack(prev => prev.length > 1 ? prev.slice(0, -1) : prev);
   const replace = (screen: Screen) => setNavStack(prev => [...prev.slice(0, -1), screen]);
+
+  // Document management
+  const MAX_MB = 20;
+  const MAX_BYTES = MAX_MB * 1024 * 1024;
+
+  const addDocuments = async (petId: string, kind: DocKind, files: FileList) => {
+    const toDoc = (f: File): PetDocument | null => {
+      if (f.size > MAX_BYTES) {
+        setSnackbar({ message: `${f.name}: over ${MAX_MB}MB` });
+        return null;
+      }
+      const mime = f.type || "application/octet-stream";
+      const url = URL.createObjectURL(f);
+      const isImage = mime.startsWith("image/");
+      return {
+        id: crypto.randomUUID(),
+        pet_id: petId,
+        kind,
+        title: f.name.replace(/\.[^.]+$/, ""),
+        mime,
+        size: f.size,
+        created_at: new Date().toISOString(),
+        url,
+        thumbnail: isImage ? url : undefined,
+      };
+    };
+
+    const docs: PetDocument[] = [];
+    for (const f of Array.from(files)) {
+      const d = toDoc(f);
+      if (d) docs.push(d);
+    }
+    if (!docs.length) return;
+
+    setDocuments(prev => [...docs, ...prev]); // newest first
+    setSnackbar({
+      message: docs.length === 1 ? "File attached ✓" : `${docs.length} files attached ✓`
+    });
+  };
+
+  const removeDocument = (docId: string) => {
+    setDocuments(prev => prev.filter(d => d.id !== docId));
+  };
+
+  const docsFor = (petId: string, kind?: DocKind) =>
+    documents.filter(d => d.pet_id === petId && (!kind || d.kind === kind));
 
   const handleGetStarted = () => {
     push('category');
@@ -334,6 +386,7 @@ const Index = () => {
     vaccinations: pickByPet(vaccinations, pet.id),
     treatments: pickByPet(treatments, pet.id),
     exams: pickByPet(examinations, pet.id),
+    documents: pickByPet(documents, pet.id),
     health: {
       weight: health.weight.filter(w => w.petId === pet.id),
       food: health.food.filter(f => f.petId === pet.id),
@@ -349,6 +402,7 @@ const Index = () => {
     setVaccinations(prev => [...prev, ...snap.vaccinations]);
     setTreatments(prev => [...prev, ...snap.treatments]);
     setExaminations(prev => [...prev, ...snap.exams]);
+    setDocuments(prev => [...prev, ...snap.documents]);
     setHealth(prev => ({
       weight: [...prev.weight, ...snap.health.weight],
       food: [...prev.food, ...snap.health.food],
@@ -363,6 +417,7 @@ const Index = () => {
     setVaccinations(prev => dropByPet(prev, petId));
     setTreatments(prev => dropByPet(prev, petId));
     setExaminations(prev => dropByPet(prev, petId));
+    setDocuments(prev => dropByPet(prev, petId));
     setHealth(prev => ({
       weight: prev.weight.filter(w => w.petId !== petId),
       food: prev.food.filter(f => f.petId !== petId),
@@ -619,6 +674,7 @@ const Index = () => {
           onViewVaccinationList={handleViewVaccinationList}
           onViewTreatmentList={handleViewTreatmentList}
           onViewExamList={handleViewExamList}
+          onViewDocuments={() => push('documents')}
           vaccinations={vaccinations}
           treatments={treatments}
           examinations={examinations}
@@ -633,13 +689,16 @@ const Index = () => {
         />
       )}
 
-      {currentScreen === 'vaccine-details' && petData && (
+      {currentScreen === 'vaccine-details' && petData && currentPetId && (
         <VaccineDetailsForm
           petData={petData}
           selectedVaccine={selectedVaccine}
           onSave={handleSaveVaccination}
           onBack={handleBack}
           onCancel={() => setCurrentScreen('medical-dashboard')}
+          onAddDocuments={(files) => addDocuments(currentPetId, 'certificate', files)}
+          documents={docsFor(currentPetId, 'certificate')}
+          onRemoveDocument={removeDocument}
         />
       )}
 
@@ -671,13 +730,16 @@ const Index = () => {
         <TreatmentSelection petData={petData} onBack={handleBack} onNext={handleTreatmentNext} />
       )}
 
-      {currentScreen === 'treatment-details' && petData && (
+      {currentScreen === 'treatment-details' && petData && currentPetId && (
         <TreatmentDetailsForm
           petData={petData}
           treatmentType={selectedTreatmentType}
           onSave={handleSaveTreatment}
           onBack={handleBack}
           onCancel={() => setCurrentScreen('medical-dashboard')}
+          onAddDocuments={(files) => addDocuments(currentPetId, 'treatment', files)}
+          documents={docsFor(currentPetId, 'treatment')}
+          onRemoveDocument={removeDocument}
         />
       )}
 
@@ -695,13 +757,16 @@ const Index = () => {
         <ExamSelection petData={petData} onBack={handleBack} onNext={handleExamNext} />
       )}
 
-      {currentScreen === 'exam-details' && petData && (
+      {currentScreen === 'exam-details' && petData && currentPetId && (
         <ExamDetailsForm
           petData={petData}
           examType={selectedExamType}
           onSave={handleSaveExam}
           onBack={handleBack}
           onCancel={() => setCurrentScreen('medical-dashboard')}
+          onAddDocuments={(files) => addDocuments(currentPetId, 'exam', files)}
+          documents={docsFor(currentPetId, 'exam')}
+          onRemoveDocument={removeDocument}
         />
       )}
 
@@ -712,6 +777,17 @@ const Index = () => {
           onBack={handleBack}
           onAddNew={handleAddExam}
           onViewDetails={handleViewExamDetails}
+        />
+      )}
+
+      {currentScreen === 'documents' && currentPetId && (
+        <DocumentsView
+          petId={currentPetId}
+          petName={pets.find(p => p.id === currentPetId)?.name || 'Pet'}
+          documents={documents}
+          onAddDocuments={addDocuments}
+          onRemoveDocument={removeDocument}
+          onBack={handleBack}
         />
       )}
 

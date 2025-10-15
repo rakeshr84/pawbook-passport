@@ -15,6 +15,7 @@ interface MedicalDashboardProps {
   onViewVaccinationList: () => void;
   onViewTreatmentList: () => void;
   onViewExamList: () => void;
+  onViewDocuments?: () => void;
   vaccinations: VaccinationRecord[];
   treatments: any[];
   examinations: any[];
@@ -30,6 +31,7 @@ const MedicalDashboard = ({
   onViewVaccinationList,
   onViewTreatmentList,
   onViewExamList,
+  onViewDocuments,
   vaccinations,
   treatments,
   examinations,
@@ -249,6 +251,16 @@ const MedicalDashboard = ({
                   <Plus className="w-5 h-5" />
                   Schedule Exam
                 </button>
+                
+                {onViewDocuments && (
+                  <button 
+                    onClick={onViewDocuments}
+                    className="flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
+                  >
+                    <FileText className="w-5 h-5" />
+                    View Documents
+                  </button>
+                )}
                 
                 <button 
                   onClick={onViewFullHistory}

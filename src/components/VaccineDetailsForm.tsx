@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, Camera, Upload, Lightbulb } from 'lucide-react';
 import { VaccinationRecord } from '@/types/medical';
+import { FilePicker } from '@/components/FilePicker';
+import { DocumentPreview } from '@/components/DocumentPreview';
 
 interface VaccineDetailsFormProps {
   petData: {
@@ -15,6 +17,9 @@ interface VaccineDetailsFormProps {
   onSave: (record: Omit<VaccinationRecord, 'id' | 'pet_id' | 'created_at' | 'updated_at'>) => void;
   onBack: () => void;
   onCancel: () => void;
+  onAddDocuments?: (files: FileList) => void;
+  documents?: any[];
+  onRemoveDocument?: (docId: string) => void;
 }
 
 // Helper functions
@@ -50,7 +55,10 @@ export default function VaccineDetailsForm({
   selectedVaccine, 
   onSave, 
   onBack, 
-  onCancel 
+  onCancel,
+  onAddDocuments,
+  documents = [],
+  onRemoveDocument,
 }: VaccineDetailsFormProps) {
   const [usePrimaryVet, setUsePrimaryVet] = useState(true);
   const [formData, setFormData] = useState({
@@ -371,26 +379,50 @@ export default function VaccineDetailsForm({
           <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 shadow-lg">
             <h2 className="text-2xl font-light text-gray-900 mb-6">Supporting Documents</h2>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Certificate/Record Card
-              </label>
-              <div className="flex gap-3 mb-4">
-                <label className="flex-1 cursor-pointer">
-                  <input type="file" accept="image/*" capture="environment" className="hidden" />
-                  <div className="flex items-center justify-center gap-2 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-200">
-                    <Camera className="w-5 h-5" />
-                    Take Photo
-                  </div>
-                </label>
-                <label className="flex-1 cursor-pointer">
-                  <input type="file" accept="image/*,application/pdf" className="hidden" />
-                  <div className="flex items-center justify-center gap-2 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-200">
-                    <Upload className="w-5 h-5" />
-                    Upload PDF
-                  </div>
-                </label>
+            <div className="space-y-6">
+              <div className="grid sm:grid-cols-3 gap-3">
+                {onAddDocuments && (
+                  <>
+                    <FilePicker 
+                      accept="application/pdf" 
+                      onPick={(files) => onAddDocuments(files)}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <Upload size={20} />
+                        Upload PDF
+                      </div>
+                    </FilePicker>
+
+                    <FilePicker 
+                      accept="image/*" 
+                      onPick={(files) => onAddDocuments(files)}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <Upload size={20} />
+                        Upload Image
+                      </div>
+                    </FilePicker>
+
+                    <FilePicker 
+                      accept="image/*" 
+                      capture="environment" 
+                      onPick={(files) => onAddDocuments(files)}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <Camera size={20} />
+                        Take Photo
+                      </div>
+                    </FilePicker>
+                  </>
+                )}
               </div>
+
+              {onRemoveDocument && (
+                <DocumentPreview 
+                  documents={documents} 
+                  onRemove={onRemoveDocument} 
+                />
+              )}
 
               <div className="bg-blue-50 rounded-xl p-4">
                 <div className="flex gap-3">
