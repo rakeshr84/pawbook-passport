@@ -4,6 +4,7 @@ import { PetFormData, Category } from '@/types/pet';
 import { useToast } from '@/hooks/use-toast';
 import { breedsByCategory } from '@/data/breeds';
 import { NeuroButton } from '@/components/ui/neuro-button';
+import { AVATARS, defaultAvatarFor, normalizeSpecies } from '@/lib/utils';
 
 interface PetFormProps {
   category: Category;
@@ -54,48 +55,6 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     return ageString ? `${ageString} old` : '';
   };
 
-  const AVATARS: Record<string, string[]> = {
-    dogs: [
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f436.svg",
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f415.svg",
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f429.svg",
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43a.svg",
-    ],
-    cats: [
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f431.svg",
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f408.svg",
-    ],
-    birds: [
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f426.svg",
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f99c.svg",
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f985.svg",
-    ],
-    rabbits: [
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f407.svg",
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f430.svg",
-    ],
-    hamsters: [
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f439.svg",
-    ],
-    "guinea-pigs": [
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f439.svg",
-    ],
-    fish: [
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f41f.svg",
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f420.svg",
-    ],
-    reptiles: [
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f98e.svg",
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f422.svg",
-    ],
-    exotic: [
-      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2728.svg",
-    ],
-  };
-
-  const defaultAvatarFor = (categoryId: string) => {
-    return AVATARS[categoryId]?.[0] || AVATARS.dogs[0];
-  };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -202,7 +161,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                 ) : formData.avatarUrl ? (
                   <img src={formData.avatarUrl} alt="Avatar" className="w-20 h-20" />
                 ) : (
-                  <img src={defaultAvatarFor(category.id)} alt="Default" className="w-20 h-20" />
+                  <img src={defaultAvatarFor(normalizeSpecies(category.id))} alt="Default" className="w-20 h-20" />
                 )}
               </div>
 
@@ -270,7 +229,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-2xl">
                 <h4 className="text-xl font-light text-gray-900 mb-4">Choose an Avatar</h4>
                 <div className="grid grid-cols-4 gap-4">
-                  {(AVATARS[category.id] || AVATARS.dogs).map((src, i) => (
+                  {(AVATARS[normalizeSpecies(category.id)] || AVATARS.dog).map((src, i) => (
                     <button
                       key={i}
                       type="button"

@@ -1,12 +1,16 @@
+import { defaultAvatarFor, formatSpeciesBreed } from '@/lib/utils';
+
 export type WeightUnit = 'kg' | 'lbs';
 
 export interface PetCardData {
   id: string;
   name: string;
+  species: string;
   breed?: string;
   dateOfBirth?: string;
   ageLabel?: string;
   photoUrl?: string;
+  avatarUrl?: string;
   weight?: number;
   weightUnit?: WeightUnit;
   microchipNumber?: string;
@@ -82,7 +86,7 @@ const Dashboard = ({ user, pets, onSelectPet, onAddPet, onLogout }: DashboardPro
                 >
                   <div className="flex items-center gap-4">
                     <img
-                      src={p.photoUrl || 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f436.png'}
+                      src={p.photoUrl || defaultAvatarFor(p.species)}
                       alt={p.name}
                       className="w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-md"
                     />
@@ -92,7 +96,7 @@ const Dashboard = ({ user, pets, onSelectPet, onAddPet, onLogout }: DashboardPro
                         <StatusDot status={p.status} />
                       </div>
                       <p className="text-gray-600 font-light truncate">
-                        {p.breed || '—'} {p.ageLabel ? `• ${p.ageLabel}` : ''} {formatWeight(p.weight, p.weightUnit) && `• ${formatWeight(p.weight, p.weightUnit)}`}
+                        {formatSpeciesBreed(p.species, p.breed)} {p.ageLabel ? `• ${p.ageLabel}` : ''} {formatWeight(p.weight, p.weightUnit) && `• ${formatWeight(p.weight, p.weightUnit)}`}
                       </p>
                       {p.microchipNumber && (
                         <p className="text-gray-500 font-light mt-1 text-sm truncate">Chip: {p.microchipNumber}</p>

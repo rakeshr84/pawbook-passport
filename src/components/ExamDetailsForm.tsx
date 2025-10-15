@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft, Upload, Camera } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
 import { ClinicalExam } from '@/types/medical';
-import { normalizePetCategory } from '@/lib/utils';
+import { normalizeSpecies } from '@/lib/utils';
 
 interface ExamDetailsFormProps {
   petData: PetFormData;
@@ -38,7 +38,7 @@ export default function ExamDetailsForm({
   const [vetLicense, setVetLicense] = useState('');
   const [notes, setNotes] = useState('');
 
-  const petCategory = normalizePetCategory(petData.category);
+  const petCategory = normalizeSpecies(petData.category);
 
   const getExamTypeDisplay = () => {
     const displays: Record<string, string> = {
@@ -52,7 +52,7 @@ export default function ExamDetailsForm({
   };
 
   const getNormalTemp = () => {
-    if (petCategory === 'dogs' || petCategory === 'cats') {
+    if (petCategory === 'dog' || petCategory === 'cat') {
       return 'Normal: 100.5-102.5°F (38-39°C)';
     }
     return 'Varies by species';

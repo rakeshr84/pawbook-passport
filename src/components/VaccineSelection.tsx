@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
-import { normalizePetCategory } from '@/lib/utils';
+import { normalizeSpecies } from '@/lib/utils';
 
 interface VaccineSelectionProps {
   petData: PetFormData;
@@ -24,9 +24,9 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
   };
 
   const petAgeInMonths = calculateAgeInMonths(petData.dateOfBirth);
-  const category = normalizePetCategory(petData.category);
-  const isPuppy = category === 'dogs' && petAgeInMonths < 6;
-  const isKitten = category === 'cats' && petAgeInMonths < 6;
+  const category = normalizeSpecies(petData.category);
+  const isPuppy = category === 'dog' && petAgeInMonths < 6;
+  const isKitten = category === 'cat' && petAgeInMonths < 6;
 
   const handleNext = () => {
     if (selectedVaccine === 'custom' && customVaccineName.trim()) {
@@ -89,7 +89,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </div>
               </label>
             </div>
-          ) : category === 'dogs' && isPuppy ? (
+          ) : category === 'dog' && isPuppy ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🐶 Puppy Vaccination Series</h3>
               <div className="bg-blue-50 rounded-xl p-4 mb-4">
@@ -140,7 +140,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </label>
               </div>
             </>
-          ) : category === 'cats' && isKitten ? (
+          ) : category === 'cat' && isKitten ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🐱 Kitten Vaccination Series</h3>
               <div className="bg-blue-50 rounded-xl p-4 mb-4">
@@ -191,7 +191,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </label>
               </div>
             </>
-          ) : category === 'cats' ? (
+          ) : category === 'cat' ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🌟 Recommended for Cats</h3>
               
@@ -261,7 +261,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </div>
               </label>
             </>
-          ) : category === 'birds' ? (
+          ) : category === 'bird' ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🦜 Bird Vaccinations</h3>
               
@@ -345,7 +345,7 @@ const VaccineSelection = ({ petData, onBack, onNext }: VaccineSelectionProps) =>
                 </label>
               </div>
             </>
-          ) : category === 'rabbits' ? (
+          ) : category === 'rabbit' ? (
             <>
               <h3 className="text-lg font-medium text-gray-900 mb-4">🐰 Rabbit Vaccinations</h3>
               
