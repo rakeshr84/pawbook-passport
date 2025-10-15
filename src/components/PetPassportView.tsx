@@ -28,6 +28,7 @@ interface PetPassportViewProps {
   health: HealthState;
   onBack: () => void;
   onAddMedicalRecords?: () => void;
+  onAddDocuments?: () => void;
   onAddAnother?: () => void;
   onEditProfile?: () => void;
   onDeletePet?: () => void;
@@ -47,6 +48,7 @@ const PetPassportView = ({
   health,
   onBack,
   onAddMedicalRecords,
+  onAddDocuments,
   onAddAnother,
   onEditProfile,
   onDeletePet,
@@ -370,7 +372,7 @@ const PetPassportView = ({
                   </p>
                   
                   <button 
-                    onClick={onAddMedicalRecords}
+                    onClick={onAddDocuments}
                     className="bg-gray-900 text-white px-8 py-4 rounded-full font-medium hover:bg-gray-800 transition-all duration-300 inline-flex items-center gap-2"
                   >
                     <Plus className="w-5 h-5" />

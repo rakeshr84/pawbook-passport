@@ -652,7 +652,8 @@ const Index = () => {
               pop();
             }
           }}
-          onAddMedicalRecords={handleAddDocuments}
+          onAddMedicalRecords={handleAddMedicalRecords}
+          onAddDocuments={handleAddDocuments}
           onAddAnother={handleAddAnother}
           onEditProfile={handleEditProfile}
           onDeletePet={handleRequestDeletePet}
