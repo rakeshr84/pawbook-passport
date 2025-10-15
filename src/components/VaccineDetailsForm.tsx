@@ -51,11 +51,11 @@ function suggestValidUntil(vaccinationDate: string, vaccineType: string): string
   return date.toISOString().split('T')[0];
 }
 
-export default function VaccineDetailsForm({ 
-  petData, 
-  selectedVaccine, 
-  onSave, 
-  onBack, 
+export default function VaccineDetailsForm({
+  petData,
+  selectedVaccine,
+  onSave,
+  onBack,
   onCancel,
   petId,
   uploads = [],
@@ -63,6 +63,8 @@ export default function VaccineDetailsForm({
   onRemoveUpload,
 }: VaccineDetailsFormProps) {
   const [usePrimaryVet, setUsePrimaryVet] = useState(true);
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
+  const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     manufacturer: '',
     product_name: '',
@@ -367,13 +369,42 @@ export default function VaccineDetailsForm({
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Vet Signature/Stamp (Optional)
               </label>
-              <label className="cursor-pointer">
-                <input type="file" accept="image/*" className="hidden" />
-                <div className="flex items-center justify-center gap-2 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-200">
-                  <Upload className="w-5 h-5" />
+              <div className="flex flex-col items-center gap-3">
+                <label className="relative inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-xl font-light cursor-pointer hover:bg-gray-50 transition-all duration-200">
+                  <Upload className="w-4 h-4 mr-2" />
                   Upload Signature
-                </div>
-              </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setSignatureFile(file);
+                      setSignaturePreview(URL.createObjectURL(file));
+                    }}
+                  />
+                </label>
+                {signaturePreview && (
+                  <div className="mt-2 flex flex-col items-center">
+                    <img 
+                      src={signaturePreview} 
+                      alt="Signature preview"
+                      className="h-16 object-contain rounded-md border" 
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSignatureFile(null);
+                        setSignaturePreview(null);
+                      }}
+                      className="text-sm text-red-600 mt-1 underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

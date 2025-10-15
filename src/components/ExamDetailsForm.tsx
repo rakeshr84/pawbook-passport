@@ -47,6 +47,8 @@ export default function ExamDetailsForm({
   const [vetPhone, setVetPhone] = useState(petData.vetPhone || '');
   const [vetLicense, setVetLicense] = useState('');
   const [notes, setNotes] = useState('');
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
+  const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
 
   const petCategory = normalizeSpecies(petData.category);
 
@@ -453,13 +455,42 @@ export default function ExamDetailsForm({
                   Veterinarian Signature (Optional)
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
-                  <button
-                    type="button"
-                    className="flex items-center justify-center gap-3 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300 mx-auto"
-                  >
-                    <Upload className="w-5 h-5" />
-                    Upload Signature
-                  </button>
+                  <div className="flex flex-col items-center gap-3">
+                    <label className="relative inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-xl font-light cursor-pointer hover:bg-gray-50 transition-all duration-300">
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Signature
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setSignatureFile(file);
+                          setSignaturePreview(URL.createObjectURL(file));
+                        }}
+                      />
+                    </label>
+                    {signaturePreview && (
+                      <div className="mt-2 flex flex-col items-center">
+                        <img 
+                          src={signaturePreview} 
+                          alt="Signature preview"
+                          className="h-16 object-contain rounded-md border" 
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSignatureFile(null);
+                            setSignaturePreview(null);
+                          }}
+                          className="text-sm text-red-600 mt-1 underline"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
