@@ -6,7 +6,7 @@ export interface NeuroButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
 }
 
 const NeuroButton = React.forwardRef<HTMLButtonElement, NeuroButtonProps>(
-  ({ className, asLabel = false, ...props }, ref) => {
+  ({ className, asLabel = false, children, ...props }, ref) => {
     const Component = asLabel ? "span" : "button";
     
     return (
@@ -23,7 +23,9 @@ const NeuroButton = React.forwardRef<HTMLButtonElement, NeuroButtonProps>(
           asLabel ? "cursor-pointer" : "",
           className
         )}
-      />
+      >
+        {children}
+      </Component>
     );
   }
 );
