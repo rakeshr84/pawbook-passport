@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import WelcomePage from '@/components/WelcomePage';
+import WelcomePageNew from '@/components/WelcomePageNew';
+import SignInPage from '@/components/SignInPage';
+import BottomTabNav, { TabId } from '@/components/BottomTabNav';
 import SignIn from '@/components/SignIn';
 import Dashboard, { PetCardData } from '@/components/Dashboard';
 import CategorySelection from '@/components/CategorySelection';
@@ -51,6 +53,7 @@ const Index = () => {
   // Navigation stack for clean back button logic
   const [navStack, setNavStack] = useState<Screen[]>(['welcome']);
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  const [activeTab, setActiveTab] = useState<TabId>('home');
   
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [petData, setPetData] = useState<PetFormData | null>(null);
@@ -587,7 +590,7 @@ const Index = () => {
       />
 
       {currentScreen === 'welcome' && (
-        <WelcomePage
+        <WelcomePageNew
           onGetStarted={handleGetStarted}
           onSignIn={handleSignInClick}
           onGoToDashboard={() => setNavStack(['welcome', 'dashboard'])}
@@ -596,7 +599,23 @@ const Index = () => {
       )}
 
       {currentScreen === 'signin' && (
-        <SignIn onBack={handleBack} onSignIn={handleSignIn} />
+        <SignInPage 
+          onBack={handleBack} 
+          onSignIn={(email, password) => {
+            // Mock sign in - in production, integrate with auth system
+            setIsAuthed(true);
+            setUser({ email, full_name: email.split('@')[0] });
+            toast({ title: "Welcome back!", description: "Signed in successfully" });
+            setCurrentScreen('dashboard');
+          }}
+          onSignUp={(email, password, name) => {
+            // Mock sign up - in production, integrate with auth system
+            setIsAuthed(true);
+            setUser({ email, full_name: name });
+            toast({ title: "Account created!", description: "Welcome to PawBuck" });
+            setCurrentScreen('category');
+          }}
+        />
       )}
 
       {currentScreen === 'dashboard' && (
