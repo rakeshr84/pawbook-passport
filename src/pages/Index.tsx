@@ -393,7 +393,12 @@ const Index = () => {
       />
 
       {currentScreen === 'welcome' && (
-        <WelcomePage onGetStarted={handleGetStarted} onSignIn={handleSignInClick} />
+        <WelcomePage
+          onGetStarted={handleGetStarted}
+          onSignIn={handleSignInClick}
+          onGoToDashboard={() => setNavStack(['welcome', 'dashboard'])}
+          isAuthed={isAuthed}
+        />
       )}
 
       {currentScreen === 'signin' && (
