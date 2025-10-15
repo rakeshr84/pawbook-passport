@@ -369,7 +369,10 @@ const PetPassportView = ({
                     documents for {petData.name}.
                   </p>
                   
-                  <button className="bg-gray-900 text-white px-8 py-4 rounded-full font-medium hover:bg-gray-800 transition-all duration-300 inline-flex items-center gap-2">
+                  <button 
+                    onClick={onAddMedicalRecords}
+                    className="bg-gray-900 text-white px-8 py-4 rounded-full font-medium hover:bg-gray-800 transition-all duration-300 inline-flex items-center gap-2"
+                  >
                     <Plus className="w-5 h-5" />
                     Upload Documents
                   </button>
