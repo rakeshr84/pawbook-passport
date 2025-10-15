@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft, Camera, Upload } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
 import { TreatmentRecord } from '@/types/medical';
-import { UniversalUploadButton, UploadedFile } from '@/components/UniversalUpload';
+import { InlineUploadButton, UploadedFile } from '@/components/InlineUploadButton';
 import { UploadList } from '@/components/UploadList';
 
 interface TreatmentDetailsFormProps {
@@ -287,35 +287,35 @@ export default function TreatmentDetailsForm({
             <div className="space-y-6">
               {petId && onUpload && (
                 <>
-                  <div className="grid sm:grid-cols-3 gap-3">
-                    <UniversalUploadButton
-                      label="Upload PDF"
-                      accept="application/pdf"
-                      petId={petId}
-                      context="treatment"
-                      onUpload={onUpload}
-                      debugTag="treatment-upload-pdf"
-                    />
-                    
-                    <UniversalUploadButton
-                      label="Upload Image"
-                      accept="image/*"
-                      petId={petId}
-                      context="treatment"
-                      onUpload={onUpload}
-                      debugTag="treatment-upload-image"
-                    />
-                    
-                    <UniversalUploadButton
-                      label="Take Photo"
-                      accept="image/*"
-                      capture="environment"
-                      multiple={false}
-                      petId={petId}
-                      context="treatment"
-                      onUpload={onUpload}
-                      debugTag="treatment-camera"
-                    />
+            <div className="grid sm:grid-cols-3 gap-3">
+              <InlineUploadButton
+                label="Upload PDF"
+                accept="application/pdf"
+                petId={petId}
+                context="treatment"
+                onUpload={onUpload}
+                debugTag="treatment-upload-pdf"
+              />
+              
+              <InlineUploadButton
+                label="Upload Image"
+                accept="image/*"
+                petId={petId}
+                context="treatment"
+                onUpload={onUpload}
+                debugTag="treatment-upload-image"
+              />
+              
+              <InlineUploadButton
+                label="Take Photo"
+                accept="image/*"
+                capture="environment"
+                multiple={false}
+                petId={petId}
+                context="treatment"
+                onUpload={onUpload}
+                debugTag="treatment-camera"
+              />
                   </div>
 
                   {onRemoveUpload && (

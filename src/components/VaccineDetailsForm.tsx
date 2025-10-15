@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, Camera, Upload, Lightbulb } from 'lucide-react';
 import { VaccinationRecord } from '@/types/medical';
-import { UniversalUploadButton, UploadedFile } from '@/components/UniversalUpload';
+import { InlineUploadButton, UploadedFile } from '@/components/InlineUploadButton';
 import { UploadList } from '@/components/UploadList';
 
 interface VaccineDetailsFormProps {
@@ -384,35 +384,35 @@ export default function VaccineDetailsForm({
             <div className="space-y-6">
               {petId && onUpload && (
                 <>
-                  <div className="grid sm:grid-cols-3 gap-3">
-                    <UniversalUploadButton
-                      label="Upload PDF"
-                      accept="application/pdf"
-                      petId={petId}
-                      context="vaccination"
-                      onUpload={onUpload}
-                      debugTag="vaccine-upload-pdf"
-                    />
-                    
-                    <UniversalUploadButton
-                      label="Upload Image"
-                      accept="image/*"
-                      petId={petId}
-                      context="vaccination"
-                      onUpload={onUpload}
-                      debugTag="vaccine-upload-image"
-                    />
-                    
-                    <UniversalUploadButton
-                      label="Take Photo"
-                      accept="image/*"
-                      capture="environment"
-                      multiple={false}
-                      petId={petId}
-                      context="vaccination"
-                      onUpload={onUpload}
-                      debugTag="vaccine-camera"
-                    />
+            <div className="grid sm:grid-cols-3 gap-3">
+              <InlineUploadButton
+                label="Upload PDF"
+                accept="application/pdf"
+                petId={petId}
+                context="vaccination"
+                onUpload={onUpload}
+                debugTag="vaccine-upload-pdf"
+              />
+              
+              <InlineUploadButton
+                label="Upload Image"
+                accept="image/*"
+                petId={petId}
+                context="vaccination"
+                onUpload={onUpload}
+                debugTag="vaccine-upload-image"
+              />
+              
+              <InlineUploadButton
+                label="Take Photo"
+                accept="image/*"
+                capture="environment"
+                multiple={false}
+                petId={petId}
+                context="vaccination"
+                onUpload={onUpload}
+                debugTag="vaccine-camera"
+              />
                   </div>
 
                   {onRemoveUpload && (

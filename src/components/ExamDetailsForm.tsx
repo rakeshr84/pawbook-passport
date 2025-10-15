@@ -3,7 +3,7 @@ import { ChevronLeft, Camera, Upload } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
 import { ClinicalExam } from '@/types/medical';
 import { normalizeSpecies } from '@/lib/utils';
-import { UniversalUploadButton, UploadedFile } from '@/components/UniversalUpload';
+import { InlineUploadButton, UploadedFile } from '@/components/InlineUploadButton';
 import { UploadList } from '@/components/UploadList';
 
 interface ExamDetailsFormProps {
@@ -408,35 +408,35 @@ export default function ExamDetailsForm({
             <div className="space-y-6">
               {petId && onUpload && (
                 <>
-                  <div className="grid sm:grid-cols-3 gap-3">
-                    <UniversalUploadButton
-                      label="Upload PDF"
-                      accept="application/pdf"
-                      petId={petId}
-                      context="exam"
-                      onUpload={onUpload}
-                      debugTag="exam-upload-pdf"
-                    />
-                    
-                    <UniversalUploadButton
-                      label="Upload Image"
-                      accept="image/*"
-                      petId={petId}
-                      context="exam"
-                      onUpload={onUpload}
-                      debugTag="exam-upload-image"
-                    />
-                    
-                    <UniversalUploadButton
-                      label="Take Photo"
-                      accept="image/*"
-                      capture="environment"
-                      multiple={false}
-                      petId={petId}
-                      context="exam"
-                      onUpload={onUpload}
-                      debugTag="exam-camera"
-                    />
+            <div className="grid sm:grid-cols-3 gap-3">
+              <InlineUploadButton
+                label="Upload PDF"
+                accept="application/pdf"
+                petId={petId}
+                context="exam"
+                onUpload={onUpload}
+                debugTag="exam-upload-pdf"
+              />
+              
+              <InlineUploadButton
+                label="Upload Image"
+                accept="image/*"
+                petId={petId}
+                context="exam"
+                onUpload={onUpload}
+                debugTag="exam-upload-image"
+              />
+              
+              <InlineUploadButton
+                label="Take Photo"
+                accept="image/*"
+                capture="environment"
+                multiple={false}
+                petId={petId}
+                context="exam"
+                onUpload={onUpload}
+                debugTag="exam-camera"
+              />
                   </div>
 
                   {onRemoveUpload && (

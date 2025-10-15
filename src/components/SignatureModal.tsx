@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import type { UploadedFile } from "@/components/UniversalUpload";
+import type { UploadedFile } from "@/components/InlineUploadButton";
 
 function dataURLtoBlob(dataUrl: string): Promise<Blob> {
   return fetch(dataUrl).then(r => r.blob());

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import type { UploadedFile, UploadContext } from "../components/UniversalUpload";
+import type { UploadedFile, UploadContext } from "@/components/InlineUploadButton";
 
 export function useUploads() {
   const [uploads, setUploads] = useState<UploadedFile[]>([]);
@@ -9,10 +9,8 @@ export function useUploads() {
     setUploads(prev => [...files, ...prev]);
   };
 
-  const filesFor = (petId?: string, context?: UploadContext) =>
-    uploads.filter(
-      (u) => (!petId || u.petId === petId) && (!context || u.context === context)
-    );
+  const filesFor = (petId: string, context?: UploadContext) =>
+    uploads.filter((u) => u.petId === petId && (!context || u.context === context));
 
   return useMemo(
     () => ({ uploads, handleUpload, filesFor, setUploads }),
