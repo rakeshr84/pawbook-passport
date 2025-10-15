@@ -182,7 +182,7 @@ const PetPassportView = ({
                       <FileText className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
                       <div className="flex-1">
                         <div className="text-sm text-gray-500 font-light">Species & Breed</div>
-                        <div className="text-gray-900 font-medium">{category.name.slice(0, -1)} • {petData.breed}</div>
+                        <div className="text-gray-900 font-medium">{formatSpeciesBreed(petData.category, petData.breed)}</div>
                       </div>
                     </div>
                     
