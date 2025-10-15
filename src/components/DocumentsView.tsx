@@ -118,7 +118,7 @@ export function DocumentsView({
                 type="file"
                 accept="application/pdf,image/*"
                 multiple
-                className="absolute inset-0 opacity-0 cursor-pointer"
+                className="absolute inset-0 opacity-0 cursor-pointer z-[10000]"
                 onChange={(e) => {
                   handleUploadFiles(e.currentTarget.files, "documents");
                   e.currentTarget.value = "";
