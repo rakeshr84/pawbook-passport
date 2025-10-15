@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { ChevronLeft, Plus, Stethoscope, Lightbulb, FileText } from 'lucide-react';
+import { ChevronLeft, Plus, Stethoscope, Lightbulb, FileText, Sparkles } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
 import { VaccinationRecord } from '@/types/medical';
 import { PetAvatar } from '@/components/PetAvatar';
 import { formatSpeciesBreed } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface MedicalDashboardProps {
   pet: any;
@@ -55,21 +56,21 @@ const MedicalDashboard = ({
   const hasRecords = vaccinations.length > 0 || treatments.length > 0 || examinations.length > 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-12 px-6">
-      <div className="max-w-4xl mx-auto space-y-12">
+    <div className="min-h-screen gradient-bg py-8 px-4">
+      <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="flex items-center gap-6 mb-8">
+        <div className="flex items-center gap-4 mb-6">
           <button 
             onClick={onBack}
-            className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+            className="p-2 rounded-full hover:bg-white/20 ios-transition"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-6 h-6 text-foreground" />
           </button>
-          <PetAvatar pet={pet} size={80} />
+          <PetAvatar pet={pet} size={64} />
           <div className="flex-1">
-            <h1 className="text-4xl font-light text-gray-900">{pet.name}'s Medical Records</h1>
-            <p className="text-gray-500 font-light mt-1">
+            <h1 className="text-3xl font-light text-foreground">{pet.name}'s Health</h1>
+            <p className="text-muted-foreground font-light mt-0.5 text-sm">
               {formatSpeciesBreed(pet.species || pet.category, pet.breed)} • {pet.ageLabel || calculateAge(pet.dateOfBirth)}
             </p>
           </div>
@@ -78,35 +79,35 @@ const MedicalDashboard = ({
         {!hasRecords ? (
           <>
             {/* Empty State Message */}
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Stethoscope className="w-12 h-12 text-blue-600" />
+            <div className="text-center py-10">
+              <div className="w-24 h-24 gradient-accent rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg animate-glow-pulse">
+                <Stethoscope className="w-12 h-12 text-white" />
               </div>
-              <h2 className="text-3xl font-light text-gray-900 mb-3">
+              <h2 className="text-3xl font-light text-foreground mb-2">
                 Start tracking {pet.name}'s health
               </h2>
-              <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto">
-                Keep all vaccination records, treatments, and health exams organized in one place
+              <p className="text-lg text-muted-foreground font-light max-w-2xl mx-auto">
+                Keep all vaccination records, treatments, and health exams organized in one place 🐾
               </p>
             </div>
 
             {/* Get Started Card */}
-            <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-lg">
-              <h3 className="text-2xl font-light text-gray-900 mb-6 text-center">What would you like to add first?</h3>
+            <div className="glass-effect rounded-3xl p-8 shadow-lg">
+              <h3 className="text-xl font-light text-foreground mb-6 text-center">What would you like to add first?</h3>
               
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-3 gap-4">
                 
                 {/* Vaccinations */}
                 <button 
                   onClick={onAddVaccination}
-                  className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
+                  className="glass-effect rounded-2xl p-6 shadow hover:shadow-lg ios-transition text-center group"
                 >
-                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💉</div>
-                  <h4 className="text-xl font-medium text-gray-900 mb-2">Vaccinations</h4>
-                  <p className="text-gray-600 font-light text-sm mb-4">
+                  <div className="text-5xl mb-3 group-hover:scale-110 ios-transition">💉</div>
+                  <h4 className="text-lg font-medium text-foreground mb-2">Vaccinations</h4>
+                  <p className="text-muted-foreground font-light text-sm mb-3">
                     Track vaccine records and get reminders
                   </p>
-                  <div className="text-blue-600 font-medium text-sm">
+                  <div className="text-accent font-medium text-sm">
                     Add Vaccine →
                   </div>
                 </button>
@@ -114,14 +115,14 @@ const MedicalDashboard = ({
                 {/* Treatments */}
                 <button 
               onClick={onAddTreatment}
-                  className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
+                  className="glass-effect rounded-2xl p-6 shadow hover:shadow-lg ios-transition text-center group"
                 >
-                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💊</div>
-                  <h4 className="text-xl font-medium text-gray-900 mb-2">Treatments</h4>
-                  <p className="text-gray-600 font-light text-sm mb-4">
+                  <div className="text-5xl mb-3 group-hover:scale-110 ios-transition">💊</div>
+                  <h4 className="text-lg font-medium text-foreground mb-2">Treatments</h4>
+                  <p className="text-muted-foreground font-light text-sm mb-3">
                     Log flea/tick, deworming, medications
                   </p>
-                  <div className="text-blue-600 font-medium text-sm">
+                  <div className="text-accent font-medium text-sm">
                     Add Treatment →
                   </div>
                 </button>
@@ -129,14 +130,14 @@ const MedicalDashboard = ({
                 {/* Examinations */}
                 <button 
               onClick={onAddExam}
-                  className="bg-white/60 backdrop-blur-md rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
+                  className="glass-effect rounded-2xl p-6 shadow hover:shadow-lg ios-transition text-center group"
                 >
-                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🏥</div>
-                  <h4 className="text-xl font-medium text-gray-900 mb-2">Health Exam</h4>
-                  <p className="text-gray-600 font-light text-sm mb-4">
+                  <div className="text-5xl mb-3 group-hover:scale-110 ios-transition">🏥</div>
+                  <h4 className="text-lg font-medium text-foreground mb-2">Health Exam</h4>
+                  <p className="text-muted-foreground font-light text-sm mb-3">
                     Record checkups and vet visits
                   </p>
-                  <div className="text-blue-600 font-medium text-sm">
+                  <div className="text-accent font-medium text-sm">
                     Add Exam →
                   </div>
                 </button>
@@ -144,15 +145,15 @@ const MedicalDashboard = ({
               </div>
               
               {/* Quick Onboard Banner */}
-              <div className="bg-blue-50 rounded-2xl p-6 mt-8">
+              <div className="glass-effect rounded-2xl p-5 mt-6">
                 <div className="flex items-start gap-3">
-                  <Lightbulb className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+                  <Sparkles className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Already have vaccination records?</h4>
-                    <p className="text-sm text-gray-600 font-light mb-3">
+                    <h4 className="font-medium text-foreground mb-2">Already have vaccination records?</h4>
+                    <p className="text-sm text-muted-foreground font-light mb-2">
                       No need to enter complete history! Just add your pet's most recent vaccinations and we'll track from here.
                     </p>
-                    <p className="text-sm text-gray-600 font-light">
+                    <p className="text-sm text-muted-foreground font-light">
                       💡 You can upload certificate photos for easy reference when adding vaccines.
                     </p>
                   </div>
@@ -163,60 +164,60 @@ const MedicalDashboard = ({
           </>
         ) : (
           <>
-            {/* Health Status Card - calculated from actual data */}
+            {/* Health Status Card */}
             {vaccinations.length > 0 && (
-              <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 shadow-lg">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <h2 className="text-2xl font-light text-gray-900">Health Records</h2>
+              <div className="glass-effect rounded-3xl p-6 shadow-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-glow-pulse"></div>
+                  <h2 className="text-xl font-light text-foreground">Health Records</h2>
                 </div>
-                <p className="text-gray-600 font-light">
+                <p className="text-muted-foreground font-light">
                   {vaccinations.length} vaccination{vaccinations.length !== 1 ? 's' : ''} on record
                 </p>
               </div>
             )}
 
             {/* Overview Cards */}
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-4">
               
               <div 
                 onClick={onViewVaccinationList}
-                className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+                className="glass-effect rounded-2xl p-5 shadow hover:shadow-lg ios-transition cursor-pointer"
               >
-                <div className="text-4xl mb-4">💉</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Vaccinations</h3>
-                <p className="text-gray-600 font-light mb-4">
+                <div className="text-4xl mb-3">💉</div>
+                <h3 className="text-lg font-medium text-foreground mb-2">Vaccinations</h3>
+                <p className="text-muted-foreground font-light mb-3 text-sm">
                   ✓ {vaccinations.length} vaccine{vaccinations.length !== 1 ? 's' : ''} on record
                 </p>
-                <button className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
+                <button className="text-accent font-medium hover:text-accent/80 ios-transition text-sm">
                   View All →
                 </button>
               </div>
 
               <div 
                 onClick={onViewTreatmentList}
-                className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+                className="glass-effect rounded-2xl p-5 shadow hover:shadow-lg ios-transition cursor-pointer"
               >
-                <div className="text-4xl mb-4">💊</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Treatments</h3>
-                <p className="text-gray-600 font-light mb-4">
-                  {treatments.length > 0 ? `✓ ${treatments.length} treatment${treatments.length !== 1 ? 's' : ''} on record` : 'No treatments yet'}
+                <div className="text-4xl mb-3">💊</div>
+                <h3 className="text-lg font-medium text-foreground mb-2">Treatments</h3>
+                <p className="text-muted-foreground font-light mb-3 text-sm">
+                  {treatments.length > 0 ? `✓ ${treatments.length} treatment${treatments.length !== 1 ? 's' : ''} on record` : 'Not added yet — want to?'}
                 </p>
-                <button className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
+                <button className="text-accent font-medium hover:text-accent/80 ios-transition text-sm">
                   View All →
                 </button>
               </div>
 
               <div 
                 onClick={onViewExamList}
-                className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+                className="glass-effect rounded-2xl p-5 shadow hover:shadow-lg ios-transition cursor-pointer"
               >
-                <div className="text-4xl mb-4">🏥</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Health Exams</h3>
-                <p className="text-gray-600 font-light mb-4">
-                  {examinations.length > 0 ? `✓ ${examinations.length} exam${examinations.length !== 1 ? 's' : ''} on record` : 'No exams yet'}
+                <div className="text-4xl mb-3">🏥</div>
+                <h3 className="text-lg font-medium text-foreground mb-2">Health Exams</h3>
+                <p className="text-muted-foreground font-light mb-3 text-sm">
+                  {examinations.length > 0 ? `✓ ${examinations.length} exam${examinations.length !== 1 ? 's' : ''} on record` : 'Not added yet — want to?'}
                 </p>
-                <button className="text-gray-900 font-medium hover:text-gray-600 transition-colors duration-200">
+                <button className="text-accent font-medium hover:text-accent/80 ios-transition text-sm">
                   View All →
                 </button>
               </div>
@@ -224,77 +225,78 @@ const MedicalDashboard = ({
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 shadow-lg">
-              <h3 className="text-2xl font-light text-gray-900 mb-6">Quick Actions</h3>
-              <div className="grid md:grid-cols-2 gap-4">
+            <div className="glass-effect rounded-3xl p-6 shadow-lg">
+              <h3 className="text-xl font-light text-foreground mb-4">Quick Actions</h3>
+              <div className="grid md:grid-cols-2 gap-3">
                 
-                <button 
+                <Button 
                   onClick={onAddVaccination}
-                  className="flex items-center justify-center gap-3 px-6 py-4 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-all duration-300"
+                  variant="gradient"
                 >
                   <Plus className="w-5 h-5" />
                   Add Vaccination
-                </button>
+                </Button>
                 
-                <button 
+                <Button 
                   onClick={onAddTreatment}
-                  className="flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
+                  variant="outline"
                 >
                   <Plus className="w-5 h-5" />
                   Add Treatment
-                </button>
+                </Button>
                 
-                <button 
+                <Button 
                   onClick={onAddExam}
-                  className="flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
+                  variant="outline"
                 >
                   <Plus className="w-5 h-5" />
                   Schedule Exam
-                </button>
+                </Button>
                 
                 {onViewDocuments && (
-                  <button 
+                  <Button 
                     onClick={onViewDocuments}
-                    className="flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
+                    variant="outline"
                   >
                     <FileText className="w-5 h-5" />
                     View Documents
-                  </button>
+                  </Button>
                 )}
                 
-                <button 
+                <Button 
                   onClick={onViewFullHistory}
-                  className="flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
+                  variant="outline"
+                  className="md:col-span-2"
                 >
                   <FileText className="w-5 h-5" />
                   View Timeline
-                </button>
+                </Button>
                 
               </div>
             </div>
 
-            {/* Recent Timeline Preview - only show if has vaccinations */}
+            {/* Recent Timeline Preview */}
             {vaccinations.length > 0 && (
-              <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 shadow-lg">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-light text-gray-900">Recent Activity</h3>
+              <div className="glass-effect rounded-3xl p-6 shadow-lg">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-xl font-light text-foreground">Recent Activity</h3>
                   {onViewFullHistory && (
                     <button 
                       onClick={onViewFullHistory}
-                      className="text-gray-600 font-light hover:text-gray-900 transition-colors duration-200"
+                      className="text-muted-foreground font-light hover:text-foreground ios-transition text-sm"
                     >
                       View Full History →
                     </button>
                   )}
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {vaccinations.slice(0, 3).map((vaccination, index) => (
-                    <div key={vaccination.id} className={`flex gap-4 ${index < 2 ? 'pb-4 border-b border-gray-200' : ''}`}>
+                    <div key={vaccination.id} className={`flex gap-4 ${index < 2 ? 'pb-3 border-b border-border' : ''}`}>
                       <div className="text-2xl">💉</div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">{vaccination.vaccine_name}</p>
-                        <p className="text-sm text-gray-500 font-light">
+                        <p className="font-medium text-foreground">{vaccination.vaccine_name}</p>
+                        <p className="text-sm text-muted-foreground font-light">
                           {new Date(vaccination.vaccination_date).toLocaleDateString('en-US', { 
                             year: 'numeric', 
                             month: 'long', 

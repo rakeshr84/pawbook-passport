@@ -1,9 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { Camera, Upload, FileText, ChevronLeft } from 'lucide-react';
 import { UploadedFile } from '@/components/InlineUploadButton';
 import { UploadList } from '@/components/UploadList';
 import { ForceUpload } from '@/components/ForceUpload';
-import { Button } from '@/components/ui/button';
 
 interface DocumentsViewProps {
   petId: string;
@@ -25,7 +23,6 @@ export function DocumentsView({
 
   const [docs, setDocs] = useState<UploadedFile[]>([]);
   const [docFilter, setDocFilter] = useState<string>('all');
-  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const contexts = ["all", "documents", "vaccination", "treatment", "exam", "pre-travel", "lab"];
   const contextLabels: Record<string, string> = {
@@ -52,7 +49,7 @@ export function DocumentsView({
 
   const hasDocs = docsForThisPet.length > 0;
 
-  // ✅ Unified file upload handler with success animation
+  // ✅ Unified file upload handler
   const handleUploadFiles = (list: FileList | null, context: UploadedFile['context'] = "documents") => {
     if (!list || !list.length) return;
     const added: UploadedFile[] = Array.from(list).map((f) => ({
@@ -68,70 +65,55 @@ export function DocumentsView({
     // update local + global
     setDocs((prev) => [...added, ...prev]);
     onUpload(added);
-    
-    // Show success animation
-    setUploadSuccess(true);
-    setTimeout(() => setUploadSuccess(false), 2000);
   };
 
   return (
-    <div className="min-h-screen gradient-bg py-8 px-4">
+    <div className="min-h-screen gradient-bg py-12 px-6">
       <div className="max-w-4xl mx-auto">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-light ios-transition mb-4"
+          className="text-gray-600 hover:text-foreground font-light smooth-transition mb-4"
         >
-          <ChevronLeft className="w-5 h-5" />
-          Back
+          ← Back
         </button>
 
-        <div className="space-y-2 mb-6">
-          <h1 className="text-3xl font-light text-foreground">Documents</h1>
+        <div className="space-y-3 mb-8">
+          <h1 className="text-4xl font-light text-foreground">Documents</h1>
           <p className="text-muted-foreground font-light">
-            Keep their records safe 🐾
+            {petName}'s medical documents and certificates
           </p>
         </div>
 
         {!hasDocs ? (
           // ---------------------- Empty State ----------------------
-          <div className="glass-effect rounded-3xl p-10 shadow-lg text-center">
-            <div className="w-20 h-20 rounded-full gradient-accent mx-auto mb-5 flex items-center justify-center shadow-lg animate-glow-pulse">
-              <FileText className="w-10 h-10 text-white" />
+          <div className="bg-white/60 backdrop-blur-md rounded-3xl p-10 shadow-lg text-center">
+            <div className="w-16 h-16 rounded-full bg-purple-100 mx-auto mb-5 flex items-center justify-center">
+              <span className="text-2xl">📄</span>
             </div>
-            <h2 className="text-2xl font-light text-foreground mb-2">
+            <h2 className="text-2xl font-light text-gray-900 mb-2">
               All documents in one place
             </h2>
-            <p className="text-muted-foreground font-light mb-6">
+            <p className="text-gray-600 font-light mb-6">
               Upload vaccination certificates, medical reports, and other important documents for {petName}.
             </p>
 
-            {/* ✅ Fixed upload buttons with proper styling */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-              <ForceUpload
-                label="📄 Upload Documents"
-                accept="application/pdf,image/*"
-                multiple
-                onSelect={(files) => handleUploadFiles(files, "documents")}
-                className="flex-1"
-              />
-              
-              <ForceUpload
-                label="📸 Take Photo"
-                accept="image/*"
-                multiple
-                onSelect={(files) => handleUploadFiles(files, "documents")}
-                className="flex-1"
-              />
-            </div>
+            {/* ✅ Fixed upload button */}
+            <ForceUpload
+              label="+ Upload Documents"
+              accept="application/pdf,image/*"
+              multiple
+              onSelect={(files) => handleUploadFiles(files, "documents")}
+              className="w-[260px] mx-auto"
+            />
 
             {docsForThisPet.length > 0 && (
               <div className="mt-6 space-y-2 max-w-2xl mx-auto">
                 {docsForThisPet.map((f) => (
                   <div
                     key={f.id}
-                    className="flex items-center gap-3 glass-effect p-3 rounded-2xl"
+                    className="flex items-center gap-3 bg-white/70 p-3 rounded-2xl border border-gray-200"
                   >
-                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-muted flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 border flex items-center justify-center">
                       {f.mime.startsWith("image/") ? (
                         <img
                           src={f.url}
@@ -139,14 +121,14 @@ export function DocumentsView({
                           className="object-cover w-full h-full"
                         />
                       ) : (
-                        <span className="text-xs text-muted-foreground">PDF</span>
+                        <span className="text-xs text-gray-600">PDF</span>
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm text-foreground truncate">
+                      <div className="text-sm text-gray-900 truncate">
                         {f.name}
                       </div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-gray-500">
                         {(f.size / 1048576).toFixed(2)} MB
                       </div>
                     </div>
@@ -154,7 +136,7 @@ export function DocumentsView({
                       href={f.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-accent text-sm underline"
+                      className="text-blue-700 text-sm underline"
                     >
                       Open
                     </a>
@@ -162,7 +144,7 @@ export function DocumentsView({
                       onClick={() =>
                         setDocs((prev) => prev.filter((x) => x.id !== f.id))
                       }
-                      className="text-destructive text-sm"
+                      className="text-red-600 text-sm"
                     >
                       Remove
                     </button>
@@ -174,7 +156,7 @@ export function DocumentsView({
             <button
               type="button"
               onClick={onBack}
-              className="text-muted-foreground font-light hover:text-foreground mt-6 ios-transition"
+              className="text-gray-500 font-light hover:text-gray-700 mt-6"
             >
               I'll do this later
             </button>
@@ -182,26 +164,16 @@ export function DocumentsView({
         ) : (
           // ---------------------- Documents list view ----------------------
           <>
-            {/* Success animation */}
-            {uploadSuccess && (
-              <div className="glass-effect rounded-2xl p-4 mb-4 text-center animate-fade-in border-2 border-accent">
-                <div className="flex items-center justify-center gap-2 text-accent font-medium">
-                  <span className="text-2xl">✓</span>
-                  <span>Upload successful!</span>
-                </div>
-              </div>
-            )}
-
             {/* Filter chips */}
             <div className="flex flex-wrap gap-2 mb-6">
               {contexts.map((ctx) => (
                 <button
                   key={ctx}
                   onClick={() => setDocFilter(ctx)}
-                  className={`px-4 py-2 rounded-full font-light ios-transition ${
+                  className={`px-4 py-2 rounded-full font-light transition-all ${
                     docFilter === ctx
-                      ? "gradient-accent text-white shadow-lg"
-                      : "glass-effect text-foreground hover:shadow"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-white/60 text-gray-700 hover:bg-white/80"
                   }`}
                 >
                   {contextLabels[ctx]}
@@ -211,7 +183,7 @@ export function DocumentsView({
 
             {/* Documents list */}
             {filteredUploads.length === 0 ? (
-              <div className="glass-effect rounded-3xl p-12 text-center mb-6">
+              <div className="bg-white/60 backdrop-blur-md rounded-3xl p-12 text-center mb-6">
                 <p className="text-muted-foreground font-light">
                   No{" "}
                   {docFilter !== "all"
@@ -227,33 +199,33 @@ export function DocumentsView({
             )}
 
             {/* Add more */}
-            <div className="glass-effect rounded-3xl p-6 shadow-lg">
-              <h3 className="text-xl font-light text-foreground mb-4">
+            <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg">
+              <h3 className="text-xl font-light text-gray-900 mb-4">
                 Add More Documents
               </h3>
               <div className="grid sm:grid-cols-3 gap-3">
                 <ForceUpload
-                  label="📄 Add More"
+                  label="Add More"
                   accept="application/pdf,image/*"
                   multiple
                   onSelect={(files) => handleUploadFiles(files, "documents")}
-                  className="glass-effect text-foreground font-light"
+                  className="bg-white border border-gray-200 text-gray-800 font-light"
                 />
 
                 <ForceUpload
-                  label="📸 Scan with Camera"
+                  label="Scan with Camera"
                   accept="image/*"
                   multiple
                   onSelect={(files) => handleUploadFiles(files, "documents")}
-                  className="glass-effect text-foreground font-light"
+                  className="bg-white border border-gray-200 text-gray-800 font-light"
                 />
 
                 <ForceUpload
-                  label="📋 Add PDF"
+                  label="Add PDF"
                   accept="application/pdf"
                   multiple
                   onSelect={(files) => handleUploadFiles(files, "documents")}
-                  className="glass-effect text-foreground font-light"
+                  className="bg-white border border-gray-200 text-gray-800 font-light"
                 />
               </div>
             </div>
