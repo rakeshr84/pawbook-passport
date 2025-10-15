@@ -17,11 +17,17 @@ export function FilePicker({
 }: FilePickerProps) {
   const ref = useRef<HTMLInputElement>(null);
   
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    ref.current?.click();
+  };
+  
   return (
     <>
       <button
         type="button"
-        onClick={() => ref.current?.click()}
+        onClick={handleClick}
         className="w-full h-14 px-6 rounded-2xl bg-white border border-gray-200 text-gray-800 font-light shadow
                    hover:shadow-md active:translate-y-px transition-all"
       >
@@ -33,7 +39,7 @@ export function FilePicker({
         className="hidden"
         accept={accept}
         multiple={multiple}
-        capture={capture}
+        {...(capture ? { capture } : {})}
         onChange={(e) => {
           const files = e.target.files;
           if (files && files.length) onPick(files);
