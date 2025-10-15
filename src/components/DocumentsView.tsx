@@ -1,43 +1,42 @@
 import { useState } from 'react';
-import { FileText, Image as ImageIcon, Camera } from 'lucide-react';
-import { PetDocument, DocKind } from '@/types/document';
-import { FilePicker } from '@/components/FilePicker';
+import { FileText, Camera } from 'lucide-react';
+import { FileUploadButton, FilePreviewList, UploadedFile } from '@/components/FileUploadSystem';
 
 interface DocumentsViewProps {
   petId: string;
   petName: string;
-  documents: PetDocument[];
-  onAddDocuments: (petId: string, kind: DocKind, files: FileList) => void;
-  onRemoveDocument: (docId: string) => void;
+  uploads: UploadedFile[];
+  onUpload: (files: UploadedFile[]) => void;
+  onRemove: (id: string) => void;
   onBack: () => void;
 }
 
 export function DocumentsView({
   petId,
   petName,
-  documents,
-  onAddDocuments,
-  onRemoveDocument,
+  uploads,
+  onUpload,
+  onRemove,
   onBack,
 }: DocumentsViewProps) {
-  const [docFilter, setDocFilter] = useState<DocKind | "all">("all");
+  const [docFilter, setDocFilter] = useState<string>("all");
   
-  const kinds: (DocKind | "all")[] = ["all", "pretravel", "certificate", "exam", "treatment", "lab", "other"];
-  const kindLabels: Record<DocKind | "all", string> = {
+  const contexts = ["all", "documents", "vaccination", "treatment", "exam", "pre-travel", "lab"];
+  const contextLabels: Record<string, string> = {
     all: "All",
-    pretravel: "Pre-Travel",
-    certificate: "Certificates",
-    exam: "Exams",
+    documents: "Documents",
+    vaccination: "Vaccinations",
     treatment: "Treatments",
+    exam: "Exams",
+    "pre-travel": "Pre-Travel",
     lab: "Labs",
-    other: "Other",
   };
 
-  const filteredDocs = documents.filter(d => 
-    d.pet_id === petId && (docFilter === "all" || d.kind === docFilter)
+  const filteredUploads = uploads.filter(u => 
+    docFilter === "all" || u.context === docFilter
   );
 
-  const hasDocs = documents.filter(d => d.pet_id === petId).length > 0;
+  const hasDocs = uploads.length > 0;
 
   return (
     <div className="min-h-screen gradient-bg py-12 px-6">
@@ -68,12 +67,14 @@ export function DocumentsView({
             </p>
 
             <div className="max-w-xs mx-auto mb-4">
-              <FilePicker
+              <FileUploadButton
+                label="+ Upload Documents"
                 accept="application/pdf,image/*"
-                onPick={(files) => onAddDocuments(petId, "other", files)}
-              >
-                + Upload Documents
-              </FilePicker>
+                multiple
+                petId={petId}
+                context="documents"
+                onUpload={onUpload}
+              />
             </div>
 
             <button
@@ -88,63 +89,31 @@ export function DocumentsView({
           <>
             {/* Filter chips */}
             <div className="flex flex-wrap gap-2 mb-6">
-              {kinds.map(kind => (
+              {contexts.map(ctx => (
                 <button
-                  key={kind}
-                  onClick={() => setDocFilter(kind)}
+                  key={ctx}
+                  onClick={() => setDocFilter(ctx)}
                   className={`px-4 py-2 rounded-full font-light transition-all ${
-                    docFilter === kind
+                    docFilter === ctx
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-white/60 text-gray-700 hover:bg-white/80'
                   }`}
                 >
-                  {kindLabels[kind]}
+                  {contextLabels[ctx]}
                 </button>
               ))}
             </div>
 
             {/* Documents list */}
-            {filteredDocs.length === 0 ? (
+            {filteredUploads.length === 0 ? (
               <div className="bg-white/60 backdrop-blur-md rounded-3xl p-12 text-center mb-6">
-                <p className="text-muted-foreground font-light">No {docFilter !== "all" ? kindLabels[docFilter].toLowerCase() : ""} documents yet</p>
+                <p className="text-muted-foreground font-light">
+                  No {docFilter !== "all" ? contextLabels[docFilter].toLowerCase() : ""} documents yet
+                </p>
               </div>
             ) : (
-              <div className="grid sm:grid-cols-2 gap-4 mb-6">
-                {filteredDocs.map(d => (
-                  <div 
-                    key={d.id} 
-                    className="flex items-center gap-3 bg-white/70 backdrop-blur-md rounded-2xl p-4 border border-gray-200 shadow-sm"
-                  >
-                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center border flex-shrink-0">
-                      {d.thumbnail ? (
-                        <img src={d.thumbnail} className="object-cover w-full h-full" alt={d.title} />
-                      ) : (
-                        <FileText size={24} className="text-gray-600" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-gray-900 truncate">{d.title}</div>
-                      <div className="text-xs text-gray-500">{(d.size / 1024 / 1024).toFixed(2)} MB</div>
-                      <div className="text-xs text-gray-500 capitalize">{d.kind}</div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <a 
-                        href={d.url} 
-                        target="_blank" 
-                        rel="noreferrer" 
-                        className="text-blue-700 text-sm underline whitespace-nowrap"
-                      >
-                        Open
-                      </a>
-                      <button
-                        className="text-red-600 text-sm whitespace-nowrap"
-                        onClick={() => onRemoveDocument(d.id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              <div className="mb-6">
+                <FilePreviewList files={filteredUploads} onRemove={onRemove} />
               </div>
             )}
 
@@ -152,36 +121,31 @@ export function DocumentsView({
             <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg">
               <h3 className="text-xl font-light text-gray-900 mb-4">Add More Documents</h3>
               <div className="grid sm:grid-cols-3 gap-3">
-                <FilePicker 
-                  accept="application/pdf,image/*" 
-                  onPick={(files) => onAddDocuments(petId, "other", files)}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <FileText size={20} />
-                    Add More
-                  </div>
-                </FilePicker>
+                <FileUploadButton
+                  label="Add More"
+                  accept="application/pdf,image/*"
+                  petId={petId}
+                  context="documents"
+                  onUpload={onUpload}
+                />
                 
-                <FilePicker 
-                  accept="image/*" 
-                  capture="environment" 
-                  onPick={(files) => onAddDocuments(petId, "other", files)}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <Camera size={20} />
-                    Scan with Camera
-                  </div>
-                </FilePicker>
+                <FileUploadButton
+                  label="Scan with Camera"
+                  accept="image/*"
+                  capture="environment"
+                  multiple={false}
+                  petId={petId}
+                  context="documents"
+                  onUpload={onUpload}
+                />
                 
-                <FilePicker 
-                  accept="application/pdf" 
-                  onPick={(files) => onAddDocuments(petId, "other", files)}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <FileText size={20} />
-                    Add PDF
-                  </div>
-                </FilePicker>
+                <FileUploadButton
+                  label="Add PDF"
+                  accept="application/pdf"
+                  petId={petId}
+                  context="documents"
+                  onUpload={onUpload}
+                />
               </div>
             </div>
           </>

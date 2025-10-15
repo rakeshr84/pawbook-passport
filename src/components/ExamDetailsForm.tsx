@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { ChevronLeft, Upload, Camera } from 'lucide-react';
+import { ChevronLeft, Camera, Upload } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
 import { ClinicalExam } from '@/types/medical';
 import { normalizeSpecies } from '@/lib/utils';
-import { FilePicker } from '@/components/FilePicker';
-import { DocumentPreview } from '@/components/DocumentPreview';
+import { FileUploadButton, FilePreviewList, UploadedFile } from '@/components/FileUploadSystem';
 
 interface ExamDetailsFormProps {
   petData: PetFormData;
@@ -12,9 +11,10 @@ interface ExamDetailsFormProps {
   onSave: (record: Omit<ClinicalExam, 'id' | 'pet_id' | 'created_at' | 'updated_at'>) => void;
   onBack: () => void;
   onCancel: () => void;
-  onAddDocuments?: (files: FileList) => void;
-  documents?: any[];
-  onRemoveDocument?: (docId: string) => void;
+  petId?: string;
+  uploads?: UploadedFile[];
+  onUpload?: (files: UploadedFile[]) => void;
+  onRemoveUpload?: (id: string) => void;
 }
 
 export default function ExamDetailsForm({

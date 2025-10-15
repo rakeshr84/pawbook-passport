@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, Camera, Upload, Lightbulb } from 'lucide-react';
 import { VaccinationRecord } from '@/types/medical';
-import { FilePicker } from '@/components/FilePicker';
-import { DocumentPreview } from '@/components/DocumentPreview';
+import { FileUploadButton, FilePreviewList, UploadedFile } from '@/components/FileUploadSystem';
 
 interface VaccineDetailsFormProps {
   petData: {
@@ -17,9 +16,10 @@ interface VaccineDetailsFormProps {
   onSave: (record: Omit<VaccinationRecord, 'id' | 'pet_id' | 'created_at' | 'updated_at'>) => void;
   onBack: () => void;
   onCancel: () => void;
-  onAddDocuments?: (files: FileList) => void;
-  documents?: any[];
-  onRemoveDocument?: (docId: string) => void;
+  petId?: string;
+  uploads?: UploadedFile[];
+  onUpload?: (files: UploadedFile[]) => void;
+  onRemoveUpload?: (id: string) => void;
 }
 
 // Helper functions
@@ -56,9 +56,10 @@ export default function VaccineDetailsForm({
   onSave, 
   onBack, 
   onCancel,
-  onAddDocuments,
-  documents = [],
-  onRemoveDocument,
+  petId,
+  uploads = [],
+  onUpload,
+  onRemoveUpload,
 }: VaccineDetailsFormProps) {
   const [usePrimaryVet, setUsePrimaryVet] = useState(true);
   const [formData, setFormData] = useState({
@@ -380,48 +381,43 @@ export default function VaccineDetailsForm({
             <h2 className="text-2xl font-light text-gray-900 mb-6">Supporting Documents</h2>
             
             <div className="space-y-6">
-              <div className="grid sm:grid-cols-3 gap-3">
-                {onAddDocuments && (
-                  <>
-                    <FilePicker 
-                      accept="application/pdf" 
-                      onPick={(files) => onAddDocuments(files)}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        <Upload size={20} />
-                        Upload PDF
-                      </div>
-                    </FilePicker>
+              {petId && onUpload && (
+                <>
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    <FileUploadButton
+                      label="Upload PDF"
+                      accept="application/pdf"
+                      petId={petId}
+                      context="vaccination"
+                      onUpload={onUpload}
+                    />
+                    
+                    <FileUploadButton
+                      label="Upload Image"
+                      accept="image/*"
+                      petId={petId}
+                      context="vaccination"
+                      onUpload={onUpload}
+                    />
+                    
+                    <FileUploadButton
+                      label="Take Photo"
+                      accept="image/*"
+                      capture="environment"
+                      multiple={false}
+                      petId={petId}
+                      context="vaccination"
+                      onUpload={onUpload}
+                    />
+                  </div>
 
-                    <FilePicker 
-                      accept="image/*" 
-                      onPick={(files) => onAddDocuments(files)}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        <Upload size={20} />
-                        Upload Image
-                      </div>
-                    </FilePicker>
-
-                    <FilePicker 
-                      accept="image/*" 
-                      capture="environment" 
-                      onPick={(files) => onAddDocuments(files)}
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        <Camera size={20} />
-                        Take Photo
-                      </div>
-                    </FilePicker>
-                  </>
-                )}
-              </div>
-
-              {onRemoveDocument && (
-                <DocumentPreview 
-                  documents={documents} 
-                  onRemove={onRemoveDocument} 
-                />
+                  {onRemoveUpload && (
+                    <FilePreviewList 
+                      files={uploads} 
+                      onRemove={onRemoveUpload} 
+                    />
+                  )}
+                </>
               )}
 
               <div className="bg-blue-50 rounded-xl p-4">
