@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 
 interface ForceUploadProps {
   accept?: string;
@@ -15,32 +15,8 @@ export function ForceUpload({
   label,
   className = "",
 }: ForceUploadProps) {
-  const hiddenInputRef = useRef<HTMLInputElement>(null);
-
-  const triggerFileDialog = () => {
-    if (hiddenInputRef.current) {
-      // Use the ref'd input if available
-      hiddenInputRef.current.click();
-    } else {
-      // Fallback: create temporary input if ref failed
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = accept;
-      input.multiple = multiple;
-      input.style.display = "none";
-      input.addEventListener("change", (e: any) => {
-        if (e.target.files?.length) onSelect(e.target.files);
-        document.body.removeChild(input);
-      });
-      document.body.appendChild(input);
-      input.click();
-    }
-  };
-
   return (
-    <button
-      type="button"
-      onClick={triggerFileDialog}
+    <label
       className={
         "relative inline-flex items-center justify-center px-6 h-12 rounded-2xl " +
         "bg-gray-900 text-white font-medium hover:shadow-md active:translate-y-px " +
@@ -50,16 +26,17 @@ export function ForceUpload({
     >
       {label}
       <input
-        ref={hiddenInputRef}
         type="file"
         accept={accept}
         multiple={multiple}
-        className="hidden"
+        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
         onChange={(e) => {
-          if (e.target.files?.length) onSelect(e.target.files);
-          e.target.value = "";
+          if (e.target.files?.length) {
+            onSelect(e.target.files);
+            e.target.value = "";
+          }
         }}
       />
-    </button>
+    </label>
   );
 }
