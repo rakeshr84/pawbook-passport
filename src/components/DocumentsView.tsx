@@ -101,7 +101,7 @@ export function DocumentsView({
             <ForceUpload
               label="+ Upload Documents"
               accept="application/pdf,image/*"
-              multiple={true}
+              multiple
               onSelect={(files) => handleUploadFiles(files, "documents")}
               className="w-[260px] mx-auto"
             />
