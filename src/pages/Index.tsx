@@ -22,6 +22,7 @@ import AppHeader from '@/components/AppHeader';
 import EditProfile from '@/components/EditProfile';
 import { Screen, Category, PetFormData, UserFormData } from '@/types/pet';
 import { VaccinationRecord, TreatmentRecord, ClinicalExam } from '@/types/medical';
+import { HealthState } from '@/types/health';
 import { toast } from '@/hooks/use-toast';
 
 // Helper: Calculate age label with proper negative month handling
@@ -67,6 +68,15 @@ const Index = () => {
   const [isAuthed, setIsAuthed] = useState(false);
   const [user, setUser] = useState<{ full_name?: string; email?: string } | null>(null);
   const [pets, setPets] = useState<PetCardData[]>([]);
+
+  // Health tracking state
+  const [health, setHealth] = useState<HealthState>({
+    weight: [],
+    food: [],
+    water: [],
+    activity: [],
+    meds: [],
+  });
 
   // Sync currentScreen with navStack
   useEffect(() => {
@@ -289,6 +299,52 @@ const Index = () => {
     setNavStack(['welcome']);
   };
 
+  // Health tracking handlers
+  const handleSaveWeight = (weight: number, unit: "kg" | "lbs", date: string) => {
+    if (!currentPetId) return;
+    setHealth(h => ({
+      ...h,
+      weight: [...h.weight, { id: crypto.randomUUID(), petId: currentPetId, date, weight, unit }]
+    }));
+    toast({ title: "Weight logged", description: `${weight} ${unit} recorded for ${date}` });
+  };
+
+  const handleSaveFood = (amount: number, date: string, name?: string) => {
+    if (!currentPetId) return;
+    setHealth(h => ({
+      ...h,
+      food: [...h.food, { id: crypto.randomUUID(), petId: currentPetId, date, amount, unit: "g", foodName: name }]
+    }));
+    toast({ title: "Food logged", description: `${amount}g recorded` });
+  };
+
+  const handleSaveWater = (amount: number, date: string) => {
+    if (!currentPetId) return;
+    setHealth(h => ({
+      ...h,
+      water: [...h.water, { id: crypto.randomUUID(), petId: currentPetId, date, amount, unit: "ml" }]
+    }));
+    toast({ title: "Water logged", description: `${amount}ml recorded` });
+  };
+
+  const handleSaveActivity = (duration: number, kind: "walk" | "play" | "training", date: string, distanceKm?: number) => {
+    if (!currentPetId) return;
+    setHealth(h => ({
+      ...h,
+      activity: [...h.activity, { id: crypto.randomUUID(), petId: currentPetId, date, kind, duration, durationUnit: "min", distanceKm }]
+    }));
+    toast({ title: "Activity logged", description: `${duration} min ${kind} recorded` });
+  };
+
+  const handleSaveMed = (name: string, taken: boolean, date: string, dose?: string) => {
+    if (!currentPetId) return;
+    setHealth(h => ({
+      ...h,
+      meds: [...h.meds, { id: crypto.randomUUID(), petId: currentPetId, date, name, dose, taken }]
+    }));
+    toast({ title: "Medication logged", description: `${name} ${taken ? 'taken' : 'skipped'}` });
+  };
+
   const handleSelectPet = (id: string) => {
     const selected = pets.find(p => p.id === id);
     if (!selected) return;
@@ -378,12 +434,14 @@ const Index = () => {
         />
       )}
 
-      {currentScreen === 'passport' && petData && selectedCategory && (
+      {currentScreen === 'passport' && petData && selectedCategory && currentPetId && (
         <PetPassportView
           petData={petData}
           userData={userData}
           user={user}
           category={selectedCategory}
+          petId={currentPetId}
+          health={health}
           onBack={() => {
             if (isAuthed) {
               setNavStack(['welcome', 'dashboard']);
@@ -394,6 +452,11 @@ const Index = () => {
           onAddMedicalRecords={handleAddMedicalRecords}
           onAddAnother={handleAddAnother}
           onEditProfile={handleEditProfile}
+          onSaveWeight={handleSaveWeight}
+          onSaveFood={handleSaveFood}
+          onSaveWater={handleSaveWater}
+          onSaveActivity={handleSaveActivity}
+          onSaveMed={handleSaveMed}
         />
       )}
 

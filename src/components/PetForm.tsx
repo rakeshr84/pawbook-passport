@@ -3,6 +3,7 @@ import { Camera } from 'lucide-react';
 import { PetFormData, Category } from '@/types/pet';
 import { useToast } from '@/hooks/use-toast';
 import { breedsByCategory } from '@/data/breeds';
+import { NeuroButton } from '@/components/ui/neuro-button';
 
 interface PetFormProps {
   category: Category;
@@ -37,6 +38,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [dateError, setDateError] = useState<string>('');
   const [useAvatar, setUseAvatar] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
 
   const calculateAge = (dob: string): string => {
     if (!dob) return '';
@@ -52,19 +54,47 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     return ageString ? `${ageString} old` : '';
   };
 
-  const speciesAvatar = (species: string) => {
-    const map: Record<string, string> = {
-      dogs: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f436.svg",
-      cats: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f431.svg",
-      birds: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f426.svg",
-      rabbits: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f407.svg",
-      hamsters: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f439.svg",
-      "guinea-pigs": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f439.svg",
-      fish: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f41f.svg",
-      reptiles: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f98e.svg",
-      exotic: "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2728.svg",
-    };
-    return map[species] || "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2728.svg";
+  const AVATARS: Record<string, string[]> = {
+    dogs: [
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f436.svg",
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f415.svg",
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f429.svg",
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f43a.svg",
+    ],
+    cats: [
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f431.svg",
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f408.svg",
+    ],
+    birds: [
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f426.svg",
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f99c.svg",
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f985.svg",
+    ],
+    rabbits: [
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f407.svg",
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f430.svg",
+    ],
+    hamsters: [
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f439.svg",
+    ],
+    "guinea-pigs": [
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f439.svg",
+    ],
+    fish: [
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f41f.svg",
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f420.svg",
+    ],
+    reptiles: [
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f98e.svg",
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f422.svg",
+    ],
+    exotic: [
+      "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2728.svg",
+    ],
+  };
+
+  const defaultAvatarFor = (categoryId: string) => {
+    return AVATARS[categoryId]?.[0] || AVATARS.dogs[0];
   };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +116,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     const newErrors: Record<string, boolean> = {};
     const missingFields: string[] = [];
 
-    if (!formData.profilePhotoPreview && !useAvatar) {
+    if (!formData.profilePhotoPreview && !formData.avatarUrl) {
       newErrors.profilePhoto = true;
       missingFields.push('Pet photo or avatar');
     }
@@ -159,8 +189,8 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Photo/Avatar Section */}
           <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg" ref={photoInputRef}>
-            <h3 className="text-2xl font-light text-gray-900 mb-4">Profile Photo</h3>
-            <p className="text-gray-600 font-light mb-4">
+            <h3 className="text-2xl font-light text-gray-900 mb-2">Profile Photo</h3>
+            <p className="text-gray-600 font-light mb-5">
               Add a photo or pick an avatar now—so your pet is easy to spot later.
             </p>
 
@@ -169,57 +199,60 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               <div className="w-28 h-28 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-gray-100 flex items-center justify-center">
                 {formData.profilePhotoPreview ? (
                   <img src={formData.profilePhotoPreview} alt="Pet" className="object-cover w-full h-full" />
+                ) : formData.avatarUrl ? (
+                  <img src={formData.avatarUrl} alt="Avatar" className="w-20 h-20" />
                 ) : (
-                  <img src={speciesAvatar(category.id)} alt="Avatar" className="w-20 h-20" />
+                  <img src={defaultAvatarFor(category.id)} alt="Default" className="w-20 h-20" />
                 )}
               </div>
 
-              {/* Controls */}
-              <div className="flex-1 grid sm:grid-cols-3 gap-3 w-full">
-                {/* Choose Avatar */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData(prev => ({ ...prev, profilePhotoPreview: speciesAvatar(category.id) }));
-                    setUseAvatar(true);
-                    setErrors(prev => ({ ...prev, profilePhoto: false }));
-                  }}
-                  className="px-6 py-4 rounded-xl border border-gray-300 font-light hover:bg-gray-50 transition-all duration-200"
-                >
+              {/* Uniform buttons */}
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
+                <NeuroButton type="button" onClick={() => setShowAvatarModal(true)}>
                   Use Avatar
-                </button>
+                </NeuroButton>
 
-                {/* Take Photo (Camera) */}
-                <label className="cursor-pointer">
+                <label>
                   <input
                     type="file"
                     accept="image/*"
                     capture="environment"
                     className="hidden"
-                    onChange={handlePhotoChange}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      const url = URL.createObjectURL(f);
+                      setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
+                      setErrors(prev => ({ ...prev, profilePhoto: false }));
+                    }}
                   />
-                  <div className="px-6 py-4 rounded-xl border border-gray-300 font-light text-center hover:bg-gray-50 transition-all duration-200">
+                  <NeuroButton type="button" asLabel>
                     Take Photo
-                  </div>
+                  </NeuroButton>
                 </label>
 
-                {/* Choose from Gallery */}
-                <label className="cursor-pointer">
+                <label>
                   <input
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={handlePhotoChange}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      const url = URL.createObjectURL(f);
+                      setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
+                      setErrors(prev => ({ ...prev, profilePhoto: false }));
+                    }}
                   />
-                  <div className="px-6 py-4 rounded-xl border border-gray-300 font-light text-center hover:bg-gray-50 transition-all duration-200">
+                  <NeuroButton type="button" asLabel>
                     Choose from Gallery
-                  </div>
+                  </NeuroButton>
                 </label>
               </div>
             </div>
 
             {/* Gentle requirement banner */}
-            {!formData.profilePhotoPreview && !useAvatar && (
+            {!(formData.profilePhotoPreview || formData.avatarUrl) && (
               <div className="mt-4 bg-blue-50 rounded-xl p-4 text-sm text-gray-700 font-light">
                 Add a photo or pick an avatar to continue. You can change it anytime.
               </div>
@@ -230,6 +263,37 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               </p>
             )}
           </div>
+
+          {/* Avatar Gallery Modal */}
+          {showAvatarModal && (
+            <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+              <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-2xl">
+                <h4 className="text-xl font-light text-gray-900 mb-4">Choose an Avatar</h4>
+                <div className="grid grid-cols-4 gap-4">
+                  {(AVATARS[category.id] || AVATARS.dogs).map((src, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      className="p-3 rounded-2xl border border-gray-200 hover:bg-gray-50 transition-all"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, avatarUrl: src, profilePhotoPreview: undefined }));
+                        setUseAvatar(true);
+                        setErrors(prev => ({ ...prev, profilePhoto: false }));
+                        setShowAvatarModal(false);
+                      }}
+                    >
+                      <img src={src} className="w-16 h-16 mx-auto" alt={`Avatar ${i + 1}`} />
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-6 text-right">
+                  <NeuroButton type="button" onClick={() => setShowAvatarModal(false)}>
+                    Close
+                  </NeuroButton>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
@@ -422,7 +486,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
             </button>
             <button
               type="submit"
-              disabled={!formData.profilePhotoPreview && !useAvatar}
+              disabled={!(formData.profilePhotoPreview || formData.avatarUrl)}
               className="flex-1 bg-primary text-primary-foreground py-4 px-8 rounded-full font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed smooth-transition"
             >
               Create Passport

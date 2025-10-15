@@ -10,19 +10,29 @@ import {
   Stethoscope,
   Plus,
   Share2,
-  Edit3
+  Edit3,
+  Activity
 } from 'lucide-react';
 import { PetFormData, UserFormData, Category } from '@/types/pet';
+import { HealthState } from '@/types/health';
+import HealthTracking from '@/components/HealthTracking';
 
 interface PetPassportViewProps {
   petData: PetFormData;
   userData: UserFormData | null;
   user?: { full_name?: string; email?: string; phone?: string } | null;
   category: Category;
+  petId: string;
+  health: HealthState;
   onBack: () => void;
   onAddMedicalRecords?: () => void;
   onAddAnother?: () => void;
   onEditProfile?: () => void;
+  onSaveWeight: (weight: number, unit: "kg" | "lbs", date: string) => void;
+  onSaveFood: (amount: number, date: string, name?: string) => void;
+  onSaveWater: (amount: number, date: string) => void;
+  onSaveActivity: (duration: number, kind: "walk" | "play" | "training", date: string, distanceKm?: number) => void;
+  onSaveMed: (name: string, taken: boolean, date: string, dose?: string) => void;
 }
 
 const PetPassportView = ({ 
@@ -30,12 +40,19 @@ const PetPassportView = ({
   userData, 
   user,
   category,
+  petId,
+  health,
   onBack,
   onAddMedicalRecords,
   onAddAnother,
-  onEditProfile
+  onEditProfile,
+  onSaveWeight,
+  onSaveFood,
+  onSaveWater,
+  onSaveActivity,
+  onSaveMed
 }: PetPassportViewProps) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'medical' | 'documents'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'medical' | 'documents' | 'health'>('profile');
 
   const calculateAge = (dateOfBirth: string): string => {
     const birthDate = new Date(dateOfBirth);
@@ -95,7 +112,7 @@ const PetPassportView = ({
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex border-b border-gray-200 px-8 bg-white/40">
+          <div className="flex border-b border-gray-200 px-8 bg-white/40 overflow-x-auto">
             <button
               onClick={() => setActiveTab('profile')}
               className={`px-6 py-4 transition-all duration-200 border-b-2 ${
@@ -125,6 +142,16 @@ const PetPassportView = ({
               }`}
             >
               Documents
+            </button>
+            <button
+              onClick={() => setActiveTab('health')}
+              className={`px-6 py-4 transition-all duration-200 border-b-2 whitespace-nowrap ${
+                activeTab === 'health'
+                  ? 'text-gray-900 font-medium border-gray-900'
+                  : 'text-gray-500 font-light border-transparent hover:text-gray-700'
+              }`}
+            >
+              Health Tracking
             </button>
           </div>
 
@@ -344,6 +371,21 @@ const PetPassportView = ({
                   
                 </div>
               </div>
+            )}
+
+            {activeTab === 'health' && (
+              <HealthTracking
+                petId={petId}
+                petName={petData.name}
+                petBreed={petData.breed}
+                petDateOfBirth={petData.dateOfBirth}
+                health={health}
+                onSaveWeight={onSaveWeight}
+                onSaveFood={onSaveFood}
+                onSaveWater={onSaveWater}
+                onSaveActivity={onSaveActivity}
+                onSaveMed={onSaveMed}
+              />
             )}
 
           </div>

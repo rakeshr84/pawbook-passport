@@ -9,6 +9,7 @@ export interface PetFormData {
   microchipNumber: string;
   profilePhoto: File | null;
   profilePhotoPreview: string;
+  avatarUrl?: string;
   vetClinic: string;
   vetPhone: string;
   category: string;
