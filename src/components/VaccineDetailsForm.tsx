@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, Camera, Upload, Lightbulb } from 'lucide-react';
 import { VaccinationRecord } from '@/types/medical';
-import { FileUploadButton, FilePreviewList, UploadedFile } from '@/components/FileUploadSystem';
+import { UniversalUploadButton, UploadedFile } from '@/components/UniversalUpload';
+import { UploadList } from '@/components/UploadList';
 
 interface VaccineDetailsFormProps {
   petData: {
@@ -384,23 +385,25 @@ export default function VaccineDetailsForm({
               {petId && onUpload && (
                 <>
                   <div className="grid sm:grid-cols-3 gap-3">
-                    <FileUploadButton
+                    <UniversalUploadButton
                       label="Upload PDF"
                       accept="application/pdf"
                       petId={petId}
                       context="vaccination"
                       onUpload={onUpload}
+                      debugTag="vaccine-upload-pdf"
                     />
                     
-                    <FileUploadButton
+                    <UniversalUploadButton
                       label="Upload Image"
                       accept="image/*"
                       petId={petId}
                       context="vaccination"
                       onUpload={onUpload}
+                      debugTag="vaccine-upload-image"
                     />
                     
-                    <FileUploadButton
+                    <UniversalUploadButton
                       label="Take Photo"
                       accept="image/*"
                       capture="environment"
@@ -408,12 +411,13 @@ export default function VaccineDetailsForm({
                       petId={petId}
                       context="vaccination"
                       onUpload={onUpload}
+                      debugTag="vaccine-camera"
                     />
                   </div>
 
                   {onRemoveUpload && (
-                    <FilePreviewList 
-                      files={uploads} 
+                    <UploadList 
+                      items={uploads.filter(u => u.petId === petId && u.context === 'vaccination')} 
                       onRemove={onRemoveUpload} 
                     />
                   )}

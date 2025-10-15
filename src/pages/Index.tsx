@@ -24,7 +24,7 @@ import EditProfile from '@/components/EditProfile';
 import { Screen, Category, PetFormData, UserFormData } from '@/types/pet';
 import { VaccinationRecord, TreatmentRecord, ClinicalExam } from '@/types/medical';
 import { PetDocument, DocKind } from '@/types/document';
-import { UploadedFile } from '@/components/FileUploadSystem';
+import { useUploads } from '@/hooks/useUploads';
 import { HealthState } from '@/types/health';
 import { toast } from '@/hooks/use-toast';
 import { normalizeSpecies, defaultAvatarFor, getPetImageUrl } from '@/lib/utils';
@@ -86,7 +86,7 @@ const Index = () => {
   const [documents, setDocuments] = useState<PetDocument[]>([]);
 
   // Universal upload system
-  const [uploads, setUploads] = useState<UploadedFile[]>([]);
+  const { uploads, handleUpload, filesFor, removeFile } = useUploads();
 
   // Delete confirmation & undo state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -158,20 +158,6 @@ const Index = () => {
   const docsFor = (petId: string, kind?: DocKind) =>
     documents.filter(d => d.pet_id === petId && (!kind || d.kind === kind));
 
-  // Universal upload handlers
-  const handleUpload = (files: UploadedFile[]) => {
-    setUploads((prev) => [...files, ...prev]); // newest first
-    setSnackbar({
-      message: files.length === 1 ? "File attached ✓" : `${files.length} files attached ✓`
-    });
-  };
-
-  const filesFor = (petId: string, context?: string) =>
-    uploads.filter((u) => u.petId === petId && (!context || u.context === context));
-
-  const removeUpload = (id: string) => {
-    setUploads((prev) => prev.filter((u) => u.id !== id));
-  };
 
   const handleGetStarted = () => {
     push('category');
@@ -716,9 +702,9 @@ const Index = () => {
           onBack={handleBack}
           onCancel={() => setCurrentScreen('medical-dashboard')}
           petId={currentPetId}
-          uploads={filesFor(currentPetId, 'vaccination')}
+          uploads={uploads}
           onUpload={handleUpload}
-          onRemoveUpload={removeUpload}
+          onRemoveUpload={removeFile}
         />
       )}
 
@@ -758,9 +744,9 @@ const Index = () => {
           onBack={handleBack}
           onCancel={() => setCurrentScreen('medical-dashboard')}
           petId={currentPetId}
-          uploads={filesFor(currentPetId, 'treatment')}
+          uploads={uploads}
           onUpload={handleUpload}
-          onRemoveUpload={removeUpload}
+          onRemoveUpload={removeFile}
         />
       )}
 
@@ -786,9 +772,9 @@ const Index = () => {
           onBack={handleBack}
           onCancel={() => setCurrentScreen('medical-dashboard')}
           petId={currentPetId}
-          uploads={filesFor(currentPetId, 'exam')}
+          uploads={uploads}
           onUpload={handleUpload}
-          onRemoveUpload={removeUpload}
+          onRemoveUpload={removeFile}
         />
       )}
 
@@ -806,9 +792,9 @@ const Index = () => {
         <DocumentsView
           petId={currentPetId}
           petName={pets.find(p => p.id === currentPetId)?.name || 'Pet'}
-          uploads={filesFor(currentPetId)}
+          uploads={uploads}
           onUpload={handleUpload}
-          onRemove={removeUpload}
+          onRemove={removeFile}
           onBack={handleBack}
         />
       )}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { FileText, Camera } from 'lucide-react';
-import { FileUploadButton, FilePreviewList, UploadedFile } from '@/components/FileUploadSystem';
+import { UniversalUploadButton, UploadedFile } from '@/components/UniversalUpload';
+import { UploadList } from '@/components/UploadList';
 
 interface DocumentsViewProps {
   petId: string;
@@ -67,13 +67,14 @@ export function DocumentsView({
             </p>
 
             <div className="max-w-xs mx-auto mb-4">
-              <FileUploadButton
+              <UniversalUploadButton
                 label="+ Upload Documents"
                 accept="application/pdf,image/*"
                 multiple
                 petId={petId}
                 context="documents"
                 onUpload={onUpload}
+                debugTag="documents-empty-cta"
               />
             </div>
 
@@ -113,7 +114,7 @@ export function DocumentsView({
               </div>
             ) : (
               <div className="mb-6">
-                <FilePreviewList files={filteredUploads} onRemove={onRemove} />
+                <UploadList items={filteredUploads} onRemove={onRemove} />
               </div>
             )}
 
@@ -121,15 +122,16 @@ export function DocumentsView({
             <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg">
               <h3 className="text-xl font-light text-gray-900 mb-4">Add More Documents</h3>
               <div className="grid sm:grid-cols-3 gap-3">
-                <FileUploadButton
+                <UniversalUploadButton
                   label="Add More"
                   accept="application/pdf,image/*"
                   petId={petId}
                   context="documents"
                   onUpload={onUpload}
+                  debugTag="documents-add-more"
                 />
                 
-                <FileUploadButton
+                <UniversalUploadButton
                   label="Scan with Camera"
                   accept="image/*"
                   capture="environment"
@@ -137,14 +139,16 @@ export function DocumentsView({
                   petId={petId}
                   context="documents"
                   onUpload={onUpload}
+                  debugTag="documents-camera"
                 />
                 
-                <FileUploadButton
+                <UniversalUploadButton
                   label="Add PDF"
                   accept="application/pdf"
                   petId={petId}
                   context="documents"
                   onUpload={onUpload}
+                  debugTag="documents-add-pdf"
                 />
               </div>
             </div>

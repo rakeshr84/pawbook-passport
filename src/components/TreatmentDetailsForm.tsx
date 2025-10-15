@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { ChevronLeft, Camera, Upload } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
 import { TreatmentRecord } from '@/types/medical';
-import { FileUploadButton, FilePreviewList, UploadedFile } from '@/components/FileUploadSystem';
+import { UniversalUploadButton, UploadedFile } from '@/components/UniversalUpload';
+import { UploadList } from '@/components/UploadList';
 
 interface TreatmentDetailsFormProps {
   petData: PetFormData;
@@ -22,6 +23,10 @@ export default function TreatmentDetailsForm({
   onSave,
   onBack,
   onCancel,
+  petId,
+  uploads = [],
+  onUpload,
+  onRemoveUpload,
 }: TreatmentDetailsFormProps) {
   const [productName, setProductName] = useState('');
   const [manufacturer, setManufacturer] = useState('');
@@ -279,26 +284,48 @@ export default function TreatmentDetailsForm({
           <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 shadow-lg">
             <h2 className="text-2xl font-light text-gray-900 mb-6">Supporting Documents</h2>
             
-            <div className="space-y-4">
-              <label className="block text-gray-700 font-light mb-2">
-                Receipt/Record (Optional)
-              </label>
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  className="flex-1 flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
-                >
-                  <Camera className="w-5 h-5" />
-                  Take Photo
-                </button>
-                <button
-                  type="button"
-                  className="flex-1 flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
-                >
-                  <Upload className="w-5 h-5" />
-                  Upload File
-                </button>
-              </div>
+            <div className="space-y-6">
+              {petId && onUpload && (
+                <>
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    <UniversalUploadButton
+                      label="Upload PDF"
+                      accept="application/pdf"
+                      petId={petId}
+                      context="treatment"
+                      onUpload={onUpload}
+                      debugTag="treatment-upload-pdf"
+                    />
+                    
+                    <UniversalUploadButton
+                      label="Upload Image"
+                      accept="image/*"
+                      petId={petId}
+                      context="treatment"
+                      onUpload={onUpload}
+                      debugTag="treatment-upload-image"
+                    />
+                    
+                    <UniversalUploadButton
+                      label="Take Photo"
+                      accept="image/*"
+                      capture="environment"
+                      multiple={false}
+                      petId={petId}
+                      context="treatment"
+                      onUpload={onUpload}
+                      debugTag="treatment-camera"
+                    />
+                  </div>
+
+                  {onRemoveUpload && (
+                    <UploadList 
+                      items={uploads.filter(u => u.petId === petId && u.context === 'treatment')} 
+                      onRemove={onRemoveUpload} 
+                    />
+                  )}
+                </>
+              )}
             </div>
           </div>
 

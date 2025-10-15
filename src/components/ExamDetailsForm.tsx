@@ -3,7 +3,8 @@ import { ChevronLeft, Camera, Upload } from 'lucide-react';
 import { PetFormData } from '@/types/pet';
 import { ClinicalExam } from '@/types/medical';
 import { normalizeSpecies } from '@/lib/utils';
-import { FileUploadButton, FilePreviewList, UploadedFile } from '@/components/FileUploadSystem';
+import { UniversalUploadButton, UploadedFile } from '@/components/UniversalUpload';
+import { UploadList } from '@/components/UploadList';
 
 interface ExamDetailsFormProps {
   petData: PetFormData;
@@ -23,6 +24,10 @@ export default function ExamDetailsForm({
   onSave,
   onBack,
   onCancel,
+  petId,
+  uploads = [],
+  onUpload,
+  onRemoveUpload,
 }: ExamDetailsFormProps) {
   const [examDate, setExamDate] = useState('');
   const [reason, setReason] = useState('');
@@ -401,27 +406,47 @@ export default function ExamDetailsForm({
             <h2 className="text-2xl font-light text-gray-900 mb-6">Supporting Documents</h2>
             
             <div className="space-y-6">
-              <div>
-                <label className="block text-gray-700 font-light mb-2">
-                  Health Certificate / Exam Report
-                </label>
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    className="flex-1 flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
-                  >
-                    <Camera className="w-5 h-5" />
-                    Take Photo
-                  </button>
-                  <button
-                    type="button"
-                    className="flex-1 flex items-center justify-center gap-3 px-6 py-4 border border-gray-300 text-gray-700 rounded-xl font-light hover:bg-gray-50 transition-all duration-300"
-                  >
-                    <Upload className="w-5 h-5" />
-                    Upload PDF
-                  </button>
-                </div>
-              </div>
+              {petId && onUpload && (
+                <>
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    <UniversalUploadButton
+                      label="Upload PDF"
+                      accept="application/pdf"
+                      petId={petId}
+                      context="exam"
+                      onUpload={onUpload}
+                      debugTag="exam-upload-pdf"
+                    />
+                    
+                    <UniversalUploadButton
+                      label="Upload Image"
+                      accept="image/*"
+                      petId={petId}
+                      context="exam"
+                      onUpload={onUpload}
+                      debugTag="exam-upload-image"
+                    />
+                    
+                    <UniversalUploadButton
+                      label="Take Photo"
+                      accept="image/*"
+                      capture="environment"
+                      multiple={false}
+                      petId={petId}
+                      context="exam"
+                      onUpload={onUpload}
+                      debugTag="exam-camera"
+                    />
+                  </div>
+
+                  {onRemoveUpload && (
+                    <UploadList 
+                      items={uploads.filter(u => u.petId === petId && u.context === 'exam')} 
+                      onRemove={onRemoveUpload} 
+                    />
+                  )}
+                </>
+              )}
 
               <div>
                 <label className="block text-gray-700 font-light mb-2">
