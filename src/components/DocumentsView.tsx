@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { InlineUploadButton, UploadedFile } from '@/components/InlineUploadButton';
 import { UploadList } from '@/components/UploadList';
 
@@ -19,6 +19,39 @@ export function DocumentsView({
   onRemove,
   onBack,
 }: DocumentsViewProps) {
+  // Local, in-memory document list for this view.
+  type DocItem = {
+    id: string;
+    petId: string;
+    name: string;
+    mime: string;
+    size: number;
+    url: string;        // object URL
+    createdAt: string;
+  };
+
+  const [docs, setDocs] = useState<DocItem[]>([]);
+
+  const docsForThisPet = useMemo(
+    () => docs.filter(d => d.petId === petId),
+    [docs, petId]
+  );
+
+  // Handler used by the input below
+  function handlePick(list: FileList | null) {
+    if (!list || !list.length) return;
+    const added: DocItem[] = Array.from(list).map((f) => ({
+      id: crypto.randomUUID(),
+      petId,
+      name: f.name,
+      mime: f.type || "application/octet-stream",
+      size: f.size,
+      url: URL.createObjectURL(f),
+      createdAt: new Date().toISOString(),
+    }));
+    setDocs(prev => [...added, ...prev]); // newest first
+  }
+
   const [docFilter, setDocFilter] = useState<string>("all");
   
   const contexts = ["all", "documents", "vaccination", "treatment", "exam", "pre-travel", "lab"];
@@ -36,7 +69,7 @@ export function DocumentsView({
     docFilter === "all" || u.context === docFilter
   );
 
-  const hasDocs = uploads.length > 0;
+  const hasDocs = docsForThisPet.length > 0;
 
   return (
     <div className="min-h-screen gradient-bg py-12 px-6">
@@ -66,17 +99,54 @@ export function DocumentsView({
               Upload vaccination certificates, medical reports, and other important documents for {petName}.
             </p>
 
-            <div className="max-w-xs mx-auto mb-4">
-              <InlineUploadButton
-                label="+ Upload Documents"
+            {/* Unblockable upload button (label wraps the file input) */}
+            <label
+              className="relative inline-flex items-center justify-center
+                         px-6 h-12 rounded-2xl bg-gray-900 text-white font-medium
+                         hover:shadow-md active:translate-y-px transition-all cursor-pointer select-none
+                         w-[260px] mx-auto"
+              data-upload-debug="documents-empty-cta"
+            >
+              + Upload Documents
+              <input
+                type="file"
                 accept="application/pdf,image/*"
                 multiple
-                petId={petId}
-                context="documents"
-                onUpload={onUpload}
-                debugTag="documents-empty-cta"
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={(e) => {
+                  handlePick(e.currentTarget.files);
+                  // allow choosing the *same* file again later
+                  e.currentTarget.value = "";
+                }}
               />
-            </div>
+            </label>
+
+            {docsForThisPet.length > 0 && (
+              <div className="mt-6 space-y-2 max-w-2xl mx-auto">
+                {docsForThisPet.map((f) => (
+                  <div key={f.id} className="flex items-center gap-3 bg-white/70 p-3 rounded-2xl border border-gray-200">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 border flex items-center justify-center">
+                      {f.mime.startsWith("image/") ? (
+                        <img src={f.url} alt="" className="object-cover w-full h-full" />
+                      ) : (
+                        <span className="text-xs text-gray-600">PDF</span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm text-gray-900 truncate">{f.name}</div>
+                      <div className="text-xs text-gray-500">{(f.size / 1048576).toFixed(2)} MB</div>
+                    </div>
+                    <a href={f.url} target="_blank" rel="noreferrer" className="text-blue-700 text-sm underline">Open</a>
+                    <button
+                      onClick={() => setDocs(prev => prev.filter(x => x.id !== f.id))}
+                      className="text-red-600 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <button
               type="button"
