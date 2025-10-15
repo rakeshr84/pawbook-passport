@@ -24,24 +24,25 @@ export function PetAvatar({
   };
 
   const r = rounded === 'full' ? 'rounded-full' : 'rounded-2xl';
-  const tint = pet?.avatarTint as string | undefined;
-  // Only show tint if it's an avatar (not an uploaded photo)
-  const showTint = tint && !pet?.profilePhotoPreview;
+  
+  // BACKDROP: use pet.avatarTint or soft neutral; only show when using avatar (no real photo)
+  const showBackdrop = !!pet?.avatarUrl && !pet?.profilePhotoPreview;
+  const backdrop = pet?.avatarTint || 'linear-gradient(135deg, #f9fafb, #e5e7eb)';
 
   return (
-    <div
-      className={`relative overflow-hidden border-4 border-white shadow-md bg-gray-100 ${r} ${className}`}
-      style={{ width: size, height: size }}
-      aria-label={`${pet?.name || 'Pet'} avatar`}
-    >
-      {showTint && (
-        <div className="absolute inset-0 z-10" style={{ background: tint, opacity: 0.65 }} />
+    <div className={`relative ${className}`} style={{ width: size, height: size }}>
+      {/* circular backdrop behind the emoji */}
+      {showBackdrop && (
+        <div
+          className={`absolute inset-0 ${r} shadow-inner`}
+          style={{ background: backdrop }}
+        />
       )}
       <img
         src={src}
         alt=""
         onError={onError}
-        className="absolute inset-0 w-full h-full object-contain p-2"
+        className={`absolute inset-0 w-full h-full object-contain p-2 bg-transparent ${r} border-4 border-white shadow-md`}
         draggable={false}
       />
     </div>

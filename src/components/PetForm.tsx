@@ -232,10 +232,10 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               </div>
             </div>
 
-            {/* Coat Color Selector (for avatar tint) */}
+            {/* Coat Color Selector (for avatar backdrop) */}
             {formData.avatarUrl && !formData.profilePhotoPreview && (
               <div className="mt-6">
-                <div className="text-sm text-gray-700 font-light mb-2">Coat Color (for avatar tint)</div>
+                <div className="text-sm text-gray-700 font-light mb-2">Coat Color (avatar backdrop)</div>
                 <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
                   {COAT_PALETTES.map(c => (
                     <button
@@ -277,7 +277,11 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                       type="button"
                       className="p-3 rounded-2xl border border-gray-200 hover:bg-gray-50 transition-all"
                       onClick={() => {
-                        setFormData(prev => ({ ...prev, avatarUrl: src, profilePhotoPreview: undefined }));
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          avatarUrl: src, 
+                          profilePhotoPreview: undefined // ensure avatar is shown
+                        }));
                         setUseAvatar(true);
                         setErrors(prev => ({ ...prev, profilePhoto: false }));
                         setShowAvatarModal(false);
