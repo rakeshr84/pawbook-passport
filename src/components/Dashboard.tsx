@@ -1,3 +1,5 @@
+export type WeightUnit = 'kg' | 'lbs';
+
 export interface PetCardData {
   id: string;
   name: string;
@@ -5,6 +7,9 @@ export interface PetCardData {
   dateOfBirth?: string;
   ageLabel?: string;
   photoUrl?: string;
+  weight?: number;
+  weightUnit?: WeightUnit;
+  microchipNumber?: string;
   status?: 'ok' | 'expiring' | 'due';
 }
 
@@ -22,6 +27,9 @@ const StatusDot = ({ status = 'ok' }: { status?: 'ok' | 'expiring' | 'due' }) =>
 };
 
 const Dashboard = ({ user, pets, onSelectPet, onAddPet, onLogout }: DashboardProps) => {
+  const formatWeight = (w?: number, u?: WeightUnit) =>
+    (w != null && !Number.isNaN(w)) ? `${w} ${u || 'kg'}` : '';
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-12 px-6">
       <div className="max-w-6xl mx-auto">
@@ -84,8 +92,11 @@ const Dashboard = ({ user, pets, onSelectPet, onAddPet, onLogout }: DashboardPro
                         <StatusDot status={p.status} />
                       </div>
                       <p className="text-gray-600 font-light truncate">
-                        {p.breed || '—'} {p.ageLabel ? `• ${p.ageLabel}` : ''}
+                        {p.breed || '—'} {p.ageLabel ? `• ${p.ageLabel}` : ''} {formatWeight(p.weight, p.weightUnit) && `• ${formatWeight(p.weight, p.weightUnit)}`}
                       </p>
+                      {p.microchipNumber && (
+                        <p className="text-gray-500 font-light mt-1 text-sm truncate">Chip: {p.microchipNumber}</p>
+                      )}
                     </div>
                   </div>
                   <div className="mt-6 flex items-center justify-between text-sm">

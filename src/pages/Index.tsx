@@ -109,6 +109,9 @@ const Index = () => {
         dateOfBirth: petData.dateOfBirth,
         ageLabel: calculateAgeLabel(petData.dateOfBirth),
         photoUrl: petData.profilePhotoPreview,
+        weight: petData.weight !== '' && petData.weight != null ? Number(petData.weight) : undefined,
+        weightUnit: petData.weightUnit || 'kg',
+        microchipNumber: petData.microchipNumber || undefined,
         status: 'ok',
       };
       setPets(prev => [...prev, newPet]);
@@ -295,9 +298,9 @@ const Index = () => {
       dateOfBirth: selected.dateOfBirth || '',
       gender: 'unknown',
       colorMarkings: '',
-      weight: '',
-      weightUnit: 'kg',
-      microchipNumber: '',
+      weight: selected.weight != null ? String(selected.weight) : '',
+      weightUnit: selected.weightUnit ?? 'kg',
+      microchipNumber: selected.microchipNumber || '',
       profilePhoto: null,
       profilePhotoPreview: selected.photoUrl || '',
       vetClinic: '',

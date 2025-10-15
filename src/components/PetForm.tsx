@@ -295,7 +295,8 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
             <div className="flex gap-4">
               <input
                 type="number"
-                placeholder="Weight"
+                inputMode="decimal"
+                placeholder="Weight (optional)"
                 value={formData.weight}
                 onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
                 className="flex-1 px-6 py-4 border border-border rounded-xl bg-white focus:outline-none focus:border-gray-400 transition-colors duration-200 font-light"
@@ -323,7 +324,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                 maxLength={15}
                 value={formData.microchipNumber}
                 onChange={(e) => {
-                  setFormData(prev => ({ ...prev, microchipNumber: e.target.value }));
+                  setFormData(prev => ({ ...prev, microchipNumber: e.target.value.trim() }));
                   setErrors(prev => ({ ...prev, microchipNumber: false }));
                 }}
                 className={`w-full px-6 py-4 border ${
