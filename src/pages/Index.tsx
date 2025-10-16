@@ -692,7 +692,10 @@ const Index = () => {
     <>
       <AppHeader
         showDashboard={showAppHeader}
-        onDashboard={() => setNavStack(['welcome', 'dashboard'])}
+        onDashboard={() => {
+          setNavStack(['welcome', 'dashboard']);
+          setActiveTab('home'); // Reset to home tab
+        }}
       />
 
       {currentScreen === 'welcome' && (
