@@ -3,6 +3,7 @@ import WelcomePageNew from '@/components/WelcomePageNew';
 import SignInPage from '@/components/SignInPage';
 import BottomTabNav, { TabId } from '@/components/BottomTabNav';
 import SignIn from '@/components/SignIn';
+import HomeScreen from '@/components/HomeScreen';
 import Dashboard, { PetCardData } from '@/components/Dashboard';
 import CategorySelection from '@/components/CategorySelection';
 import PetForm from '@/components/PetForm';
@@ -567,6 +568,43 @@ const Index = () => {
     push('passport');
   };
 
+  // Quick action handler - opens specific tab for a pet
+  const handleQuickAction = (petId: string, tab: 'health' | 'records' | 'profile') => {
+    const selected = pets.find(p => p.id === petId);
+    if (!selected) return;
+    
+    // Set the pet as current
+    setPetData({
+      name: selected.name,
+      breed: selected.breed || '',
+      dateOfBirth: selected.dateOfBirth || '',
+      gender: 'unknown',
+      colorMarkings: '',
+      weight: selected.weight != null ? String(selected.weight) : '',
+      weightUnit: selected.weightUnit ?? 'kg',
+      microchipNumber: selected.microchipNumber || '',
+      profilePhoto: null,
+      profilePhotoPreview: selected.photoUrl || '',
+      avatarUrl: selected.avatarUrl,
+      coatColorId: selected.coatColorId,
+      avatarTint: selected.avatarTint,
+      vetClinic: '',
+      vetPhone: '',
+      category: selected.species,
+    });
+    setCurrentPetId(selected.id);
+    setSelectedCategory({ id: selected.species, name: selected.species, bgGradient: '', tabIcon: '', photos: [], mascot: '', message: '' });
+    
+    // Navigate based on action
+    if (tab === 'health') {
+      push('medical-dashboard');
+    } else if (tab === 'records') {
+      push('documents');
+    } else if (tab === 'profile') {
+      push('passport');
+    }
+  };
+
   const handleEditProfile = () => {
     push('edit-profile');
   };
@@ -619,17 +657,26 @@ const Index = () => {
       )}
 
       {currentScreen === 'dashboard' && (
-        <Dashboard
-          user={user}
-          pets={pets}
-          onSelectPet={handleSelectPet}
-          onAddPet={handleAddAnotherPet}
-          onLogout={handleLogout}
-          onDeletePet={(id) => {
-            setCurrentPetId(id);
-            handleRequestDeletePet();
-          }}
-        />
+        <>
+          <HomeScreen
+            pets={pets}
+            onAddPet={handleAddAnotherPet}
+            onQuickAction={handleQuickAction}
+          />
+          <BottomTabNav 
+            activeTab="home" 
+            onTabChange={(tab) => {
+              setActiveTab(tab);
+              // Handle tab navigation - currently staying on home
+              if (tab === 'home') {
+                // Already on home
+              } else {
+                console.log('Navigate to tab:', tab);
+              }
+            }}
+            petName={pets[0]?.name}
+          />
+        </>
       )}
       
       {currentScreen === 'category' && (
