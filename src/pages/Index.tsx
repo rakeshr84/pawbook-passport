@@ -5,6 +5,7 @@ import BottomTabNav, { TabId } from '@/components/BottomTabNav';
 import SignIn from '@/components/SignIn';
 import HomeScreen from '@/components/HomeScreen';
 import HealthTab from '@/components/HealthTab';
+import RecordsTab, { RecordDocument } from '@/components/RecordsTab';
 import Dashboard, { PetCardData } from '@/components/Dashboard';
 import CategorySelection from '@/components/CategorySelection';
 import PetForm from '@/components/PetForm';
@@ -89,6 +90,9 @@ const Index = () => {
 
   // Documents state
   const [documents, setDocuments] = useState<PetDocument[]>([]);
+  
+  // Records state for new RecordsTab
+  const [recordDocuments, setRecordDocuments] = useState<RecordDocument[]>([]);
 
   // Universal upload system
   const { uploads, handleUpload, filesFor, setUploads } = useUploads();
@@ -162,6 +166,34 @@ const Index = () => {
 
   const docsFor = (petId: string, kind?: DocKind) =>
     documents.filter(d => d.pet_id === petId && (!kind || d.kind === kind));
+
+  // Records handlers for new RecordsTab
+  const handleRecordsUpload = (files: FileList, category: RecordDocument['category']) => {
+    if (!currentPetId && !pets[0]) return;
+    const petId = currentPetId || pets[0]?.id;
+    
+    const newDocs: RecordDocument[] = Array.from(files).map(f => ({
+      id: crypto.randomUUID(),
+      petId,
+      category,
+      name: f.name,
+      mime: f.type || 'application/octet-stream',
+      size: f.size,
+      url: URL.createObjectURL(f),
+      createdAt: new Date().toISOString(),
+    }));
+    
+    setRecordDocuments(prev => [...newDocs, ...prev]);
+    toast({
+      title: "✓ Files uploaded",
+      description: `${newDocs.length} ${newDocs.length === 1 ? 'file' : 'files'} added successfully`,
+    });
+  };
+
+  const handleRecordsRemove = (id: string) => {
+    setRecordDocuments(prev => prev.filter(d => d.id !== id));
+    toast({ title: "File removed", description: "Document deleted successfully" });
+  };
 
 
   const handleGetStarted = () => {
@@ -689,6 +721,25 @@ const Index = () => {
               }
               push('medical-dashboard');
             }}
+          />
+          <BottomTabNav 
+            activeTab={activeTab} 
+            onTabChange={(tab) => {
+              setActiveTab(tab);
+            }}
+            petName={pets[0]?.name}
+          />
+        </>
+      )}
+
+      {currentScreen === 'dashboard' && activeTab === 'records' && (
+        <>
+          <RecordsTab
+            petId={currentPetId || pets[0]?.id}
+            petName={currentPetId ? pets.find(p => p.id === currentPetId)?.name : pets[0]?.name}
+            documents={recordDocuments}
+            onUpload={handleRecordsUpload}
+            onRemove={handleRecordsRemove}
           />
           <BottomTabNav 
             activeTab={activeTab} 

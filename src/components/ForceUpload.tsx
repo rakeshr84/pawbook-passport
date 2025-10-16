@@ -6,6 +6,7 @@ interface ForceUploadProps {
   onSelect: (files: FileList) => void;
   label: string;
   className?: string;
+  icon?: React.ReactNode;
 }
 
 export function ForceUpload({
@@ -14,6 +15,7 @@ export function ForceUpload({
   onSelect,
   label,
   className = "",
+  icon,
 }: ForceUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,12 +30,15 @@ export function ForceUpload({
         type="button"
         onClick={handleClick}
         className={
-          "inline-flex items-center justify-center px-6 h-12 rounded-2xl " +
-          "bg-gray-900 text-white font-medium hover:shadow-md active:translate-y-px " +
-          "transition-all cursor-pointer select-none " +
-          className
+          label 
+            ? "inline-flex items-center justify-center gap-2 px-6 h-12 rounded-2xl " +
+              "bg-gray-900 text-white font-medium hover:shadow-md active:translate-y-px " +
+              "transition-all cursor-pointer select-none " +
+              className
+            : "inline-flex items-center justify-center " + className
         }
       >
+        {icon}
         {label}
       </button>
       <input
