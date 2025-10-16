@@ -726,11 +726,13 @@ const Index = () => {
 
       {currentScreen === 'dashboard' && activeTab === 'home' && (
         <>
-          <HomeScreen
-            pets={pets}
-            onAddPet={handleAddAnotherPet}
-            onQuickAction={handleQuickAction}
-          />
+          <div className="animate-slide-in-right">
+            <HomeScreen
+              pets={pets}
+              onAddPet={handleAddAnotherPet}
+              onQuickAction={handleQuickAction}
+            />
+          </div>
           <BottomTabNav 
             activeTab={activeTab} 
             onTabChange={(tab) => {
@@ -743,20 +745,22 @@ const Index = () => {
 
       {currentScreen === 'dashboard' && activeTab === 'health' && (
         <>
-          <HealthTab
-            pet={currentPetId ? pets.find(p => p.id === currentPetId) : pets[0]}
-            vaccinationCount={vaccinations.filter(v => v.pet_id === (currentPetId || pets[0]?.id)).length}
-            treatmentCount={treatments.filter(t => t.pet_id === (currentPetId || pets[0]?.id)).length}
-            onOpenVaccinations={() => push('vaccination-list')}
-            onOpenTreatments={() => push('treatment-list')}
-            onOpenTracking={() => {
-              // Set current pet if not set
-              if (!currentPetId && pets[0]) {
-                setCurrentPetId(pets[0].id);
-              }
-              push('medical-dashboard');
-            }}
-          />
+          <div className="animate-slide-in-right">
+            <HealthTab
+              pet={currentPetId ? pets.find(p => p.id === currentPetId) : pets[0]}
+              vaccinationCount={vaccinations.filter(v => v.pet_id === (currentPetId || pets[0]?.id)).length}
+              treatmentCount={treatments.filter(t => t.pet_id === (currentPetId || pets[0]?.id)).length}
+              onOpenVaccinations={() => push('vaccination-list')}
+              onOpenTreatments={() => push('treatment-list')}
+              onOpenTracking={() => {
+                // Set current pet if not set
+                if (!currentPetId && pets[0]) {
+                  setCurrentPetId(pets[0].id);
+                }
+                push('medical-dashboard');
+              }}
+            />
+          </div>
           <BottomTabNav 
             activeTab={activeTab} 
             onTabChange={(tab) => {
@@ -769,13 +773,15 @@ const Index = () => {
 
       {currentScreen === 'dashboard' && activeTab === 'records' && (
         <>
-          <RecordsTab
-            petId={currentPetId || pets[0]?.id}
-            petName={currentPetId ? pets.find(p => p.id === currentPetId)?.name : pets[0]?.name}
-            documents={recordDocuments}
-            onUpload={handleRecordsUpload}
-            onRemove={handleRecordsRemove}
-          />
+          <div className="animate-slide-in-right">
+            <RecordsTab
+              petId={currentPetId || pets[0]?.id}
+              petName={currentPetId ? pets.find(p => p.id === currentPetId)?.name : pets[0]?.name}
+              documents={recordDocuments}
+              onUpload={handleRecordsUpload}
+              onRemove={handleRecordsRemove}
+            />
+          </div>
           <BottomTabNav 
             activeTab={activeTab} 
             onTabChange={(tab) => {
@@ -788,11 +794,13 @@ const Index = () => {
 
       {currentScreen === 'dashboard' && activeTab === 'profile' && (
         <>
-          <ProfileTab
-            pet={currentPetId ? pets.find(p => p.id === currentPetId) : pets[0]}
-            onUpdatePet={handleUpdatePet}
-            onDeletePet={handleDeletePetFromProfile}
-          />
+          <div className="animate-slide-in-right">
+            <ProfileTab
+              pet={currentPetId ? pets.find(p => p.id === currentPetId) : pets[0]}
+              onUpdatePet={handleUpdatePet}
+              onDeletePet={handleDeletePetFromProfile}
+            />
+          </div>
           <BottomTabNav 
             activeTab={activeTab} 
             onTabChange={(tab) => {
