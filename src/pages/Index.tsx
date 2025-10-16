@@ -6,6 +6,7 @@ import SignIn from '@/components/SignIn';
 import HomeScreen from '@/components/HomeScreen';
 import HealthTab from '@/components/HealthTab';
 import RecordsTab, { RecordDocument } from '@/components/RecordsTab';
+import ProfileTab from '@/components/ProfileTab';
 import Dashboard, { PetCardData } from '@/components/Dashboard';
 import CategorySelection from '@/components/CategorySelection';
 import PetForm from '@/components/PetForm';
@@ -193,6 +194,40 @@ const Index = () => {
   const handleRecordsRemove = (id: string) => {
     setRecordDocuments(prev => prev.filter(d => d.id !== id));
     toast({ title: "File removed", description: "Document deleted successfully" });
+  };
+
+  // Profile handlers
+  const handleUpdatePet = (updates: Partial<PetCardData>) => {
+    if (!currentPetId) return;
+    setPets(prev => prev.map(p => 
+      p.id === currentPetId ? { ...p, ...updates } : p
+    ));
+    toast({
+      title: "✓ Profile updated",
+      description: "Changes saved successfully",
+    });
+  };
+
+  const handleDeletePetFromProfile = () => {
+    if (!currentPetId) return;
+    const pet = pets.find(p => p.id === currentPetId);
+    if (!pet) return;
+
+    // Snapshot for undo
+    const snap = buildSnapshot(pet);
+    setLastDeleted(snap);
+
+    // Delete now
+    permanentlyDeletePet(pet.id);
+
+    // Navigate back to home
+    setCurrentPetId(null);
+    setActiveTab('home');
+    
+    toast({
+      title: "Pet deleted",
+      description: `${pet.name || 'Pet'} has been removed`,
+    });
   };
 
 
@@ -740,6 +775,23 @@ const Index = () => {
             documents={recordDocuments}
             onUpload={handleRecordsUpload}
             onRemove={handleRecordsRemove}
+          />
+          <BottomTabNav 
+            activeTab={activeTab} 
+            onTabChange={(tab) => {
+              setActiveTab(tab);
+            }}
+            petName={pets[0]?.name}
+          />
+        </>
+      )}
+
+      {currentScreen === 'dashboard' && activeTab === 'profile' && (
+        <>
+          <ProfileTab
+            pet={currentPetId ? pets.find(p => p.id === currentPetId) : pets[0]}
+            onUpdatePet={handleUpdatePet}
+            onDeletePet={handleDeletePetFromProfile}
           />
           <BottomTabNav 
             activeTab={activeTab} 
