@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { ChevronLeft, User, Mail, Phone } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export default function EditProfile({
   user,
@@ -14,53 +17,117 @@ export default function EditProfile({
 
   const canSave = fullName.trim().length > 1;
 
+  const handleSave = () => {
+    if (canSave) {
+      onSave({ full_name: fullName, phone });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 py-10 px-6">
-      <div className="max-w-2xl mx-auto bg-white/60 backdrop-blur-md rounded-3xl p-8 shadow-lg">
-        <h1 className="text-4xl font-light text-gray-900 mb-6">Edit Profile</h1>
-        <div className="space-y-6">
-          <label className="block">
-            <span className="block text-sm font-medium text-gray-700 mb-2">Full Name</span>
-            <input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-6 py-4 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-gray-400 font-light"
-            />
-          </label>
+    <div className="min-h-screen gradient-bg py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        
+        {/* Back Button */}
+        <button
+          onClick={onCancel}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-light ios-transition mb-6"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          Back
+        </button>
 
-          <label className="block">
-            <span className="block text-sm font-medium text-gray-700 mb-2">Email (read-only)</span>
-            <input
-              type="email"
-              value={user?.email || ""}
-              disabled
-              className="w-full px-6 py-4 border border-gray-200 rounded-xl bg-gray-50 text-gray-500 font-light cursor-not-allowed"
-            />
-          </label>
+        {/* Main Card */}
+        <div className="glass-effect rounded-3xl p-8 shadow-xl">
+          
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 gradient-accent rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <User className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-3xl font-light text-foreground mb-2">Edit Profile</h1>
+            <p className="text-muted-foreground font-light">Update your account details</p>
+          </div>
 
-          <label className="block">
-            <span className="block text-sm font-medium text-gray-700 mb-2">Phone</span>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-6 py-4 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-gray-400 font-light"
-              placeholder="+1 555 000 0000"
-            />
-          </label>
+          {/* Form */}
+          <div className="space-y-6">
+            
+            <div>
+              <label className="block text-sm font-light text-muted-foreground mb-2">
+                Full Name
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Your name"
+                  className="glass-effect border-border pl-10"
+                />
+              </div>
+            </div>
 
-          <div className="flex gap-4 pt-6">
-            <button onClick={onCancel} className="px-8 py-4 text-gray-600 hover:text-gray-900 font-light transition-all">Cancel</button>
-            <button
-              onClick={() => onSave({ full_name: fullName, phone })}
-              disabled={!canSave}
-              className="ml-auto bg-gray-900 text-white py-4 px-8 rounded-full font-medium hover:bg-gray-800 disabled:bg-gray-300 transition-all duration-300"
-            >
-              Save ✓
-            </button>
+            <div>
+              <label className="block text-sm font-light text-muted-foreground mb-2">
+                Email <span className="text-xs">(read-only)</span>
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  type="email"
+                  value={user?.email || ""}
+                  disabled
+                  className="glass-effect border-border pl-10 opacity-60 cursor-not-allowed"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-light text-muted-foreground mb-2">
+                Phone <span className="text-xs">(optional)</span>
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+1 555 000 0000"
+                  className="glass-effect border-border pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-4 pt-6">
+              <Button
+                onClick={onCancel}
+                variant="ghost"
+                size="lg"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={!canSave}
+                variant="gradient"
+                size="lg"
+                className="flex-1"
+              >
+                All set — you're doing great ✓
+              </Button>
+            </div>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="mt-6 text-center">
+          <p className="text-xs text-muted-foreground font-light">
+            PawBuck 2.0 · Version 1.0.0
+          </p>
+        </div>
+
       </div>
     </div>
   );

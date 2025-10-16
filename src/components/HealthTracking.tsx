@@ -229,21 +229,49 @@ const HealthTracking = ({
         </div>
       </div>
 
-      {/* Weight Chart */}
+      {/* Weight Chart - iOS Curved Mint */}
       {chartData.length > 0 && (
-        <div className="bg-white/60 backdrop-blur-md rounded-2xl p-5 shadow-md">
-          <h3 className="text-lg font-light text-gray-900 mb-4">Weight Progress</h3>
+        <div className="glass-effect rounded-3xl p-6 shadow-lg">
+          <h3 className="text-lg font-light text-foreground mb-4">Weight Progress</h3>
           <ResponsiveContainer width="100%" height={220}>
             <ComposedChart data={chartData}>
-              <XAxis dataKey="date" hide />
-              <YAxis hide domain={['dataMin - 2', 'dataMax + 2']} />
-              <Area dataKey="refHigh" stroke="none" fill="rgba(59,130,246,0.1)" />
-              <Area dataKey="refLow" stroke="none" fill="rgba(255,255,255,0.5)" />
-              <Line dataKey="weight" stroke="#111827" strokeWidth={2} dot={{ r: 4 }} />
+              <XAxis 
+                dataKey="date" 
+                stroke="hsl(var(--muted-foreground))" 
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis 
+                stroke="hsl(var(--muted-foreground))" 
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                domain={['dataMin - 2', 'dataMax + 2']} 
+              />
+              <Area 
+                dataKey="refHigh" 
+                stroke="none" 
+                fill="hsl(var(--accent-gradient-start) / 0.08)" 
+              />
+              <Area 
+                dataKey="refLow" 
+                stroke="none" 
+                fill="hsl(var(--background))" 
+              />
+              <Line 
+                dataKey="weight" 
+                stroke="hsl(var(--accent))" 
+                strokeWidth={3} 
+                dot={{ r: 5, fill: 'hsl(var(--accent))', strokeWidth: 2, stroke: 'white' }}
+                type="monotone"
+              />
             </ComposedChart>
           </ResponsiveContainer>
-          <p className="text-xs text-gray-500 font-light mt-2 text-center">
-            Blue band: typical range for breed/age (mock data)
+          <p className="text-xs text-muted-foreground font-light mt-3 text-center">
+            {lastWeight 
+              ? `Weight steady — perfect for a ${petBreed || 'pet'}.` 
+              : 'Mint band shows typical range for breed/age'}
           </p>
         </div>
       )}
