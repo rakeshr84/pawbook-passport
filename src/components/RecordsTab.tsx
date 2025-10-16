@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { FileText, Upload, Camera, ChevronRight, Download, Trash2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { FileText, Upload, Camera, ChevronRight, Download, Trash2, Plus } from 'lucide-react';
 import { ForceUpload } from '@/components/ForceUpload';
 import { Button } from '@/components/ui/button';
+import { AddRecordModal } from '@/components/AddRecordModal';
 
 export interface RecordDocument {
   id: string;
@@ -27,6 +28,8 @@ type CategoryFilter = 'all' | 'vaccination' | 'treatment' | 'travel' | 'lab';
 const RecordsTab = ({ petId, petName = 'your pet', documents, onUpload, onRemove }: RecordsTabProps) => {
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const categories: Array<{ id: CategoryFilter; label: string; emoji: string; uploadCategory?: RecordDocument['category'] }> = [
     { id: 'all', label: 'All Documents', emoji: '📁' },
@@ -54,6 +57,16 @@ const RecordsTab = ({ petId, petName = 'your pet', documents, onUpload, onRemove
     if (cat === 'all') return documents.filter(d => d.petId === petId).length;
     return documents.filter(d => d.petId === petId && d.category === cat).length;
   };
+
+  const handleSelectRecordType = (category: RecordDocument['category']) => {
+    // Trigger file input for selected category
+    const input = fileInputRefs.current[category];
+    if (input) {
+      input.click();
+    }
+  };
+
+  const activeCategoryData = categories.find(c => c.id === activeCategory);
 
   return (
     <div className="min-h-screen gradient-bg pb-24 px-4 py-8">
@@ -92,6 +105,23 @@ const RecordsTab = ({ petId, petName = 'your pet', documents, onUpload, onRemove
           ))}
         </div>
 
+        {/* Inline "Add New" Link */}
+        {activeCategory !== 'all' && activeCategoryData?.uploadCategory && (
+          <div className="mb-6 animate-fade-in">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="text-accent hover:text-accent/80 font-light ios-transition flex items-center gap-2"
+              style={{ 
+                fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
+                fontSize: '15pt',
+              }}
+            >
+              <Plus className="w-5 h-5" />
+              Add New {activeCategoryData.label}
+            </button>
+          </div>
+        )}
+
         {/* Empty State */}
         {filteredDocuments.length === 0 && (
           <div className="glass-effect rounded-3xl p-10 shadow-lg text-center animate-fade-in">
@@ -104,6 +134,18 @@ const RecordsTab = ({ petId, petName = 'your pet', documents, onUpload, onRemove
             <p className="text-muted-foreground font-light mb-6">
               Upload files to keep {petName}'s records organized
             </p>
+            
+            {/* CTA Button */}
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="gradient-accent text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl ios-transition button-glow-tap"
+              style={{ 
+                fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
+                fontSize: '16pt',
+              }}
+            >
+              Upload File
+            </button>
           </div>
         )}
 
@@ -215,6 +257,43 @@ const RecordsTab = ({ petId, petName = 'your pet', documents, onUpload, onRemove
             })}
           </div>
         )}
+
+        {/* Hidden File Inputs for Each Category */}
+        {categories.filter(c => c.uploadCategory).map((cat) => (
+          <input
+            key={cat.id}
+            ref={(el) => fileInputRefs.current[cat.uploadCategory!] = el}
+            type="file"
+            accept="application/pdf,image/*"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files) {
+                handleUploadFiles(e.target.files, cat.uploadCategory!);
+                e.target.value = ''; // Reset input
+              }
+            }}
+          />
+        ))}
+
+        {/* Floating Action Button (FAB) */}
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="fixed bottom-20 right-6 w-14 h-14 rounded-full gradient-accent shadow-2xl hover:shadow-[0_12px_24px_rgba(0,212,255,0.4)] ios-transition button-glow-tap z-40 flex items-center justify-center animate-scale-in"
+          style={{
+            background: 'linear-gradient(135deg, #00D4FF 0%, #A4FFC4 100%)',
+          }}
+        >
+          <Plus className="w-7 h-7 text-white" strokeWidth={2.5} />
+        </button>
+
+        {/* Add Record Modal */}
+        <AddRecordModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          onSelectType={handleSelectRecordType}
+          activeFilter={activeCategory}
+        />
       </div>
     </div>
   );

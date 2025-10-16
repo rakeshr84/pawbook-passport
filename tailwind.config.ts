@@ -138,6 +138,16 @@ export default {
             transform: "translateX(0)",
             opacity: "1"
           }
+        },
+        "scale-in": {
+          "0%": {
+            transform: "scale(0.9)",
+            opacity: "0"
+          },
+          "100%": {
+            transform: "scale(1)",
+            opacity: "1"
+          }
         }
       },
       animation: {
@@ -148,6 +158,7 @@ export default {
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
         "slide-in-left": "slide-in-left 0.4s cubic-bezier(0.32, 0.72, 0, 1)",
         "slide-in-right": "slide-in-right 0.4s cubic-bezier(0.32, 0.72, 0, 1)",
+        "scale-in": "scale-in 0.3s cubic-bezier(0.32, 0.72, 0, 1)",
       },
     },
   },
