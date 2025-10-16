@@ -168,26 +168,26 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Apple-like Profile Photo Card - 65% screen height, centered */}
+          {/* Compact Avatar Section - 40% screen height */}
           <div 
             className="flex items-center justify-center"
-            style={{ minHeight: '65vh' }}
+            style={{ minHeight: '40vh' }}
             ref={photoInputRef}
           >
             <div 
-              className="w-full max-w-2xl glass-effect rounded-3xl p-10 shadow-xl"
+              className="w-full max-w-2xl glass-effect rounded-3xl p-8 shadow-xl"
               style={{ 
                 background: 'linear-gradient(180deg, #FDFDFC, #F3FFF9)',
                 backdropFilter: 'blur(20px)',
               }}
             >
               {/* Header */}
-              <div className="text-center mb-8">
+              <div className="text-center mb-6">
                 <h3 
-                  className="text-foreground mb-3"
+                  className="text-foreground mb-2"
                   style={{ 
                     fontFamily: 'SF Pro Display, -apple-system, system-ui, sans-serif',
-                    fontSize: '18pt',
+                    fontSize: '17pt',
                     fontWeight: 400,
                   }}
                 >
@@ -197,7 +197,7 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                   className="text-muted-foreground"
                   style={{ 
                     fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
-                    fontSize: '15pt',
+                    fontSize: '14pt',
                     fontWeight: 300,
                   }}
                 >
@@ -205,9 +205,14 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                 </p>
               </div>
 
-              {/* Large Circular Avatar Preview */}
-              <div className="flex justify-center mb-10">
-                <div className="relative w-32 h-32">
+              {/* Avatar Preview - 96px with mint glow */}
+              <div className="flex flex-col items-center mb-8">
+                <div 
+                  className="relative w-24 h-24 mb-2"
+                  style={{
+                    filter: 'drop-shadow(0 4px 12px rgba(164, 255, 196, 0.3))',
+                  }}
+                >
                   <PetAvatar 
                     pet={{ 
                       ...formData, 
@@ -215,28 +220,38 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                       category: formData.category 
                     }} 
                     context="edit"
-                    size={128} 
+                    size={96} 
                     rounded="full" 
                   />
                 </div>
+                <p 
+                  className="text-muted-foreground text-center"
+                  style={{ 
+                    fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
+                    fontSize: '12pt',
+                    fontWeight: 300,
+                  }}
+                >
+                  Tap to change photo or pick another look
+                </p>
               </div>
 
-              {/* Avatar Carousel - 128px circles with mint border when selected */}
+              {/* Mini Avatar Row - 3 avatars at 64px */}
               {(formData.avatarUrl || !formData.profilePhotoPreview) && (
-                <div className="mb-10">
-                  <div className="flex gap-4 overflow-x-auto pb-3 px-2 -mx-2 scrollbar-hide justify-center">
+                <div className="mb-6">
+                  <div className="flex gap-3 justify-center">
                     {(AVATARS[normalizeSpecies(category.id)] || AVATARS.dog)
-                      .filter((src, idx, arr) => arr.indexOf(src) === idx) // Remove duplicates
-                      .slice(0, 8) // Limit to 8 avatars
+                      .filter((src, idx, arr) => arr.indexOf(src) === idx)
+                      .slice(0, 3)
                       .map((src, i) => (
                         <button
                           key={i}
                           type="button"
                           className={`
-                            flex-shrink-0 w-32 h-32 rounded-full
+                            flex-shrink-0 w-16 h-16 rounded-full
                             ios-transition button-glow-tap
                             ${formData.avatarUrl === src 
-                              ? 'ring-4 ring-accent/50 shadow-xl' 
+                              ? 'ring-3 ring-accent/50 shadow-lg' 
                               : 'ring-1 ring-border/20'}
                           `}
                           onClick={() => {
@@ -249,21 +264,21 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                           }}
                           style={{
                             transform: formData.avatarUrl === src ? 'scale(1.05)' : 'scale(1)',
-                            padding: '8px',
+                            padding: '4px',
                             background: formData.avatarUrl === src 
                               ? 'linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(164, 255, 196, 0.1))'
                               : 'transparent',
                           }}
                         >
-                          <img src={src} className="w-full h-full" alt={`Avatar ${i + 1}`} />
+                          <img src={src} className="w-full h-full rounded-full" alt={`Avatar ${i + 1}`} />
                         </button>
                       ))}
                   </div>
                 </div>
               )}
 
-              {/* Main Action Buttons - Frosted glass, 24pt radius, equal width */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
+              {/* Action Buttons - One row, equal width, rounded-full */}
+              <div className="grid grid-cols-3 gap-2 mb-4">
                 <button
                   type="button"
                   onClick={() => {
@@ -277,11 +292,10 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                     }));
                     setErrors(prev => ({ ...prev, profilePhoto: false }));
                   }}
-                  className="glass-effect rounded-3xl px-4 py-4 text-foreground ios-transition button-glow-tap hover:shadow-lg active:scale-96"
+                  className="glass-effect rounded-full px-3 py-2.5 text-foreground text-sm ios-transition button-glow-tap hover:shadow-lg active:scale-96"
                   style={{ 
                     fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
-                    fontSize: '15pt',
-                    fontWeight: 300,
+                    fontWeight: 400,
                   }}
                 >
                   Use Avatar
@@ -302,11 +316,10 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                     }}
                   />
                   <div 
-                    className="glass-effect rounded-3xl px-4 py-4 text-foreground ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center"
+                    className="glass-effect rounded-full px-3 py-2.5 text-foreground text-sm ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center"
                     style={{ 
                       fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
-                      fontSize: '15pt',
-                      fontWeight: 300,
+                      fontWeight: 400,
                     }}
                   >
                     Take Photo
@@ -327,11 +340,10 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
                     }}
                   />
                   <div 
-                    className="glass-effect rounded-3xl px-4 py-4 text-foreground ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center"
+                    className="glass-effect rounded-full px-3 py-2.5 text-foreground text-sm ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center"
                     style={{ 
                       fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
-                      fontSize: '15pt',
-                      fontWeight: 300,
+                      fontWeight: 400,
                     }}
                   >
                     Choose from Gallery
@@ -342,10 +354,9 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               {/* Error Message */}
               {errors.profilePhoto && (
                 <p 
-                  className="text-destructive text-center"
+                  className="text-destructive text-center text-sm"
                   style={{ 
                     fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
-                    fontSize: '15pt',
                     fontWeight: 300,
                   }}
                 >
