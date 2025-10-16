@@ -168,111 +168,192 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Photo/Avatar Section - PawBuck 2.0 Blue-Mint Design */}
+          {/* Apple-like Profile Photo Card - 65% screen height, centered */}
           <div 
-            className="glass-effect rounded-3xl p-8 shadow-lg"
+            className="flex items-center justify-center"
+            style={{ minHeight: '65vh' }}
             ref={photoInputRef}
-            style={{ background: 'linear-gradient(180deg, #FDFDFC, #F3FFF9)' }}
           >
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-light text-foreground mb-2">Profile Photo</h3>
-              <p className="text-muted-foreground font-light">
-                Choose how your pet shows up in PawBuck
-              </p>
-            </div>
-
-            {/* Large Circular Avatar Preview with Soft Glow */}
-            <div className="flex justify-center mb-8">
-              <div 
-                className="relative"
-                style={{
-                  filter: 'drop-shadow(0 0 40px rgba(0, 212, 255, 0.3))',
-                }}
-              >
-                <PetAvatar 
-                  pet={{ 
-                    ...formData, 
-                    species: formData.category,
-                    category: formData.category 
-                  }} 
-                  context="edit"
-                  size={160} 
-                  rounded="full" 
-                />
+            <div 
+              className="w-full max-w-2xl glass-effect rounded-3xl p-10 shadow-xl"
+              style={{ 
+                background: 'linear-gradient(180deg, #FDFDFC, #F3FFF9)',
+                backdropFilter: 'blur(20px)',
+              }}
+            >
+              {/* Header */}
+              <div className="text-center mb-8">
+                <h3 
+                  className="text-foreground mb-3"
+                  style={{ 
+                    fontFamily: 'SF Pro Display, -apple-system, system-ui, sans-serif',
+                    fontSize: '18pt',
+                    fontWeight: 400,
+                  }}
+                >
+                  Profile Photo
+                </h3>
+                <p 
+                  className="text-muted-foreground"
+                  style={{ 
+                    fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
+                    fontSize: '15pt',
+                    fontWeight: 300,
+                  }}
+                >
+                  Choose how your pet shows up in PawBuck
+                </p>
               </div>
-            </div>
 
-            {/* Avatar Carousel - Horizontal Scroll */}
-            {formData.avatarUrl && !formData.profilePhotoPreview && (
-              <div className="mb-8">
-                <div className="text-sm text-muted-foreground font-light mb-3 text-center">
-                  Choose an avatar
-                </div>
-                <div className="flex gap-3 overflow-x-auto pb-3 px-2 -mx-2 scrollbar-hide">
-                  {(AVATARS[normalizeSpecies(category.id)] || AVATARS.dog).map((src, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className={`
-                        flex-shrink-0 w-16 h-16 rounded-2xl glass-effect 
-                        ios-transition button-glow-tap p-2
-                        ${formData.avatarUrl === src ? 'ring-2 ring-accent shadow-lg' : ''}
-                      `}
-                      onClick={() => {
-                        setFormData(prev => ({ 
-                          ...prev, 
-                          avatarUrl: src, 
-                          profilePhotoPreview: undefined,
-                        }));
-                        setErrors(prev => ({ ...prev, profilePhoto: false }));
-                      }}
-                      style={{
-                        transform: formData.avatarUrl === src ? 'scale(1.05)' : 'scale(1)',
-                      }}
-                    >
-                      <img src={src} className="w-full h-full" alt={`Avatar ${i + 1}`} />
-                    </button>
-                  ))}
+              {/* Large Circular Avatar Preview */}
+              <div className="flex justify-center mb-10">
+                <div className="relative w-32 h-32">
+                  <PetAvatar 
+                    pet={{ 
+                      ...formData, 
+                      species: formData.category,
+                      category: formData.category 
+                    }} 
+                    context="edit"
+                    size={128} 
+                    rounded="full" 
+                  />
                 </div>
               </div>
-            )}
 
-            {/* Main Buttons - Frosted, 24pt radius, tactile press */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              <button
-                type="button"
-                onClick={() => {
-                  const species = normalizeSpecies(category.id);
-                  const avatars = AVATARS[species] || AVATARS.dog;
-                  setFormData(prev => ({ 
-                    ...prev, 
-                    avatarUrl: avatars[0], 
-                    profilePhotoPreview: undefined,
-                  }));
-                  setErrors(prev => ({ ...prev, profilePhoto: false }));
-                }}
-                className="glass-effect rounded-3xl px-6 py-4 text-foreground font-medium ios-transition button-glow-tap hover:shadow-lg active:scale-96"
-              >
-                Use Avatar
-              </button>
+              {/* Avatar Carousel - 128px circles with mint border when selected */}
+              {(formData.avatarUrl || !formData.profilePhotoPreview) && (
+                <div className="mb-10">
+                  <div className="flex gap-4 overflow-x-auto pb-3 px-2 -mx-2 scrollbar-hide justify-center">
+                    {(AVATARS[normalizeSpecies(category.id)] || AVATARS.dog)
+                      .filter((src, idx, arr) => arr.indexOf(src) === idx) // Remove duplicates
+                      .slice(0, 8) // Limit to 8 avatars
+                      .map((src, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className={`
+                            flex-shrink-0 w-32 h-32 rounded-full
+                            ios-transition button-glow-tap
+                            ${formData.avatarUrl === src 
+                              ? 'ring-4 ring-accent/50 shadow-xl' 
+                              : 'ring-1 ring-border/20'}
+                          `}
+                          onClick={() => {
+                            setFormData(prev => ({ 
+                              ...prev, 
+                              avatarUrl: src, 
+                              profilePhotoPreview: undefined,
+                            }));
+                            setErrors(prev => ({ ...prev, profilePhoto: false }));
+                          }}
+                          style={{
+                            transform: formData.avatarUrl === src ? 'scale(1.05)' : 'scale(1)',
+                            padding: '8px',
+                            background: formData.avatarUrl === src 
+                              ? 'linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(164, 255, 196, 0.1))'
+                              : 'transparent',
+                          }}
+                        >
+                          <img src={src} className="w-full h-full" alt={`Avatar ${i + 1}`} />
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
 
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (!f) return;
-                    const url = URL.createObjectURL(f);
-                    setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
+              {/* Main Action Buttons - Frosted glass, 24pt radius, equal width */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const species = normalizeSpecies(category.id);
+                    const avatars = AVATARS[species] || AVATARS.dog;
+                    const uniqueAvatars = avatars.filter((src, idx, arr) => arr.indexOf(src) === idx);
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      avatarUrl: uniqueAvatars[0], 
+                      profilePhotoPreview: undefined,
+                    }));
                     setErrors(prev => ({ ...prev, profilePhoto: false }));
                   }}
-                />
-                <div className="glass-effect rounded-3xl px-6 py-4 text-foreground font-medium ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center">
-                  Take Photo
-                </div>
+                  className="glass-effect rounded-3xl px-4 py-4 text-foreground ios-transition button-glow-tap hover:shadow-lg active:scale-96"
+                  style={{ 
+                    fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
+                    fontSize: '15pt',
+                    fontWeight: 300,
+                  }}
+                >
+                  Use Avatar
+                </button>
+
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      const url = URL.createObjectURL(f);
+                      setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
+                      setErrors(prev => ({ ...prev, profilePhoto: false }));
+                    }}
+                  />
+                  <div 
+                    className="glass-effect rounded-3xl px-4 py-4 text-foreground ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center"
+                    style={{ 
+                      fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
+                      fontSize: '15pt',
+                      fontWeight: 300,
+                    }}
+                  >
+                    Take Photo
+                  </div>
+                </label>
+
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      const url = URL.createObjectURL(f);
+                      setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
+                      setErrors(prev => ({ ...prev, profilePhoto: false }));
+                    }}
+                  />
+                  <div 
+                    className="glass-effect rounded-3xl px-4 py-4 text-foreground ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center"
+                    style={{ 
+                      fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
+                      fontSize: '15pt',
+                      fontWeight: 300,
+                    }}
+                  >
+                    Choose from Gallery
+                  </div>
+                </label>
+              </div>
+
+              {/* Error Message */}
+              {errors.profilePhoto && (
+                <p 
+                  className="text-destructive text-center"
+                  style={{ 
+                    fontFamily: 'SF Pro Text, -apple-system, system-ui, sans-serif',
+                    fontSize: '15pt',
+                    fontWeight: 300,
+                  }}
+                >
+                  Photo or avatar is required
+                </p>
+              )}
+            </div>
+          </div>
               </label>
 
               <label className="cursor-pointer">
