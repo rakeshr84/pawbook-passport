@@ -168,139 +168,140 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Photo/Avatar Section */}
-          <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg" ref={photoInputRef}>
-            <h3 className="text-2xl font-light text-gray-900 mb-2">Profile Photo</h3>
-            <p className="text-gray-600 font-light mb-5">
-              Add a photo or pick an avatar now—so your pet is easy to spot later.
-            </p>
+          {/* Photo/Avatar Section - PawBuck 2.0 Blue-Mint Design */}
+          <div 
+            className="glass-effect rounded-3xl p-8 shadow-lg"
+            ref={photoInputRef}
+            style={{ background: 'linear-gradient(180deg, #FDFDFC, #F3FFF9)' }}
+          >
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-light text-foreground mb-2">Profile Photo</h3>
+              <p className="text-muted-foreground font-light">
+                Choose how your pet shows up in PawBuck
+              </p>
+            </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              {/* Preview */}
-              <PetAvatar 
-                pet={{ 
-                  ...formData, 
-                  species: formData.category,
-                  category: formData.category 
-                }} 
-                context="edit"
-                size={112} 
-                rounded="2xl" 
-              />
-
-              {/* Uniform buttons */}
-              <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-                <NeuroButton type="button" onClick={() => setShowAvatarModal(true)}>
-                  Use Avatar
-                </NeuroButton>
-
-                <label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (!f) return;
-                      const url = URL.createObjectURL(f);
-                      setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
-                      setErrors(prev => ({ ...prev, profilePhoto: false }));
-                    }}
-                  />
-                  <NeuroButton type="button" asLabel>
-                    Take Photo
-                  </NeuroButton>
-                </label>
-
-                <label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (!f) return;
-                      const url = URL.createObjectURL(f);
-                      setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
-                      setErrors(prev => ({ ...prev, profilePhoto: false }));
-                    }}
-                  />
-                  <NeuroButton type="button" asLabel>
-                    Choose from Gallery
-                  </NeuroButton>
-                </label>
+            {/* Large Circular Avatar Preview with Soft Glow */}
+            <div className="flex justify-center mb-8">
+              <div 
+                className="relative"
+                style={{
+                  filter: 'drop-shadow(0 0 40px rgba(0, 212, 255, 0.3))',
+                }}
+              >
+                <PetAvatar 
+                  pet={{ 
+                    ...formData, 
+                    species: formData.category,
+                    category: formData.category 
+                  }} 
+                  context="edit"
+                  size={160} 
+                  rounded="full" 
+                />
               </div>
             </div>
 
-            {/* Coat Color Selector (for avatar backdrop) */}
+            {/* Avatar Carousel - Horizontal Scroll */}
             {formData.avatarUrl && !formData.profilePhotoPreview && (
-              <div className="mt-6">
-                <div className="text-sm text-gray-700 font-light mb-2">Coat Color (avatar backdrop)</div>
-                <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                  {COAT_PALETTES.map(c => (
+              <div className="mb-8">
+                <div className="text-sm text-muted-foreground font-light mb-3 text-center">
+                  Choose an avatar
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-3 px-2 -mx-2 scrollbar-hide">
+                  {(AVATARS[normalizeSpecies(category.id)] || AVATARS.dog).map((src, i) => (
                     <button
-                      key={c.id}
+                      key={i}
                       type="button"
-                      onClick={() => setFormData(p => ({ ...p, coatColorId: c.id, avatarTint: gradientFrom(c.hex) }))}
-                      className={`h-8 rounded-full border ${formData.coatColorId === c.id ? 'ring-2 ring-gray-900' : 'border-gray-200'}`}
-                      style={{ background: c.hex }}
-                      aria-label={c.name}
-                      title={c.name}
-                    />
+                      className={`
+                        flex-shrink-0 w-16 h-16 rounded-2xl glass-effect 
+                        ios-transition button-glow-tap p-2
+                        ${formData.avatarUrl === src ? 'ring-2 ring-accent shadow-lg' : ''}
+                      `}
+                      onClick={() => {
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          avatarUrl: src, 
+                          profilePhotoPreview: undefined,
+                        }));
+                        setErrors(prev => ({ ...prev, profilePhoto: false }));
+                      }}
+                      style={{
+                        transform: formData.avatarUrl === src ? 'scale(1.05)' : 'scale(1)',
+                      }}
+                    >
+                      <img src={src} className="w-full h-full" alt={`Avatar ${i + 1}`} />
+                    </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Gentle requirement banner */}
-            {!(formData.profilePhotoPreview || formData.avatarUrl) && (
-              <div className="mt-4 bg-blue-50 rounded-xl p-4 text-sm text-gray-700 font-light">
-                Add a photo or pick an avatar to continue. You can change it anytime.
-              </div>
-            )}
+            {/* Main Buttons - Frosted, 24pt radius, tactile press */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+              <button
+                type="button"
+                onClick={() => {
+                  const species = normalizeSpecies(category.id);
+                  const avatars = AVATARS[species] || AVATARS.dog;
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    avatarUrl: avatars[0], 
+                    profilePhotoPreview: undefined,
+                  }));
+                  setErrors(prev => ({ ...prev, profilePhoto: false }));
+                }}
+                className="glass-effect rounded-3xl px-6 py-4 text-foreground font-medium ios-transition button-glow-tap hover:shadow-lg active:scale-96"
+              >
+                Use Avatar
+              </button>
+
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    const url = URL.createObjectURL(f);
+                    setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
+                    setErrors(prev => ({ ...prev, profilePhoto: false }));
+                  }}
+                />
+                <div className="glass-effect rounded-3xl px-6 py-4 text-foreground font-medium ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center">
+                  Take Photo
+                </div>
+              </label>
+
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    const url = URL.createObjectURL(f);
+                    setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
+                    setErrors(prev => ({ ...prev, profilePhoto: false }));
+                  }}
+                />
+                <div className="glass-effect rounded-3xl px-6 py-4 text-foreground font-medium ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center">
+                  Choose from Gallery
+                </div>
+              </label>
+            </div>
+
+            {/* Error Message */}
             {errors.profilePhoto && (
-              <p className="text-sm text-red-500 font-light mt-2">
+              <p className="text-sm text-destructive font-light text-center">
                 Photo or avatar is required
               </p>
             )}
           </div>
 
-          {/* Avatar Gallery Modal */}
-          {showAvatarModal && (
-            <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-              <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-2xl">
-                <h4 className="text-xl font-light text-gray-900 mb-4">Choose an Avatar</h4>
-                <div className="grid grid-cols-4 gap-4">
-                  {(AVATARS[normalizeSpecies(category.id)] || AVATARS.dog).map((src, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className="p-3 rounded-2xl border border-gray-200 hover:bg-gray-50 transition-all"
-                      onClick={() => {
-                        setFormData(prev => ({ 
-                          ...prev, 
-                          avatarUrl: src, 
-                          profilePhotoPreview: undefined, // ensure avatar is shown
-                          photoUrl: undefined, // clear stale persisted value for instant preview
-                        }));
-                        setUseAvatar(true);
-                        setErrors(prev => ({ ...prev, profilePhoto: false }));
-                        setShowAvatarModal(false);
-                      }}
-                    >
-                      <img src={src} className="w-16 h-16 mx-auto" alt={`Avatar ${i + 1}`} />
-                    </button>
-                  ))}
-                </div>
-                <div className="mt-6 text-right">
-                  <NeuroButton type="button" onClick={() => setShowAvatarModal(false)}>
-                    Close
-                  </NeuroButton>
-                </div>
-              </div>
-            </div>
-          )}
 
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">

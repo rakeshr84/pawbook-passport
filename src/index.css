@@ -150,4 +150,13 @@ All colors MUST be HSL.
   .scale-96 {
     transform: scale(0.96);
   }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
