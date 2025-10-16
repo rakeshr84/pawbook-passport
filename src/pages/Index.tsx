@@ -260,7 +260,6 @@ const Index = () => {
       
       // Persist avatar choice: photo wins, else avatar
       const finalPhoto = petData.profilePhotoPreview || petData.avatarUrl || defaultAvatarFor(species);
-      const finalTint = petData.profilePhotoPreview ? undefined : petData.avatarTint;
       
       const newPet: PetCardData = {
         id: petId,
@@ -271,8 +270,6 @@ const Index = () => {
         ageLabel: calculateAgeLabel(petData.dateOfBirth),
         avatarUrl: petData.avatarUrl,
         photoUrl: finalPhoto,
-        coatColorId: petData.coatColorId,
-        avatarTint: finalTint,
         weight: petData.weight !== '' && petData.weight != null ? Number(petData.weight) : undefined,
         weightUnit: petData.weightUnit || 'kg',
         microchipNumber: petData.microchipNumber || undefined,
@@ -625,8 +622,6 @@ const Index = () => {
       profilePhoto: null,
       profilePhotoPreview: selected.photoUrl || '',
       avatarUrl: selected.avatarUrl,
-      coatColorId: selected.coatColorId,
-      avatarTint: selected.avatarTint,
       vetClinic: '',
       vetPhone: '',
       category: selected.species,
@@ -654,8 +649,6 @@ const Index = () => {
       profilePhoto: null,
       profilePhotoPreview: selected.photoUrl || '',
       avatarUrl: selected.avatarUrl,
-      coatColorId: selected.coatColorId,
-      avatarTint: selected.avatarTint,
       vetClinic: '',
       vetPhone: '',
       category: selected.species,

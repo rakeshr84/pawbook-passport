@@ -6,7 +6,6 @@ import { breedsByCategory } from '@/data/breeds';
 import { NeuroButton } from '@/components/ui/neuro-button';
 import { AVATARS, defaultAvatarFor, normalizeSpecies } from '@/lib/utils';
 import { PetAvatar } from '@/components/PetAvatar';
-import { COAT_PALETTES, gradientFrom } from '@/lib/tint';
 import { BREED_DEFAULTS } from '@/lib/breed-defaults';
 
 interface PetFormProps {
@@ -34,8 +33,6 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
     microchipNumber: '',
     profilePhoto: null,
     profilePhotoPreview: '',
-    coatColorId: undefined,
-    avatarTint: undefined,
     vetClinic: '',
     vetPhone: '',
     category: category.name

@@ -10,8 +10,6 @@ export interface PetFormData {
   profilePhoto: File | null;
   profilePhotoPreview: string;
   avatarUrl?: string;
-  coatColorId?: string;
-  avatarTint?: string;
   vetClinic: string;
   vetPhone: string;
   category: string;

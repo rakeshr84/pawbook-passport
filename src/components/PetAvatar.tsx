@@ -24,23 +24,25 @@ export function PetAvatar({
     [context, pet?.photoUrl, pet?.avatarUrl, pet?.profilePhotoPreview]
   );
   
-  // BACKDROP: use pet.avatarTint or soft neutral; only show when using avatar (no real photo)
-  const showBackdrop = !!pet?.avatarUrl && !pet?.profilePhotoPreview;
-  const backdrop = pet?.avatarTint || 'linear-gradient(135deg, #f9fafb, #e5e7eb)';
+  // BACKDROP: consistent mint gradient for vector avatars only (no real photo)
+  const showBackdrop = !!pet?.avatarUrl && !pet?.profilePhotoPreview && !pet?.photoUrl;
+  const backdrop = 'linear-gradient(135deg, #EFFFF8 0%, #D4F4FF 100%)';
 
   return (
     <div className={`relative ${className}`} style={{ width: size, height: size }}>
-      {/* circular backdrop behind the emoji */}
+      {/* Circular gradient backdrop for vector avatars */}
       {showBackdrop && (
         <div
-          className={`absolute inset-0 ${r} shadow-inner`}
+          className={`absolute inset-0 ${r}`}
           style={{ background: backdrop }}
         />
       )}
       <img
         src={src}
         alt=""
-        className={`absolute inset-0 w-full h-full object-contain p-2 bg-transparent ${r} border-4 border-white shadow-md`}
+        className={`absolute inset-0 w-full h-full ${
+          showBackdrop ? 'object-contain p-2' : 'object-cover'
+        } bg-transparent ${r} ring-1 ring-[#8BE5C9]/40 shadow-[0_6px_16px_rgba(0,0,0,0.08)]`}
         draggable={false}
       />
     </div>
