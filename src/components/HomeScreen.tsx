@@ -8,6 +8,8 @@ interface HomeScreenProps {
   pets: PetCardData[];
   onAddPet: () => void;
   onQuickAction: (petId: string, tab: 'health' | 'records' | 'profile') => void;
+  healthSummary?: { [petId: string]: { food: number; water: number; weight: number } };
+  onTrackNow?: (petId: string) => void;
 }
 
 const StatusDot = ({ status = 'ok' }: { status?: 'ok' | 'expiring' | 'due' }) => {
@@ -18,7 +20,7 @@ const StatusDot = ({ status = 'ok' }: { status?: 'ok' | 'expiring' | 'due' }) =>
   return <span className={`inline-block w-2.5 h-2.5 rounded-full ${colorClass} shadow-lg`} />;
 };
 
-const HomeScreen = ({ pets, onAddPet, onQuickAction }: HomeScreenProps) => {
+const HomeScreen = ({ pets, onAddPet, onQuickAction, healthSummary, onTrackNow }: HomeScreenProps) => {
   return (
     <div className="min-h-screen gradient-bg pb-24 px-4 py-8">
       <div className="max-w-6xl mx-auto">
@@ -80,7 +82,7 @@ const HomeScreen = ({ pets, onAddPet, onQuickAction }: HomeScreenProps) => {
                   </div>
 
                   {/* Pet Info */}
-                  <div className="text-center mb-6">
+                  <div className="text-center mb-4">
                     <h3 className="text-xl font-medium text-foreground mb-1">
                       {pet.name}
                     </h3>
@@ -88,6 +90,39 @@ const HomeScreen = ({ pets, onAddPet, onQuickAction }: HomeScreenProps) => {
                       {formatSpeciesBreed(pet.species, pet.breed)}
                     </p>
                   </div>
+
+                  {/* Health Tracking Summary */}
+                  {healthSummary && healthSummary[pet.id] && (
+                    <div className="mb-4 glass-effect rounded-2xl p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-medium text-foreground">Today's Tracking</p>
+                        <Sparkles className="w-3.5 h-3.5 text-accent" />
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs font-light mb-3">
+                        <div className="text-center">
+                          <div className="text-muted-foreground">Meals</div>
+                          <div className="text-foreground font-medium">{healthSummary[pet.id].food}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-muted-foreground">Water</div>
+                          <div className="text-foreground font-medium">{healthSummary[pet.id].water}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-muted-foreground">Weight</div>
+                          <div className="text-foreground font-medium">{healthSummary[pet.id].weight}</div>
+                        </div>
+                      </div>
+                      {onTrackNow && (
+                        <button
+                          onClick={() => onTrackNow(pet.id)}
+                          className="w-full py-2.5 px-4 rounded-xl gradient-accent text-white text-sm font-medium shadow-lg hover:shadow-xl ios-transition button-glow-tap flex items-center justify-center gap-2"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Track Now
+                        </button>
+                      )}
+                    </div>
+                  )}
 
                   {/* Quick Actions */}
                   <div className="grid grid-cols-3 gap-2">

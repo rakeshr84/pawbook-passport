@@ -3,7 +3,7 @@ export type LogId = string;
 export type WeightEntry = { 
   id: LogId; 
   petId: string; 
-  date: string; 
+  timestamp: string; // ISO 8601 with time
   weight: number; 
   unit: "kg" | "lbs"; 
 };
@@ -11,7 +11,7 @@ export type WeightEntry = {
 export type FoodEntry = { 
   id: LogId; 
   petId: string; 
-  date: string; 
+  timestamp: string; // ISO 8601 with time
   foodName?: string; 
   amount: number; 
   unit: "g"; 
@@ -20,7 +20,7 @@ export type FoodEntry = {
 export type WaterEntry = { 
   id: LogId; 
   petId: string; 
-  date: string; 
+  timestamp: string; // ISO 8601 with time
   amount: number; 
   unit: "ml"; 
 };
@@ -28,7 +28,7 @@ export type WaterEntry = {
 export type ActivityEntry = { 
   id: LogId; 
   petId: string; 
-  date: string; 
+  timestamp: string; // ISO 8601 with time
   kind: "walk" | "play" | "training"; 
   duration: number; 
   durationUnit: "min"; 
@@ -38,7 +38,7 @@ export type ActivityEntry = {
 export type MedEntry = { 
   id: LogId; 
   petId: string; 
-  date: string; 
+  timestamp: string; // ISO 8601 with time
   name: string; 
   dose?: string; 
   taken: boolean; 

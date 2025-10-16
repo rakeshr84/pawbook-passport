@@ -561,47 +561,47 @@ const Index = () => {
   };
 
   // Health tracking handlers
-  const handleSaveWeight = (weight: number, unit: "kg" | "lbs", date: string) => {
+  const handleSaveWeight = (weight: number, unit: "kg" | "lbs", timestamp: string) => {
     if (!currentPetId) return;
     setHealth(h => ({
       ...h,
-      weight: [...h.weight, { id: crypto.randomUUID(), petId: currentPetId, date, weight, unit }]
+      weight: [...h.weight, { id: crypto.randomUUID(), petId: currentPetId, timestamp, weight, unit }]
     }));
-    toast({ title: "Weight logged", description: `${weight} ${unit} recorded for ${date}` });
+    toast({ title: "Weight logged", description: `${weight} ${unit} recorded` });
   };
 
-  const handleSaveFood = (amount: number, date: string, name?: string) => {
+  const handleSaveFood = (amount: number, timestamp: string, name?: string) => {
     if (!currentPetId) return;
     setHealth(h => ({
       ...h,
-      food: [...h.food, { id: crypto.randomUUID(), petId: currentPetId, date, amount, unit: "g", foodName: name }]
+      food: [...h.food, { id: crypto.randomUUID(), petId: currentPetId, timestamp, amount, unit: "g", foodName: name }]
     }));
     toast({ title: "Food logged", description: `${amount}g recorded` });
   };
 
-  const handleSaveWater = (amount: number, date: string) => {
+  const handleSaveWater = (amount: number, timestamp: string) => {
     if (!currentPetId) return;
     setHealth(h => ({
       ...h,
-      water: [...h.water, { id: crypto.randomUUID(), petId: currentPetId, date, amount, unit: "ml" }]
+      water: [...h.water, { id: crypto.randomUUID(), petId: currentPetId, timestamp, amount, unit: "ml" }]
     }));
     toast({ title: "Water logged", description: `${amount}ml recorded` });
   };
 
-  const handleSaveActivity = (duration: number, kind: "walk" | "play" | "training", date: string, distanceKm?: number) => {
+  const handleSaveActivity = (duration: number, kind: "walk" | "play" | "training", timestamp: string, distanceKm?: number) => {
     if (!currentPetId) return;
     setHealth(h => ({
       ...h,
-      activity: [...h.activity, { id: crypto.randomUUID(), petId: currentPetId, date, kind, duration, durationUnit: "min", distanceKm }]
+      activity: [...h.activity, { id: crypto.randomUUID(), petId: currentPetId, timestamp, kind, duration, durationUnit: "min", distanceKm }]
     }));
     toast({ title: "Activity logged", description: `${duration} min ${kind} recorded` });
   };
 
-  const handleSaveMed = (name: string, taken: boolean, date: string, dose?: string) => {
+  const handleSaveMed = (name: string, taken: boolean, timestamp: string, dose?: string) => {
     if (!currentPetId) return;
     setHealth(h => ({
       ...h,
-      meds: [...h.meds, { id: crypto.randomUUID(), petId: currentPetId, date, name, dose, taken }]
+      meds: [...h.meds, { id: crypto.randomUUID(), petId: currentPetId, timestamp, name, dose, taken }]
     }));
     toast({ title: "Medication logged", description: `${name} ${taken ? 'taken' : 'skipped'}` });
   };
@@ -728,6 +728,24 @@ const Index = () => {
               pets={pets}
               onAddPet={handleAddAnotherPet}
               onQuickAction={handleQuickAction}
+              healthSummary={(() => {
+                const today = new Date().toISOString().split('T')[0];
+                const summary: { [petId: string]: { food: number; water: number; weight: number } } = {};
+                
+                pets.forEach(pet => {
+                  const foodCount = health.food.filter(f => f.petId === pet.id && f.timestamp.startsWith(today)).length;
+                  const waterCount = health.water.filter(w => w.petId === pet.id && w.timestamp.startsWith(today)).length;
+                  const weightCount = health.weight.filter(w => w.petId === pet.id && w.timestamp.startsWith(today)).length;
+                  
+                  summary[pet.id] = { food: foodCount, water: waterCount, weight: weightCount };
+                });
+                
+                return summary;
+              })()}
+              onTrackNow={(petId) => {
+                setCurrentPetId(petId);
+                push('health-tracking');
+              }}
             />
           </div>
           <BottomTabNav 

@@ -10,11 +10,11 @@ interface HealthTrackingProps {
   petDateOfBirth?: string;
   health: HealthState;
   onBack?: () => void;
-  onSaveWeight: (weight: number, unit: "kg" | "lbs", date: string) => void;
-  onSaveFood: (amount: number, date: string, name?: string) => void;
-  onSaveWater: (amount: number, date: string) => void;
-  onSaveActivity: (duration: number, kind: "walk" | "play" | "training", date: string, distanceKm?: number) => void;
-  onSaveMed: (name: string, taken: boolean, date: string, dose?: string) => void;
+  onSaveWeight: (weight: number, unit: "kg" | "lbs", timestamp: string) => void;
+  onSaveFood: (amount: number, timestamp: string, name?: string) => void;
+  onSaveWater: (amount: number, timestamp: string) => void;
+  onSaveActivity: (duration: number, kind: "walk" | "play" | "training", timestamp: string, distanceKm?: number) => void;
+  onSaveMed: (name: string, taken: boolean, timestamp: string, dose?: string) => void;
 }
 
 const HealthTracking = ({
@@ -44,7 +44,19 @@ const HealthTracking = ({
   const [medName, setMedName] = useState('');
   const [medDose, setMedDose] = useState('');
   const [medTaken, setMedTaken] = useState(true);
-  const [logDate, setLogDate] = useState(new Date().toISOString().split('T')[0]);
+  
+  // DateTime state - prefill with current timestamp
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+  
+  const [logDateTime, setLogDateTime] = useState(getCurrentDateTime());
 
   const resetModal = () => {
     setWeightValue('');
@@ -56,23 +68,23 @@ const HealthTracking = ({
     setMedName('');
     setMedDose('');
     setMedTaken(true);
-    setLogDate(new Date().toISOString().split('T')[0]);
+    setLogDateTime(getCurrentDateTime());
   };
 
   // Filter data for current pet
-  const petWeight = health.weight.filter(w => w.petId === petId).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const petFood = health.food.filter(f => f.petId === petId);
-  const petWater = health.water.filter(w => w.petId === petId);
-  const petActivity = health.activity.filter(a => a.petId === petId);
-  const petMeds = health.meds.filter(m => m.petId === petId);
+  const petWeight = health.weight.filter(w => w.petId === petId).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  const petFood = health.food.filter(f => f.petId === petId).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const petWater = health.water.filter(w => w.petId === petId).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const petActivity = health.activity.filter(a => a.petId === petId).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const petMeds = health.meds.filter(m => m.petId === petId).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   // Calculate today's totals
   const today = new Date().toISOString().split('T')[0];
-  const todayFood = petFood.filter(f => f.date === today).reduce((sum, f) => sum + f.amount, 0);
-  const todayWater = petWater.filter(w => w.date === today).reduce((sum, w) => sum + w.amount, 0);
-  const todayActivity = petActivity.filter(a => a.date === today).reduce((sum, a) => sum + a.duration, 0);
-  const todayActivityKm = petActivity.filter(a => a.date === today).reduce((sum, a) => sum + (a.distanceKm || 0), 0);
-  const todayMeds = petMeds.filter(m => m.date === today && m.taken).length;
+  const todayFood = petFood.filter(f => f.timestamp.startsWith(today)).reduce((sum, f) => sum + f.amount, 0);
+  const todayWater = petWater.filter(w => w.timestamp.startsWith(today)).reduce((sum, w) => sum + w.amount, 0);
+  const todayActivity = petActivity.filter(a => a.timestamp.startsWith(today)).reduce((sum, a) => sum + a.duration, 0);
+  const todayActivityKm = petActivity.filter(a => a.timestamp.startsWith(today)).reduce((sum, a) => sum + (a.distanceKm || 0), 0);
+  const todayMeds = petMeds.filter(m => m.timestamp.startsWith(today) && m.taken).length;
 
   // Last weight and change
   const lastWeight = petWeight[petWeight.length - 1];
@@ -97,11 +109,11 @@ const HealthTracking = ({
   // Prepare chart data
   const chartData = petWeight.map(w => {
     const age = petDateOfBirth ? 
-      Math.floor((new Date(w.date).getTime() - new Date(petDateOfBirth).getTime()) / (1000 * 60 * 60 * 24 * 30)) : 0;
+      Math.floor((new Date(w.timestamp).getTime() - new Date(petDateOfBirth).getTime()) / (1000 * 60 * 60 * 24 * 30)) : 0;
     const ref = getReferenceBand(age, petBreed);
     
     return {
-      date: new Date(w.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      date: new Date(w.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       weight: w.unit === 'kg' ? w.weight : w.weight * 0.453592, // normalize to kg
       refLow: ref.low,
       refHigh: ref.high,
@@ -110,35 +122,35 @@ const HealthTracking = ({
 
   const handleSaveWeight = () => {
     if (!weightValue) return;
-    onSaveWeight(Number(weightValue), weightUnit, logDate);
+    onSaveWeight(Number(weightValue), weightUnit, new Date(logDateTime).toISOString());
     setActiveModal(null);
     resetModal();
   };
 
   const handleSaveFood = () => {
     if (!foodAmount) return;
-    onSaveFood(Number(foodAmount), logDate, foodName || undefined);
+    onSaveFood(Number(foodAmount), new Date(logDateTime).toISOString(), foodName || undefined);
     setActiveModal(null);
     resetModal();
   };
 
   const handleSaveWater = () => {
     if (!waterAmount) return;
-    onSaveWater(Number(waterAmount), logDate);
+    onSaveWater(Number(waterAmount), new Date(logDateTime).toISOString());
     setActiveModal(null);
     resetModal();
   };
 
   const handleSaveActivity = () => {
     if (!activityDuration) return;
-    onSaveActivity(Number(activityDuration), activityKind, logDate, activityDistance ? Number(activityDistance) : undefined);
+    onSaveActivity(Number(activityDuration), activityKind, new Date(logDateTime).toISOString(), activityDistance ? Number(activityDistance) : undefined);
     setActiveModal(null);
     resetModal();
   };
 
   const handleSaveMed = () => {
     if (!medName) return;
-    onSaveMed(medName, medTaken, logDate, medDose || undefined);
+    onSaveMed(medName, medTaken, new Date(logDateTime).toISOString(), medDose || undefined);
     setActiveModal(null);
     resetModal();
   };
@@ -313,10 +325,10 @@ const HealthTracking = ({
             </div>
             <div className="space-y-4">
               <input
-                type="date"
-                value={logDate}
-                max={new Date().toISOString().split('T')[0]}
-                onChange={(e) => setLogDate(e.target.value)}
+                type="datetime-local"
+                value={logDateTime}
+                max={getCurrentDateTime()}
+                onChange={(e) => setLogDateTime(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-gray-400 font-light"
               />
               <div className="flex gap-3">
@@ -360,12 +372,25 @@ const HealthTracking = ({
             </div>
             <div className="space-y-4">
               <input
-                type="date"
-                value={logDate}
-                max={new Date().toISOString().split('T')[0]}
-                onChange={(e) => setLogDate(e.target.value)}
+                type="datetime-local"
+                value={logDateTime}
+                max={getCurrentDateTime()}
+                onChange={(e) => setLogDateTime(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-gray-400 font-light"
               />
+              
+              {/* Recent entries context */}
+              {petFood.slice(0, 3).length > 0 && (
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-500 font-light mb-2">Recent food logs:</p>
+                  {petFood.slice(0, 3).map((f) => (
+                    <div key={f.id} className="text-xs text-gray-600 font-light">
+                      {new Date(f.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}: {f.amount}g {f.foodName ? `(${f.foodName})` : ''}
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               <input
                 type="text"
                 placeholder="Food name (optional)"
@@ -407,12 +432,25 @@ const HealthTracking = ({
             </div>
             <div className="space-y-4">
               <input
-                type="date"
-                value={logDate}
-                max={new Date().toISOString().split('T')[0]}
-                onChange={(e) => setLogDate(e.target.value)}
+                type="datetime-local"
+                value={logDateTime}
+                max={getCurrentDateTime()}
+                onChange={(e) => setLogDateTime(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-gray-400 font-light"
               />
+              
+              {/* Recent entries context */}
+              {petWater.slice(0, 3).length > 0 && (
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-500 font-light mb-2">Recent water logs:</p>
+                  {petWater.slice(0, 3).map((w) => (
+                    <div key={w.id} className="text-xs text-gray-600 font-light">
+                      {new Date(w.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}: {w.amount}ml
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               <div className="flex gap-3 items-center">
                 <input
                   type="number"
@@ -447,12 +485,25 @@ const HealthTracking = ({
             </div>
             <div className="space-y-4">
               <input
-                type="date"
-                value={logDate}
-                max={new Date().toISOString().split('T')[0]}
-                onChange={(e) => setLogDate(e.target.value)}
+                type="datetime-local"
+                value={logDateTime}
+                max={getCurrentDateTime()}
+                onChange={(e) => setLogDateTime(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-gray-400 font-light"
               />
+              
+              {/* Recent entries context */}
+              {petActivity.slice(0, 3).length > 0 && (
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-500 font-light mb-2">Recent activities:</p>
+                  {petActivity.slice(0, 3).map((a) => (
+                    <div key={a.id} className="text-xs text-gray-600 font-light">
+                      {new Date(a.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}: {a.kind} ({a.duration}min{a.distanceKm ? `, ${a.distanceKm}km` : ''})
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               <select
                 value={activityKind}
                 onChange={(e) => setActivityKind(e.target.value as 'walk' | 'play' | 'training')}
@@ -507,12 +558,25 @@ const HealthTracking = ({
             </div>
             <div className="space-y-4">
               <input
-                type="date"
-                value={logDate}
-                max={new Date().toISOString().split('T')[0]}
-                onChange={(e) => setLogDate(e.target.value)}
+                type="datetime-local"
+                value={logDateTime}
+                max={getCurrentDateTime()}
+                onChange={(e) => setLogDateTime(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-gray-400 font-light"
               />
+              
+              {/* Recent entries context */}
+              {petMeds.slice(0, 3).length > 0 && (
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs text-gray-500 font-light mb-2">Recent medications:</p>
+                  {petMeds.slice(0, 3).map((m) => (
+                    <div key={m.id} className="text-xs text-gray-600 font-light">
+                      {new Date(m.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}: {m.name} {m.taken ? '✓' : '✗'}
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               <input
                 type="text"
                 placeholder="Medication name"
