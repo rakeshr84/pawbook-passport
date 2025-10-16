@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ChevronLeft } from 'lucide-react';
 import { categories } from '@/data/categories';
 import { Category } from '@/types/pet';
 
@@ -7,122 +8,121 @@ interface CategorySelectionProps {
   onBack: () => void;
 }
 
-const CategorySelection = ({ onSelectCategory, onBack }: CategorySelectionProps) => {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+// Species-specific gradients
+const speciesGradients: Record<string, string> = {
+  dogs: 'linear-gradient(135deg, #00D4FF, #A4FFC4)',
+  cats: 'linear-gradient(135deg, #FFB3E3, #FF8AE2)',
+  birds: 'linear-gradient(135deg, #FFE98A, #FFD24D)',
+  rabbits: 'linear-gradient(135deg, #FFD1DC, #FFB8C8)',
+  'guinea-pigs': 'linear-gradient(135deg, #FFC999, #FFB077)',
+  hamsters: 'linear-gradient(135deg, #FFC999, #FFB077)',
+  reptiles: 'linear-gradient(135deg, #A4FFC4, #00D4FF)',
+  fish: 'linear-gradient(135deg, #00D4FF, #A4FFC4)',
+  exotic: 'linear-gradient(135deg, #FFB3E3, #A4FFC4)',
+};
 
-  const handleCategoryClick = (category: Category) => {
+const CategorySelection = ({ onSelectCategory, onBack }: CategorySelectionProps) => {
+  const [tappedId, setTappedId] = useState<string | null>(null);
+
+  const handleCategoryTap = (category: Category) => {
+    setTappedId(category.id);
     setTimeout(() => {
       onSelectCategory(category);
     }, 300);
   };
 
   return (
-    <div className="min-h-screen gradient-bg py-12 px-6">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center space-y-3">
-          <h1 className="text-4xl font-light text-foreground">
+    <div 
+      className="min-h-screen pb-24 px-4 pt-8 overflow-y-auto safe-area-padding-bottom"
+      style={{
+        background: 'linear-gradient(180deg, hsl(150, 100%, 98%), hsl(190, 100%, 98%))',
+      }}
+    >
+      <div className="max-w-2xl mx-auto">
+        
+        {/* Back Button */}
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-light ios-transition mb-6"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          Back
+        </button>
+
+        {/* Header */}
+        <div className="text-center mb-8 animate-fade-in">
+          <h1 
+            className="text-3xl font-bold text-foreground mb-3"
+            style={{ fontFamily: 'SF Pro Rounded, -apple-system, system-ui, sans-serif' }}
+          >
             Which companion do you care for?
           </h1>
           <p className="text-muted-foreground font-light">
-            Hover over any folder to explore - you can add more anytime!
+            Tap to select your pet type 🐾
           </p>
         </div>
 
-        <div className="bg-white/30 backdrop-blur-md rounded-3xl p-8 shadow-lg">
-          <div className="space-y-4">
-            {categories.map((category) => {
-              const isHovered = hoveredId === category.id;
-              
-              return (
-                <div
-                  key={category.id}
-                  className="flex cursor-pointer"
-                  onMouseEnter={() => setHoveredId(category.id)}
-                  onMouseLeave={() => setHoveredId(null)}
-                  onClick={() => handleCategoryClick(category)}
+        {/* Category Grid */}
+        <div className="grid grid-cols-2 gap-4 animate-fade-in">
+          {categories.map((category) => {
+            const isTapped = tappedId === category.id;
+            const gradient = speciesGradients[category.id] || speciesGradients.dogs;
+
+            return (
+              <button
+                key={category.id}
+                onClick={() => handleCategoryTap(category)}
+                className={`
+                  glass-effect rounded-3xl p-6 
+                  flex flex-col items-center justify-center gap-3
+                  ios-transition button-glow-tap
+                  ${isTapped ? 'scale-96' : 'active:scale-96'}
+                `}
+                style={{
+                  minHeight: '160px',
+                  boxShadow: isTapped 
+                    ? '0 6px 16px rgba(0, 0, 0, 0.06), 0 0 32px rgba(0, 212, 255, 0.3)'
+                    : '0 6px 16px rgba(0, 0, 0, 0.06)',
+                  transform: isTapped ? 'scale(0.96)' : 'scale(1)',
+                  transition: 'all 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+                }}
+              >
+                {/* Icon with gradient background */}
+                <div 
+                  className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg"
+                  style={{ 
+                    background: gradient,
+                    animation: isTapped ? 'glow-pulse 0.3s ease-out' : 'none',
+                  }}
                 >
-                  <div
-                    className={`flex-1 rounded-l-2xl bg-gradient-to-br ${category.bgGradient} relative overflow-hidden folder-transition`}
-                    style={{ height: isHovered ? '380px' : '100px' }}
-                  >
-                    <div
-                      className="absolute inset-0 flex items-center px-12 smooth-transition"
-                      style={{
-                        opacity: isHovered ? 0 : 1,
-                        transform: isHovered ? 'translateX(-20px)' : 'translateX(0)'
-                      }}
-                    >
-                      <h2 className="text-5xl font-light text-gray-800">
-                        {category.name}
-                      </h2>
-                    </div>
-
-                    <div
-                      className="absolute inset-0 p-8 smooth-transition"
-                      style={{
-                        opacity: isHovered ? 1 : 0,
-                        transitionDelay: isHovered ? '200ms' : '0ms'
-                      }}
-                    >
-                      <div className="grid grid-cols-4 gap-3 mb-6">
-                        {category.photos.map((photo, idx) => (
-                          <div
-                            key={idx}
-                            className="bg-white/60 backdrop-blur-sm rounded-xl overflow-hidden h-20"
-                          >
-                            <img 
-                              src={photo.src} 
-                              alt={`${category.name} ${idx + 1}`}
-                              className="w-full h-full object-cover"
-                              style={{ objectPosition: photo.position }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
-                          <img 
-                            src={category.tabIcon} 
-                            alt={category.name}
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <div className="relative">
-                          <div className="absolute -left-2 top-4 w-4 h-4 bg-white transform rotate-45" />
-                          <div className="bg-white rounded-2xl p-4 shadow-md">
-                            <p className="text-sm text-gray-700 leading-relaxed">
-                              {category.message}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="w-20 bg-white rounded-r-2xl shadow-lg flex items-center justify-center flex-shrink-0">
-                    <img 
-                      src={category.tabIcon} 
-                      alt={category.name}
-                      className="w-12 h-12 object-contain"
-                    />
-                  </div>
+                  <img 
+                    src={category.tabIcon} 
+                    alt={category.name}
+                    className="w-12 h-12 object-contain"
+                  />
                 </div>
-              );
-            })}
-          </div>
+
+                {/* Label */}
+                <span 
+                  className="text-foreground font-bold text-center"
+                  style={{ 
+                    fontFamily: 'SF Pro Rounded, -apple-system, system-ui, sans-serif',
+                    fontSize: '22pt',
+                    lineHeight: '1.2',
+                  }}
+                >
+                  {category.name}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        <div className="text-center space-y-4">
-          <p className="text-sm text-muted-foreground font-light italic">
-            💡 Hover over any folder to see it expand with details!
+        {/* Footer Hint */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-muted-foreground font-light">
+            💡 You can add multiple pets later
           </p>
-          <button
-            onClick={onBack}
-            className="text-muted-foreground hover:text-foreground font-light smooth-transition"
-          >
-            ← Back
-          </button>
         </div>
       </div>
     </div>
