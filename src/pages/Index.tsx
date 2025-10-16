@@ -4,6 +4,7 @@ import SignInPage from '@/components/SignInPage';
 import BottomTabNav, { TabId } from '@/components/BottomTabNav';
 import SignIn from '@/components/SignIn';
 import HomeScreen from '@/components/HomeScreen';
+import HealthTab from '@/components/HealthTab';
 import Dashboard, { PetCardData } from '@/components/Dashboard';
 import CategorySelection from '@/components/CategorySelection';
 import PetForm from '@/components/PetForm';
@@ -656,7 +657,7 @@ const Index = () => {
         />
       )}
 
-      {currentScreen === 'dashboard' && (
+      {currentScreen === 'dashboard' && activeTab === 'home' && (
         <>
           <HomeScreen
             pets={pets}
@@ -664,15 +665,35 @@ const Index = () => {
             onQuickAction={handleQuickAction}
           />
           <BottomTabNav 
-            activeTab="home" 
+            activeTab={activeTab} 
             onTabChange={(tab) => {
               setActiveTab(tab);
-              // Handle tab navigation - currently staying on home
-              if (tab === 'home') {
-                // Already on home
-              } else {
-                console.log('Navigate to tab:', tab);
+            }}
+            petName={pets[0]?.name}
+          />
+        </>
+      )}
+
+      {currentScreen === 'dashboard' && activeTab === 'health' && (
+        <>
+          <HealthTab
+            pet={currentPetId ? pets.find(p => p.id === currentPetId) : pets[0]}
+            vaccinationCount={vaccinations.filter(v => v.pet_id === (currentPetId || pets[0]?.id)).length}
+            treatmentCount={treatments.filter(t => t.pet_id === (currentPetId || pets[0]?.id)).length}
+            onOpenVaccinations={() => push('vaccination-list')}
+            onOpenTreatments={() => push('treatment-list')}
+            onOpenTracking={() => {
+              // Set current pet if not set
+              if (!currentPetId && pets[0]) {
+                setCurrentPetId(pets[0].id);
               }
+              push('medical-dashboard');
+            }}
+          />
+          <BottomTabNav 
+            activeTab={activeTab} 
+            onTabChange={(tab) => {
+              setActiveTab(tab);
             }}
             petName={pets[0]?.name}
           />
