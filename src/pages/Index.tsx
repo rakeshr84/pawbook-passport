@@ -25,6 +25,7 @@ import ExamSelection from '@/components/ExamSelection';
 import ExamDetailsForm from '@/components/ExamDetailsForm';
 import ExamListView from '@/components/ExamListView';
 import { DocumentsView } from '@/components/DocumentsView';
+import HealthTracking from '@/components/HealthTracking';
 import AppHeader from '@/components/AppHeader';
 import EditProfile from '@/components/EditProfile';
 import { Screen, Category, PetFormData, UserFormData } from '@/types/pet';
@@ -753,7 +754,7 @@ const Index = () => {
                 if (!currentPetId && pets[0]) {
                   setCurrentPetId(pets[0].id);
                 }
-                push('medical-dashboard');
+                push('health-tracking');
               }}
             />
           </div>
@@ -996,6 +997,24 @@ const Index = () => {
           onRemove={(id) => setUploads(prev => prev.filter(x => x.id !== id))}
           onBack={handleBack}
         />
+      )}
+
+      {currentScreen === 'health-tracking' && currentPetId && (
+        <div className="animate-slide-in-right">
+          <HealthTracking
+            petId={currentPetId}
+            petName={pets.find(p => p.id === currentPetId)?.name || ''}
+            petBreed={pets.find(p => p.id === currentPetId)?.breed}
+            petDateOfBirth={pets.find(p => p.id === currentPetId)?.dateOfBirth}
+            health={health}
+            onBack={handleBack}
+            onSaveWeight={handleSaveWeight}
+            onSaveFood={handleSaveFood}
+            onSaveWater={handleSaveWater}
+            onSaveActivity={handleSaveActivity}
+            onSaveMed={handleSaveMed}
+          />
+        </div>
       )}
 
       {showRegistrationModal && petData && (

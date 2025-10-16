@@ -52,4 +52,5 @@ export type Screen =
   | 'documents'
   | 'signin'
   | 'dashboard'
-  | 'edit-profile';
+  | 'edit-profile'
+  | 'health-tracking';

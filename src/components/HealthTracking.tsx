@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, TrendingUp, Apple, Droplet, Pill, X } from 'lucide-react';
+import { Activity, TrendingUp, Apple, Droplet, Pill, X, ChevronLeft } from 'lucide-react';
 import { HealthState, WeightEntry, FoodEntry, WaterEntry, ActivityEntry, MedEntry } from '@/types/health';
 import { LineChart, Line, XAxis, YAxis, Area, ResponsiveContainer, ComposedChart } from 'recharts';
 
@@ -9,6 +9,7 @@ interface HealthTrackingProps {
   petBreed?: string;
   petDateOfBirth?: string;
   health: HealthState;
+  onBack?: () => void;
   onSaveWeight: (weight: number, unit: "kg" | "lbs", date: string) => void;
   onSaveFood: (amount: number, date: string, name?: string) => void;
   onSaveWater: (amount: number, date: string) => void;
@@ -22,6 +23,7 @@ const HealthTracking = ({
   petBreed,
   petDateOfBirth,
   health,
+  onBack,
   onSaveWeight,
   onSaveFood,
   onSaveWater,
@@ -142,9 +144,32 @@ const HealthTracking = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="min-h-screen gradient-bg pb-24 px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Back Button */}
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-light ios-transition mb-4"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            Back
+          </button>
+        )}
+
+        {/* Header */}
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-3xl font-light text-foreground mb-2 flex items-center gap-2">
+            <Activity className="w-8 h-8 text-accent" />
+            Health Tracking
+          </h1>
+          <p className="text-muted-foreground font-light">
+            Monitor {petName}'s daily health metrics
+          </p>
+        </div>
+
+        {/* Header Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-6">
         {/* Weight Card */}
         <div className="bg-white/60 backdrop-blur-md rounded-2xl p-5 shadow-md">
           <div className="flex items-start justify-between">
@@ -521,7 +546,8 @@ const HealthTracking = ({
             </div>
           </div>
         </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

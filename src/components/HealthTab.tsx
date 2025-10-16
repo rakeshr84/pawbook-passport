@@ -45,7 +45,7 @@ const HealthTab = ({
           {/* Vaccinations Card */}
           <button
             onClick={onOpenVaccinations}
-            className="w-full glass-effect rounded-3xl p-6 shadow-lg hover:shadow-xl ios-transition text-left group button-glow-tap"
+            className="w-full glass-effect rounded-3xl p-6 shadow-lg hover:shadow-xl active:scale-[0.98] ios-transition text-left group button-glow-tap"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -64,14 +64,14 @@ const HealthTab = ({
                   </p>
                 </div>
               </div>
-              <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 ios-transition" />
+              <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 ios-transition opacity-60 group-hover:opacity-100" />
             </div>
           </button>
 
           {/* Treatments Card */}
           <button
             onClick={onOpenTreatments}
-            className="w-full glass-effect rounded-3xl p-6 shadow-lg hover:shadow-xl ios-transition text-left group button-glow-tap"
+            className="w-full glass-effect rounded-3xl p-6 shadow-lg hover:shadow-xl active:scale-[0.98] ios-transition text-left group button-glow-tap"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -90,14 +90,14 @@ const HealthTab = ({
                   </p>
                 </div>
               </div>
-              <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 ios-transition" />
+              <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 ios-transition opacity-60 group-hover:opacity-100" />
             </div>
           </button>
 
           {/* Health Tracking Card */}
           <button
             onClick={onOpenTracking}
-            className="w-full glass-effect rounded-3xl p-6 shadow-lg hover:shadow-xl ios-transition text-left group button-glow-tap"
+            className="w-full glass-effect rounded-3xl p-6 shadow-lg hover:shadow-xl active:scale-[0.98] ios-transition text-left group button-glow-tap"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -113,7 +113,7 @@ const HealthTab = ({
                   </p>
                 </div>
               </div>
-              <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 ios-transition" />
+              <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 ios-transition opacity-60 group-hover:opacity-100" />
             </div>
           </button>
         </div>
