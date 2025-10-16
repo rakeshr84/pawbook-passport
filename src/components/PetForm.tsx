@@ -354,34 +354,6 @@ const PetForm = ({ category, onSubmit, onBack }: PetFormProps) => {
               )}
             </div>
           </div>
-              </label>
-
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (!f) return;
-                    const url = URL.createObjectURL(f);
-                    setFormData(prev => ({ ...prev, profilePhotoPreview: url, avatarUrl: undefined }));
-                    setErrors(prev => ({ ...prev, profilePhoto: false }));
-                  }}
-                />
-                <div className="glass-effect rounded-3xl px-6 py-4 text-foreground font-medium ios-transition button-glow-tap hover:shadow-lg active:scale-96 text-center">
-                  Choose from Gallery
-                </div>
-              </label>
-            </div>
-
-            {/* Error Message */}
-            {errors.profilePhoto && (
-              <p className="text-sm text-destructive font-light text-center">
-                Photo or avatar is required
-              </p>
-            )}
-          </div>
 
 
           <div className="space-y-6">
